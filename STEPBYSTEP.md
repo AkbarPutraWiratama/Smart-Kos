@@ -76,7 +76,7 @@ TailAdmin Dashboard Example
         ↓
        COPY
         ↓
-resources/views/pages/admin/dashboard.blade.php
+resources/views/admin/dashboard.blade.php
         ↓
 Modify Smart Kos content
 ```

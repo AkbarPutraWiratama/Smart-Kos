@@ -62,7 +62,7 @@ class RoomViewController extends Controller
             $roomsByFloor = $rooms->groupBy('floor_name');
         }
 
-        return view('pages.guest.rooms', [
+        return view('guest.rooms', [
             'title' => 'Informasi Lokasi & Ketersediaan Kamar — Smart Kos',
             'locations' => $locations,
             'selectedLocation' => $selectedLocation,

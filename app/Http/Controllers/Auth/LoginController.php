@@ -18,7 +18,7 @@ class LoginController extends Controller
      */
     public function showLoginForm(): View
     {
-        return view('pages.auth.login', ['title' => 'Login — Smart Kos']);
+        return view('auth.login', ['title' => 'Login — Smart Kos']);
     }
 
     /**

@@ -35,7 +35,7 @@ class LandingController extends Controller
             ->select('name', 'email')
             ->first();
 
-        return view('pages.guest.landing', [
+        return view('guest.landing', [
             'title' => 'Selamat Datang di Smart Kos',
             'locationsCount' => $locationsCount,
             'totalRooms' => $totalRooms,

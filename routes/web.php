@@ -104,29 +104,43 @@ Route::get('/videos', function () {
 })->name('videos');
 
 // Protected Smart Kos Role Routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return 'Admin Dashboard';
-    })->name('admin.dashboard');
-    Route::get('/finance', function () {
-        return 'Admin Finance';
-    })->name('admin.finance');
+use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\RoomController;
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
+
+    // Location CRUD (Phase 10)
+    Route::resource('locations', LocationController::class);
+
+    // Room CRUD (nested under location, Phase 10)
+    Route::post('/locations/{location}/rooms', [RoomController::class, 'store'])->name('locations.rooms.store');
+    Route::get('/locations/{location}/rooms/{room}/edit', [RoomController::class, 'edit'])->name('locations.rooms.edit');
+    Route::put('/locations/{location}/rooms/{room}', [RoomController::class, 'update'])->name('locations.rooms.update');
+    Route::delete('/locations/{location}/rooms/{room}', [RoomController::class, 'destroy'])->name('locations.rooms.destroy');
+
+    // Dummy placeholder pages (sidebar links)
+    Route::get('/tenants', fn () => view('admin.tenants.index'))->name('tenants.index');
+    Route::get('/complaints', fn () => view('admin.complaints.index'))->name('complaints.index');
+    Route::get('/finance', fn () => view('admin.finance.index'))->name('finance.index');
+    Route::get('/users', fn () => view('admin.users.index'))->name('users.index');
+    Route::get('/account', fn () => view('admin.account'))->name('account');
 });
 
-Route::middleware(['auth', 'role:staff'])->prefix('staff')->group(function () {
-    Route::get('/dashboard', function () {
-        return 'Staff Dashboard';
-    })->name('staff.dashboard');
-    Route::get('/complaints', function () {
-        return 'Staff Complaints';
-    })->name('staff.complaints');
+Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::get('/dashboard', fn () => view('staff.dashboard'))->name('dashboard');
+    Route::get('/payments', fn () => view('staff.payments.index'))->name('payments.index');
+    Route::get('/complaints', fn () => view('staff.complaints.index'))->name('complaints.index');
+    Route::get('/account', fn () => view('staff.account'))->name('account');
 });
 
-Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->group(function () {
-    Route::get('/dashboard', function () {
-        return 'Penyewa Dashboard';
-    })->name('penyewa.dashboard');
+Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')->group(function () {
+    Route::get('/dashboard', fn () => view('penyewa.dashboard'))->name('dashboard');
+    Route::get('/payments', fn () => view('penyewa.payments.index'))->name('payments.index');
+    Route::get('/complaints', fn () => view('penyewa.complaints.index'))->name('complaints.index');
+    Route::get('/account', fn () => view('penyewa.account'))->name('account');
 });
+
 
 
 

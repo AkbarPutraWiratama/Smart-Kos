@@ -154,7 +154,7 @@ Example:
 ```text
 resources/views/pages/dashboard/*
         ↓ COPY
-resources/views/pages/admin/dashboard.blade.php
+resources/views/admin/dashboard.blade.php
 ```
 
 or:
@@ -570,10 +570,10 @@ They are part of the template and may also be used as UI references.
 Smart Kos pages should be added separately:
 
 ```text
-resources/views/pages/admin/**
-resources/views/pages/staff/**
-resources/views/pages/penyewa/**
-resources/views/pages/guest/**
+resources/views/admin/**
+resources/views/staff/**
+resources/views/penyewa/**
+resources/views/guest/**
 ```
 
 Do not overwrite the existing demo pages to make them become Smart Kos pages.
@@ -693,11 +693,11 @@ database/migrations/**
 database/factories/**
 database/seeders/**
 
-resources/views/pages/admin/**
-resources/views/pages/staff/**
-resources/views/pages/penyewa/**
-resources/views/pages/guest/**
-resources/views/pages/auth/**
+resources/views/admin/**
+resources/views/staff/**
+resources/views/penyewa/**
+resources/views/guest/**
+resources/views/auth/**
 
 resources/views/components/smart-kos/**
 
