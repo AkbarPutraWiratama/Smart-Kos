@@ -38,7 +38,7 @@ TailAdmin/tailadmin-laravel
 
 ## Smart Kos Technology Stack
 
-Smart Kos menggunakan stack berikut:
+Smart Kos Tech stack:
 
 ```text
 Backend
@@ -50,23 +50,23 @@ Frontend
 - Tailwind CSS v4
 - Alpine.js
 - Vite 7
-- TailAdmin Laravel sebagai UI template
+- TailAdmin Laravel as the UI template
 
 Database
 - MySQL
 
 Authentication
 - Laravel session-based authentication
-- Username + password untuk login utama
-- Google OAuth khusus Admin Recovery
+- Username + password for main login
+- Google OAuth exclusively for Admin Recovery
 
 Payment
-- Virtual Account melalui payment provider
-- Manual bank transfer dengan upload bukti pembayaran
+- Virtual Account via payment provider
+- Manual bank transfer with payment proof upload
 
 File Storage
-- Laravel Filesystem untuk bukti pembayaran, gambar aduan,
-  dan gambar tindakan/perbaikan
+- Laravel Filesystem for payment proofs, complaint images,
+  and maintenance/repair images
 
 Background Processing
 - Laravel Task Scheduling
@@ -76,26 +76,26 @@ Testing
 - Laravel Feature Tests / PHPUnit
 
 Configuration
-- `.env` untuk secret dan environment configuration
+- `.env` for secrets and environment configuration
 ```
 
 ### Tech Stack Rules
 
-1. Gunakan Laravel 12 sesuai versi project.
-2. Jangan melakukan downgrade Laravel hanya untuk menyelesaikan masalah implementasi.
-3. Gunakan Blade sebagai templating utama.
-4. Gunakan Tailwind CSS v4 yang sudah digunakan oleh TailAdmin.
-5. Gunakan Alpine.js untuk interaksi frontend ringan seperti modal, dropdown,
-   filter, toggle, dan confirmation.
-6. Gunakan Vite melalui script yang sudah tersedia di `package.json`.
-7. Gunakan MySQL sebagai database utama.
-8. Gunakan Laravel Filesystem untuk file upload.
-9. Gunakan Laravel Queue dan Scheduler untuk proses asynchronous/terjadwal.
-10. Gunakan dependency yang sudah tersedia di TailAdmin sebelum menambah dependency baru.
-11. Jangan mengganti stack frontend dengan Bootstrap, React, Vue, Svelte,
-    atau framework UI lain tanpa persetujuan eksplisit.
-12. Semua credential dan secret harus berasal dari environment/configuration,
-    bukan hardcoded di source code.
+1. Use Laravel 12 according to the project version.
+2. Do not downgrade Laravel solely to resolve implementation issues.
+3. Use Blade as the primary templating engine.
+4. Use Tailwind CSS v4 as already used by TailAdmin.
+5. Use Alpine.js for lightweight frontend interactions such as modals, dropdowns,
+   filters, toggles, and confirmations.
+6. Use Vite via the scripts already available in `package.json`.
+7. Use MySQL as the primary database.
+8. Use Laravel Filesystem for file uploads.
+9. Use Laravel Queue and Scheduler for asynchronous/scheduled processes.
+10. Use dependencies already available in TailAdmin before adding new dependencies.
+11. Do not replace the frontend stack with Bootstrap, React, Vue, Svelte,
+    or any other UI framework without explicit approval.
+12. All credentials and secrets must come from environment/configuration,
+    not hardcoded in the source code.
 
 The upstream project has a modular Blade structure and existing TailAdmin layouts/components that must be reused.
 
@@ -110,10 +110,10 @@ Do not replace TailAdmin with another UI framework or rebuild the application sh
 
 ## 2.1 Mandatory TailAdmin Copy-First Rule
 
-**Jangan membuat UI Smart Kos dari nol apabila TailAdmin sudah memiliki contoh
-atau komponen yang dapat dijadikan dasar.**
+**Do not build the Smart Kos UI from scratch if TailAdmin already provides an example
+or component that can be used as a foundation.**
 
-Setiap kali ingin membuat:
+Whenever you need to create a:
 
 ```text
 page
@@ -131,25 +131,25 @@ header section
 other UI component
 ```
 
-agent WAJIB mengikuti:
+The agent MUST follow this workflow:
 
 ```text
-Cari contoh TailAdmin
+Find a TailAdmin example
         ↓
 COPY
         ↓
-Masukkan ke extension path Smart Kos
+Place it into the Smart Kos extension path
         ↓
-Rename seperlunya
+Rename as needed
         ↓
-Ubah data / text / behavior
+Modify data / text / behavior
         ↓
-Pertahankan pola TailAdmin
+Maintain the TailAdmin pattern
 ```
 
-### Aturan Praktis
+### Practical Rules
 
-Contoh:
+Example:
 
 ```text
 resources/views/pages/dashboard/*
@@ -157,7 +157,7 @@ resources/views/pages/dashboard/*
 resources/views/pages/admin/dashboard.blade.php
 ```
 
-atau:
+or:
 
 ```text
 resources/views/components/ui/*
@@ -165,7 +165,7 @@ resources/views/components/ui/*
 resources/views/components/smart-kos/*
 ```
 
-Untuk JavaScript:
+For JavaScript:
 
 ```text
 resources/js/components/*
@@ -173,7 +173,7 @@ resources/js/components/*
 resources/js/components/smart-kos/*
 ```
 
-Untuk layout:
+For layouts:
 
 ```text
 resources/views/layouts/*
@@ -181,16 +181,16 @@ resources/views/layouts/*
 Smart Kos page
 ```
 
-Jangan membuat layout pengganti jika layout TailAdmin yang ada dapat digunakan.
+Do not create a replacement layout if the existing TailAdmin layout can be used.
 
-### Tidak Boleh
+### Prohibited Actions
 
 ```text
 TailAdmin component
         ↓
-diabaikan
+ignored
         ↓
-buat component UI baru dari nol
+build a new UI component from scratch
 ```
 
 atau:
@@ -198,14 +198,14 @@ atau:
 ```text
 TailAdmin dashboard
         ↓
-hapus
+deleted
         ↓
-buat dashboard framework sendiri
+build your own framework dashboard
 ```
 
-### Tujuan
+### Objective
 
-Smart Kos harus terlihat sebagai:
+Smart Kos must look like:
 
 ```text
 TailAdmin
@@ -213,28 +213,28 @@ TailAdmin
 Smart Kos functionality
 ```
 
-bukan:
+not:
 
 ```text
 TailAdmin
    →
-ditinggalkan
+abandoned
    →
-template custom baru
+a new custom template
 ```
 
-### Pengecualian
+### Exceptions
 
-Membuat UI dari nol hanya diperbolehkan apabila:
+Building UI from scratch is only permitted if:
 
 ```text
-1. Tidak ditemukan komponen/contoh TailAdmin yang sesuai; DAN
-2. UI tersebut memang dibutuhkan Smart Kos; DAN
-3. UI baru tetap mengikuti struktur visual, responsive behavior,
-   dark mode, RTL, spacing, dan interaction pattern TailAdmin.
+1. No matching TailAdmin component/example exists; AND
+2. The UI is genuinely required by Smart Kos; AND
+3. The new UI still adheres to TailAdmin's visual structure, responsive behavior,
+   dark mode, RTL, spacing, and interaction patterns.
 ```
 
-Jika komponen TailAdmin yang sesuai tersedia, **copy/adapt adalah wajib**.
+If a matching TailAdmin component is available, copy/adapt is mandatory.
 
 ---
 
