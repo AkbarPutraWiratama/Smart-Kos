@@ -96,17 +96,27 @@ Route::get('/videos', function () {
     return view('pages.ui-elements.videos', ['title' => 'Videos']);
 })->name('videos');
 
-// Smart Kos Role Dashboard placeholders (for auth redirect testing)
-Route::middleware('auth')->group(function () {
-    Route::get('/admin/dashboard', function () {
+// Protected Smart Kos Role Routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
         return 'Admin Dashboard';
     })->name('admin.dashboard');
+    Route::get('/finance', function () {
+        return 'Admin Finance';
+    })->name('admin.finance');
+});
 
-    Route::get('/staff/dashboard', function () {
+Route::middleware(['auth', 'role:staff'])->prefix('staff')->group(function () {
+    Route::get('/dashboard', function () {
         return 'Staff Dashboard';
     })->name('staff.dashboard');
+    Route::get('/complaints', function () {
+        return 'Staff Complaints';
+    })->name('staff.complaints');
+});
 
-    Route::get('/penyewa/dashboard', function () {
+Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->group(function () {
+    Route::get('/dashboard', function () {
         return 'Penyewa Dashboard';
     })->name('penyewa.dashboard');
 });

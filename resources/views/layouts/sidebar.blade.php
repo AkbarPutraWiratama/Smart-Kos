@@ -1,6 +1,11 @@
 @php
     use App\Helpers\MenuHelper;
-    $menuGroups = MenuHelper::getMenuGroups();
+    use App\Helpers\SmartKosMenuHelper;
+
+    $user = auth()->user();
+    $menuGroups = ($user || request()->is('admin*') || request()->is('staff*') || request()->is('penyewa*'))
+        ? SmartKosMenuHelper::getMenuGroups()
+        : MenuHelper::getMenuGroups();
 
     // Get current path
     $currentPath = request()->path();
