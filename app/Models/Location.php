@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\LocationPhoto;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,6 +31,11 @@ class Location extends Model
     public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);
+    }
+
+    public function photos(): HasMany
+    {
+        return $this->hasMany(LocationPhoto::class);
     }
 
     public function expenses(): HasMany

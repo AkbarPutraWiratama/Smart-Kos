@@ -37,7 +37,6 @@ Users & Accounts
         │       │               │
         ▼       ▼               ▼
    VA Account  Payments     Complaints
-   (Midtrans)   │               │
         │       │               ▼
         │       │         Complaint Actions
         │       │
@@ -58,6 +57,23 @@ Users & Accounts
 ```
 
 ---
+
+        # 6.1 `location_photos`
+
+        Stores additional photos for a location. The legacy `locations.photo_path`
+        field remains readable for existing records, while new uploads are stored here.
+
+        ```text
+        location_photos
+        ------------------------------------------------
+        id
+        location_id
+        path
+        created_at
+        updated_at
+        ```
+
+        A location can have multiple photos.
 
 # 3. High-Level ERD
 
@@ -101,11 +117,19 @@ erDiagram
         timestamp updated_at
     }
 
+      LOCATION_PHOTOS {
+        bigint id PK
+        bigint location_id FK
+        varchar path
+        timestamp created_at
+        timestamp updated_at
+      }
+
     ROOMS {
         bigint id PK
         bigint location_id FK
-        varchar floor_name
-        varchar room_number
+        int floor_name
+        int room_number
         decimal rent_amount
         enum status
         timestamp created_at
@@ -303,6 +327,7 @@ erDiagram
     USERS ||--o{ ADMIN_GOOGLE_ACCOUNTS : owns
 
     LOCATIONS ||--o{ ROOMS : contains
+    LOCATIONS ||--o{ LOCATION_PHOTOS : has
     TENANT_PROFILES ||--o{ ROOM_ASSIGNMENTS : receives
     ROOMS ||--o{ ROOM_ASSIGNMENTS : has
 

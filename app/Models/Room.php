@@ -23,6 +23,8 @@ class Room extends Model
     protected function casts(): array
     {
         return [
+            'floor_name' => 'integer',
+            'room_number' => 'integer',
             'rent_amount' => 'decimal:2',
         ];
     }

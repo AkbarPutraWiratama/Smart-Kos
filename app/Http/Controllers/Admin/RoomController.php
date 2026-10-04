@@ -15,6 +15,7 @@ class RoomController extends Controller
     public function store(Location $location, RoomRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        unset($data['password']);
         $data['location_id'] = $location->id;
 
         // Check uniqueness of room_number within location & floor
@@ -41,6 +42,7 @@ class RoomController extends Controller
     public function update(Location $location, Room $room, RoomRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        unset($data['password']);
 
         // Check uniqueness excluding current room
         $exists = $location->rooms()

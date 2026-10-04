@@ -112,6 +112,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Location CRUD (Phase 10)
     Route::resource('locations', LocationController::class);
+    Route::delete('/locations/{location}/photos/{photo}', [LocationController::class, 'destroyPhoto'])->name('locations.photos.destroy');
+    Route::delete('/locations/{location}/legacy-photo', [LocationController::class, 'destroyLegacyPhoto'])->name('locations.legacy-photo.destroy');
 
     // Room CRUD (nested under location, Phase 10)
     Route::post('/locations/{location}/rooms', [RoomController::class, 'store'])->name('locations.rooms.store');

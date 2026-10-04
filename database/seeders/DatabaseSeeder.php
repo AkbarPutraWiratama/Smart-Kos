@@ -75,8 +75,8 @@ class DatabaseSeeder extends Seeder
             $room = \App\Models\Room::firstOrCreate(
                 [
                     'location_id' => $location->id,
-                    'floor_name' => 'Lantai 1',
-                    'room_number' => (string) $i,
+                    'floor_name' => 1,
+                    'room_number' => $i,
                 ],
                 [
                     'rent_amount' => 1500000,
@@ -105,8 +105,8 @@ class DatabaseSeeder extends Seeder
             \App\Models\Room::firstOrCreate(
                 [
                     'location_id' => $location->id,
-                    'floor_name' => 'Lantai 2',
-                    'room_number' => (string) $i,
+                    'floor_name' => 2,
+                    'room_number' => $i,
                 ],
                 [
                     'rent_amount' => 1600000,
@@ -132,8 +132,8 @@ class DatabaseSeeder extends Seeder
             \App\Models\Room::firstOrCreate(
                 [
                     'location_id' => $location2->id,
-                    'floor_name' => 'Lantai 1',
-                    'room_number' => (string) $i,
+                    'floor_name' => 1,
+                    'room_number' => $i,
                 ],
                 [
                     'rent_amount' => 1200000,
@@ -147,8 +147,8 @@ class DatabaseSeeder extends Seeder
             \App\Models\Room::firstOrCreate(
                 [
                     'location_id' => $location2->id,
-                    'floor_name' => 'Lantai 2',
-                    'room_number' => (string) $i,
+                    'floor_name' => 2,
+                    'room_number' => $i,
                 ],
                 [
                     'rent_amount' => 1300000,

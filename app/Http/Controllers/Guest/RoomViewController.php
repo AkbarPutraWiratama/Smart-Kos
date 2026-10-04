@@ -18,6 +18,7 @@ class RoomViewController extends Controller
         $selectedLocationId = $request->query('location_id');
 
         $locations = Location::where('status', 'active')
+            ->with('photos')
             ->withCount([
                 'rooms as total_rooms' => function ($query) {
                     $query->where('status', 'active');
@@ -37,6 +38,7 @@ class RoomViewController extends Controller
         if ($selectedLocationId) {
             $selectedLocation = Location::where('id', $selectedLocationId)
                 ->where('status', 'active')
+                ->with('photos')
                 ->first();
         } elseif ($locations->isNotEmpty()) {
             $selectedLocation = $locations->first();

@@ -69,23 +69,44 @@
         @if ($selectedLocation)
             <!-- Location Details Card -->
             <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6 mb-8 shadow-theme-xs">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                @php
+                    $guestPhotos = collect();
+                    if ($selectedLocation->photo_path) {
+                        $guestPhotos->push(asset('storage/' . $selectedLocation->photo_path));
+                    }
+                    foreach ($selectedLocation->photos as $photo) {
+                        $guestPhotos->push(asset('storage/' . $photo->path));
+                    }
+                @endphp
+
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center">
+                    <div x-data="{ currentPhoto: 0, photos: @js($guestPhotos->values()) }" class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-900">
+                        @if ($guestPhotos->isNotEmpty())
+                            <img :src="photos[currentPhoto]" alt="Foto {{ $selectedLocation->name }}" class="h-56 w-full object-cover sm:h-72" />
+                            @if ($guestPhotos->count() > 1)
+                                <button type="button" @click="currentPhoto = (currentPhoto - 1 + photos.length) % photos.length" aria-label="Foto sebelumnya" class="absolute start-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80">&#8249;</button>
+                                <button type="button" @click="currentPhoto = (currentPhoto + 1) % photos.length" aria-label="Foto berikutnya" class="absolute end-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80">&#8250;</button>
+                                <span class="absolute bottom-3 start-1/2 -translate-x-1/2 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white" x-text="`${currentPhoto + 1} / ${photos.length}`"></span>
+                            @endif
+                        @else
+                            <div class="flex h-56 items-center justify-center px-6 text-center text-sm text-gray-500 dark:h-72 dark:text-gray-400">Belum ada foto lokasi.</div>
+                        @endif
+                    </div>
+
                     <div>
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $selectedLocation->name }}</h2>
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ $selectedLocation->address }}</p>
                         @if ($selectedLocation->description)
                             <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">{{ $selectedLocation->description }}</p>
                         @endif
-                    </div>
-                    @if ($selectedLocation->google_maps_url)
-                        <div>
+                        @if ($selectedLocation->google_maps_url)
                             <a href="{{ $selectedLocation->google_maps_url }}" target="_blank" rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400">
+                                class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400">
                                 <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
                                 Buka di Google Maps
                             </a>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </div>
 
