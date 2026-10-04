@@ -54,6 +54,15 @@ Route::get('/bar-chart', function () {
 
 
 // authentication pages
+use App\Http\Controllers\Auth\LoginController;
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+});
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+
 Route::get('/signin', function () {
     return view('pages.auth.signin', ['title' => 'Sign In']);
 })->name('signin');
@@ -86,6 +95,21 @@ Route::get('/image', function () {
 Route::get('/videos', function () {
     return view('pages.ui-elements.videos', ['title' => 'Videos']);
 })->name('videos');
+
+// Smart Kos Role Dashboard placeholders (for auth redirect testing)
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return 'Admin Dashboard';
+    })->name('admin.dashboard');
+
+    Route::get('/staff/dashboard', function () {
+        return 'Staff Dashboard';
+    })->name('staff.dashboard');
+
+    Route::get('/penyewa/dashboard', function () {
+        return 'Penyewa Dashboard';
+    })->name('penyewa.dashboard');
+});
 
 
 
