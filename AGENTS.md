@@ -1,6 +1,11 @@
-# AGENTS.md — TailAdmin Free Laravel
+# AGENTS.md — Smart Kos & TailAdmin Foundation
 
-> Free Laravel 12 admin dashboard template · RTL Layout Support · Tailwind CSS v4 · Blade Components · Alpine.js · Vite · ApexCharts · FullCalendar · Swiper · Flatpickr
+> **CRITICAL PROJECT RULE:** All coding agents working on Smart Kos **MUST strictly follow and enforce** the master specification in [`SMARTKOSAGENTS.md`](./SMARTKOSAGENTS.md), the database schema in [`ERD.md`](./ERD.md), and the implementation sequence in [`STEPBYSTEP.md`](./STEPBYSTEP.md).
+>
+> - **Primary Rule**: Preserve the upstream TailAdmin Laravel template and extend it minimally.
+> - **Mandatory Copy-First**: Never build UI from scratch if TailAdmin provides an example. Search, COPY, place in Smart Kos path (`resources/views/pages/{role}/*` or `resources/views/components/smart-kos/*`), and adapt.
+> - **Command Security Policy**: Commands are **DEFAULT-DENY**. Only execute explicitly allowlisted commands listed in `SMARTKOSAGENTS.md`. Never run destructive database commands (`migrate:fresh`, `db:wipe`), unauthorized package installs, or shell code execution.
+> - **Architectural Invariants**: Central `users` table, isolated `/admin-recovery` via Google OAuth, strict separation between Midtrans VA and Manual Payment flows, rate limits (10m), and permanent preservation of financial history.
 
 ## Repo Map
 
