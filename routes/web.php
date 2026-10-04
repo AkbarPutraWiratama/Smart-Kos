@@ -7,8 +7,15 @@ use App\Http\Controllers\LocaleController;
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 use App\Http\Controllers\DashboardController;
 
-// dashboard pages
-Route::get('/', function () {
+use App\Http\Controllers\Guest\LandingController;
+use App\Http\Controllers\Guest\RoomViewController;
+
+// Public Smart Kos Guest Routes
+Route::get('/', [LandingController::class, 'index'])->name('home');
+Route::get('/rooms', [RoomViewController::class, 'index'])->name('guest.rooms');
+
+// Original TailAdmin Demo Dashboard
+Route::get('/tailadmin-demo', function () {
     return view('pages.dashboard.ecommerce', ['title' => 'E-commerce Dashboard']);
 })->name('dashboard');
 
