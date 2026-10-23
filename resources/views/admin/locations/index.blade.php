@@ -90,7 +90,27 @@
 					<label for="create_location_description" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi fasilitas</label>
 					<textarea id="create_location_description" name="description" rows="3" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90">{{ old('description') }}</textarea>
 				</div>
-				<x-smart-kos.location-photo-picker :photos="collect()" inputId="create_location_modal_photos" />
+				<!-- Section Foto Lokasi -->
+				<div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+					<x-smart-kos.location-photo-picker
+						:photos="collect()"
+						inputId="create_location_modal_photos"
+						inputName="photos"
+						label="Foto lokasi"
+						helperText="Pilih beberapa foto lokasi sekaligus, simpan, lalu ulangi untuk menambahkan foto lainnya tanpa menghapus foto sebelumnya. Maksimal 10 foto per sesi, masing-masing 4 MB."
+					/>
+				</div>
+
+				<!-- Section Foto Kamar -->
+				<div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+					<x-smart-kos.location-photo-picker
+						:photos="collect()"
+						inputId="create_location_modal_room_photos"
+						inputName="photos"
+						label="Foto kamar"
+						helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi."
+					/>
+				</div>
 				<input type="hidden" name="status" value="active" />
 				<div class="flex justify-end gap-3 pt-2">
 					<button type="button" @click="isCreateLocationOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">Batal</button>

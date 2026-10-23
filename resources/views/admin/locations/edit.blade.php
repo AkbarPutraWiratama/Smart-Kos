@@ -2,7 +2,13 @@
 
 @section('content')
 <div x-data="{ isDeleteLocationOpen: false }">
-	<x-common.page-breadcrumb pageTitle="Edit Lokasi" />
+	<x-common.page-breadcrumb
+		pageTitle="Edit Lokasi"
+		:breadcrumbs="[
+			['label' => 'Lokasi & Kamar', 'url' => route('admin.locations.index')],
+			['label' => $location->name, 'url' => route('admin.locations.show', $location)],
+		]"
+	/>
 
 	<x-common.component-card title="Edit informasi lokasi" desc="Perbarui informasi lokasi tanpa mengubah riwayat kamar.">
 		<form method="POST" action="{{ route('admin.locations.update', $location) }}" enctype="multipart/form-data" class="space-y-6">

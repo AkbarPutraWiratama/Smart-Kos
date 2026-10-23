@@ -2,7 +2,12 @@
 
 @section('content')
 	<div x-data="{ isAddRoomOpen: false, isEditLocationOpen: false, isDeleteLocationOpen: false }">
-	<x-common.page-breadcrumb pageTitle="{{ $location->name }}" />
+	<x-common.page-breadcrumb
+		pageTitle="{{ $location->name }}"
+		:breadcrumbs="[
+			['label' => 'Lokasi & Kamar', 'url' => route('admin.locations.index')],
+		]"
+	/>
 
 	<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>

@@ -1,7 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-common.page-breadcrumb pageTitle="Tambah Lokasi" />
+    <x-common.page-breadcrumb
+        pageTitle="Tambah Lokasi"
+        :breadcrumbs="[
+            ['label' => 'Lokasi & Kamar', 'url' => route('admin.locations.index')],
+        ]"
+    />
 
     <x-common.component-card title="Informasi lokasi" desc="Tambahkan lokasi kos baru sebelum membuat kamar di dalamnya.">
         <form method="POST" action="{{ route('admin.locations.store') }}" enctype="multipart/form-data" class="space-y-6">
@@ -32,11 +37,33 @@
                 <label for="description" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi fasilitas</label>
                 <textarea id="description" name="description" rows="4" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90">{{ old('description') }}</textarea>
             </div>
-            <x-smart-kos.location-photo-picker :photos="collect()" inputId="create_location_photos" />
+
+            <!-- Section Foto Lokasi -->
+            <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+                <x-smart-kos.location-photo-picker
+                    :photos="collect()"
+                    inputId="create_location_photos"
+                    inputName="photos"
+                    label="Foto lokasi"
+                    helperText="Pilih beberapa foto lokasi sekaligus, simpan, lalu ulangi untuk menambahkan foto lainnya tanpa menghapus foto sebelumnya. Maksimal 10 foto per sesi, masing-masing 4 MB."
+                />
+            </div>
+
+            <!-- Section Foto Kamar -->
+            <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+                <x-smart-kos.location-photo-picker
+                    :photos="collect()"
+                    inputId="create_room_photos"
+                    inputName="photos"
+                    label="Foto kamar"
+                    helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi."
+                />
+            </div>
+
             <input type="hidden" name="status" value="active" />
             <div class="flex flex-wrap justify-end gap-3">
-                <a href="{{ route('admin.locations.index') }}" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">Batal</a>
-                <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600">Simpan lokasi</button>
+                <a href="{{ route('admin.locations.index') }}" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition">Batal</a>
+                <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 shadow-theme-xs transition">Simpan lokasi</button>
             </div>
         </form>
     </x-common.component-card>

@@ -2,7 +2,13 @@
 
 @section('content')
 <div x-data="{ isConfirmSaveOpen: false }">
-	<x-common.page-breadcrumb pageTitle="Edit Kamar" />
+	<x-common.page-breadcrumb
+		pageTitle="Edit Kamar {{ $room->room_number }}"
+		:breadcrumbs="[
+			['label' => 'Lokasi & Kamar', 'url' => route('admin.locations.index')],
+			['label' => $location->name, 'url' => route('admin.locations.show', $location)],
+		]"
+	/>
 
 	<x-common.component-card title="Edit informasi kamar {{ $room->room_number }}" desc="Perubahan harga hanya berlaku untuk konfigurasi kamar saat ini.">
 		<form id="edit_room_form" method="POST" action="{{ route('admin.locations.rooms.update', [$location, $room]) }}" class="space-y-6">
