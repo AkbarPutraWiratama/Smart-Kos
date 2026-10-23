@@ -4,6 +4,7 @@
     'inputId' => 'location_photos',
     'inputName' => 'photos',
     'label' => 'Foto lokasi',
+    'badge' => null,
     'helperText' => 'Pilih beberapa foto sekaligus, simpan, lalu ulangi untuk menambahkan foto lainnya tanpa menghapus foto sebelumnya. Maksimal 10 foto per sesi, masing-masing 4 MB.',
     'slider' => false,
     'location' => null,
@@ -16,14 +17,19 @@
             'id' => 'legacy',
             'isLegacy' => true,
             'url' => asset('storage/' . $legacyPath),
+            'type' => 'location',
+            'badge' => 'Foto Lokasi',
             'deleteUrl' => $location ? route('admin.locations.legacy-photo.destroy', $location) : null,
         ]);
     }
     foreach ($photos as $photo) {
+        $photoType = $photo->type ?? 'location';
         $storedImages->push([
             'id' => (string) $photo->id,
             'isLegacy' => false,
             'url' => asset('storage/' . $photo->path),
+            'type' => $photoType,
+            'badge' => $photoType === 'room' ? 'Foto Kamar' : 'Foto Lokasi',
             'deleteUrl' => $location ? route('admin.locations.photos.destroy', [$location, $photo]) : null,
         ]);
     }
@@ -43,7 +49,14 @@
         input.files = transfer.files;
     }
 }">
-    <label for="{{ $inputId }}" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ $label }}</label>
+    <div class="mb-2 flex items-center justify-between">
+        <label for="{{ $inputId }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ $label }}</label>
+        @if ($badge)
+            <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $badge === 'Foto Kamar' ? 'bg-theme-purple-500/10 text-theme-purple-500 border border-theme-purple-500/20' : 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400 border border-brand-500/20' }}">
+                {{ $badge }}
+            </span>
+        @endif
+    </div>
     <input id="{{ $inputId }}" name="{{ $inputName }}[]" type="file" accept="image/*" multiple @change="updatePreviews($event)" class="block w-full rounded-lg border border-gray-300 bg-transparent text-sm text-gray-600 file:me-4 file:border-0 file:bg-gray-100 file:px-4 file:py-2.5 file:text-sm file:font-medium dark:border-gray-700 dark:text-gray-300 dark:file:bg-gray-800" />
     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $helperText }}</p>
 
@@ -108,12 +121,20 @@
                 </template>
             </div>
 
-            <!-- Photos Grid with Checkbox in Top Right Corner -->
+            <!-- Photos Grid with Checkbox and Section Badge in Top Corners -->
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 <template x-for="image in storedImages" :key="image.id">
                     <div class="group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 transition hover:shadow-theme-xs dark:border-gray-800 dark:bg-gray-800"
                         :class="selectedToDelete.includes(image.id) ? 'ring-2 ring-error-500 border-error-500' : ''">
                         <img :src="image.url" alt="Foto lokasi" class="h-32 w-full object-cover transition duration-200 group-hover:scale-105" />
+
+                        <!-- Photo Section Tag Badge in Top Left Corner -->
+                        <div class="absolute top-2 start-2 z-10 pointer-events-none">
+                            <span class="rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wide shadow-sm backdrop-blur-md"
+                                :class="image.type === 'room' ? 'bg-purple-600/90 text-white' : 'bg-brand-600/90 text-white'"
+                                x-text="image.badge">
+                            </span>
+                        </div>
 
                         <!-- Selection Checkbox in Top Right Corner -->
                         <div class="absolute top-2 end-2 z-10">
@@ -208,7 +229,14 @@
         <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Preview foto baru</p>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <template x-for="preview in previews" :key="preview">
-                <img :src="preview" alt="Preview foto baru" class="h-24 w-full rounded-lg object-cover border border-gray-200 dark:border-gray-700" />
+                <div class="relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                    <img :src="preview" alt="Preview foto baru" class="h-24 w-full object-cover" />
+                    @if ($badge || $label)
+                        <span class="absolute top-1 start-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-white shadow-sm backdrop-blur-sm {{ ($badge ?? $label) === 'Foto Kamar' ? 'bg-purple-600/90' : 'bg-brand-600/90' }}">
+                            {{ $badge ?? $label }}
+                        </span>
+                    @endif
+                </div>
             </template>
         </div>
     </div>

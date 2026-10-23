@@ -20,6 +20,8 @@ class LocationRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'photos' => ['nullable', 'array', 'max:10'],
             'photos.*' => ['image', 'max:4096'],
+            'room_photos' => ['nullable', 'array', 'max:10'],
+            'room_photos.*' => ['image', 'max:4096'],
             'floor_count' => ['required', 'integer', 'min:1', 'max:50'],
             'status' => ['required', 'in:active,inactive'],
         ];

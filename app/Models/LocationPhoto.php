@@ -13,6 +13,7 @@ class LocationPhoto extends Model
     protected $fillable = [
         'location_id',
         'path',
+        'type',
     ];
 
     public function location(): BelongsTo

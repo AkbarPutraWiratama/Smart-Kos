@@ -54,9 +54,9 @@
                 <x-smart-kos.location-photo-picker
                     :photos="collect()"
                     inputId="create_room_photos"
-                    inputName="photos"
+                    inputName="room_photos"
                     label="Foto kamar"
-                    helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi."
+                    helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi dengan tag 'Foto Kamar'."
                 />
             </div>
 

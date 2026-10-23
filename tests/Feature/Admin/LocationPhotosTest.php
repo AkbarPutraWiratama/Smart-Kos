@@ -301,4 +301,47 @@ class LocationPhotosTest extends TestCase
         $responseSuccess->assertRedirect(route('admin.locations.show', $location));
         $this->assertEquals(1600000, $room->fresh()->rent_amount);
     }
+
+    public function test_photo_tags_differentiate_location_and_room_sections(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $location = Location::create([
+            'name' => 'Kos Tag Test',
+            'address' => 'Jl. Tag No. 9',
+            'floor_count' => 1,
+            'status' => 'active',
+        ]);
+
+        $location->photos()->create([
+            'path' => 'locations/loc_photo.jpg',
+            'type' => 'location',
+        ]);
+
+        $location->photos()->create([
+            'path' => 'locations/room_photo.jpg',
+            'type' => 'room',
+        ]);
+
+        // Admin show page displays badges
+        $responseAdmin = $this->actingAs($admin)->get(route('admin.locations.show', $location));
+        $responseAdmin->assertStatus(200);
+        $responseAdmin->assertSee('Foto Lokasi');
+        $responseAdmin->assertSee('Foto Kamar');
+
+        // Admin edit page separates photos into corresponding sections
+        $responseEdit = $this->actingAs($admin)->get(route('admin.locations.edit', $location));
+        $responseEdit->assertStatus(200);
+        $responseEdit->assertSee('loc_photo.jpg');
+        $responseEdit->assertSee('room_photo.jpg');
+
+        // Guest room preview page also displays badges
+        $responseGuest = $this->get(route('guest.rooms', ['location_id' => $location->id]));
+        $responseGuest->assertStatus(200);
+        $responseGuest->assertSee('Foto Lokasi');
+        $responseGuest->assertSee('Foto Kamar');
+    }
 }

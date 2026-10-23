@@ -44,12 +44,13 @@
 			<!-- Section Foto Lokasi -->
 			<div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
 				<x-smart-kos.location-photo-picker
-					:photos="$location->photos"
+					:photos="$location->photos->filter(fn($p) => ($p->type ?? 'location') !== 'room')"
 					:legacyPath="$location->photo_path"
 					:location="$location"
 					inputId="edit_location_photos"
 					inputName="photos"
 					label="Foto lokasi"
+					badge="Foto Lokasi"
 					helperText="Pilih beberapa foto lokasi sekaligus, simpan, lalu ulangi untuk menambahkan foto lainnya tanpa menghapus foto sebelumnya. Maksimal 10 foto per sesi, masing-masing 4 MB."
 				/>
 			</div>
@@ -57,11 +58,13 @@
 			<!-- Section Foto Kamar -->
 			<div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
 				<x-smart-kos.location-photo-picker
-					:photos="collect()"
+					:photos="$location->photos->filter(fn($p) => ($p->type ?? 'location') === 'room')"
+					:location="$location"
 					inputId="edit_room_photos"
-					inputName="photos"
+					inputName="room_photos"
 					label="Foto kamar"
-					helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi."
+					badge="Foto Kamar"
+					helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi dengan tag 'Foto Kamar'."
 				/>
 			</div>
 

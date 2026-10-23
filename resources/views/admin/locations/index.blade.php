@@ -20,7 +20,7 @@
 			<a href="{{ route('admin.locations.show', $location) }}" class="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-theme-md dark:border-gray-800 dark:bg-white/[0.03]">
 				<div class="h-36 overflow-hidden bg-gray-100 dark:bg-gray-800">
 					@php
-						$cardPhoto = $location->photos->first()?->path ?? $location->photo_path;
+					$cardPhoto = $location->photos->firstWhere('type', 'location')?->path ?? $location->photo_path ?? $location->photos->first()?->path;
 					@endphp
 					@if ($cardPhoto)
 						<img src="{{ asset('storage/' . $cardPhoto) }}" alt="{{ $location->name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
@@ -95,7 +95,7 @@
 					<x-smart-kos.location-photo-picker
 						:photos="collect()"
 						inputId="create_location_modal_photos"
-						inputName="photos"
+					inputName="photos"
 						label="Foto lokasi"
 						helperText="Pilih beberapa foto lokasi sekaligus, simpan, lalu ulangi untuk menambahkan foto lainnya tanpa menghapus foto sebelumnya. Maksimal 10 foto per sesi, masing-masing 4 MB."
 					/>
@@ -106,7 +106,7 @@
 					<x-smart-kos.location-photo-picker
 						:photos="collect()"
 						inputId="create_location_modal_room_photos"
-						inputName="photos"
+					inputName="room_photos"
 						label="Foto kamar"
 						helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi."
 					/>
@@ -121,3 +121,4 @@
 	</div>
 	</div>
 @endsection
+

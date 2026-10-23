@@ -29,11 +29,22 @@
 
 	@php
 		$adminPhotos = collect();
-		foreach ($location->photos as $photo) {
-			$adminPhotos->push(asset('storage/' . $photo->path));
-		}
 		if ($location->photo_path) {
-			$adminPhotos->push(asset('storage/' . $location->photo_path));
+			$adminPhotos->push([
+				'url' => asset('storage/' . $location->photo_path),
+				'badge' => 'Foto Lokasi',
+				'type' => 'location',
+			]);
+		}
+		// Location photos first, followed by room photos
+		$sortedPhotos = $location->photos->sortBy(fn($p) => ($p->type ?? 'location') === 'room' ? 1 : 0);
+		foreach ($sortedPhotos as $photo) {
+			$photoType = $photo->type ?? 'location';
+			$adminPhotos->push([
+				'url' => asset('storage/' . $photo->path),
+				'badge' => $photoType === 'room' ? 'Foto Kamar' : 'Foto Lokasi',
+				'type' => $photoType,
+			]);
 		}
 	@endphp
 
@@ -42,7 +53,14 @@
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-center">
 			<div x-data="{ currentPhoto: 0, photos: @js($adminPhotos->values()) }" class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-900">
 				@if ($adminPhotos->isNotEmpty())
-					<img :src="photos[currentPhoto]" alt="Foto {{ $location->name }}" class="h-56 w-full object-cover sm:h-64" />
+					<img :src="photos[currentPhoto].url" alt="Foto {{ $location->name }}" class="h-56 w-full object-cover sm:h-64" />
+					<!-- Photo Tag Badge -->
+					<div class="absolute top-3 start-3 z-10 pointer-events-none">
+						<span class="rounded-lg px-2.5 py-1 text-xs font-semibold shadow-md backdrop-blur-md"
+							:class="photos[currentPhoto].type === 'room' ? 'bg-purple-600/90 text-white' : 'bg-brand-600/90 text-white'"
+							x-text="photos[currentPhoto].badge">
+						</span>
+					</div>
 					@if ($adminPhotos->count() > 1)
 						<button type="button" @click="currentPhoto = (currentPhoto - 1 + photos.length) % photos.length" aria-label="Foto sebelumnya" class="absolute start-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80">&#8249;</button>
 						<button type="button" @click="currentPhoto = (currentPhoto + 1) % photos.length" aria-label="Foto berikutnya" class="absolute end-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80">&#8250;</button>
@@ -325,12 +343,13 @@
 				<!-- Section Foto Lokasi -->
 				<div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
 					<x-smart-kos.location-photo-picker
-						:photos="$location->photos"
+						:photos="$location->photos->filter(fn($p) => ($p->type ?? 'location') !== 'room')"
 						:legacyPath="$location->photo_path"
 						:location="$location"
 						inputId="modal_location_photos"
 						inputName="photos"
 						label="Foto lokasi"
+						badge="Foto Lokasi"
 						helperText="Pilih beberapa foto lokasi sekaligus, simpan, lalu ulangi untuk menambahkan foto lainnya tanpa menghapus foto sebelumnya. Maksimal 10 foto per sesi, masing-masing 4 MB."
 					/>
 				</div>
@@ -338,14 +357,15 @@
 				<!-- Section Foto Kamar -->
 				<div class="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
 					<x-smart-kos.location-photo-picker
-						:photos="collect()"
+						:photos="$location->photos->filter(fn($p) => ($p->type ?? 'location') === 'room')"
+						:location="$location"
 						inputId="modal_room_photos"
-						inputName="photos"
+						inputName="room_photos"
 						label="Foto kamar"
-						helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi."
+						badge="Foto Kamar"
+						helperText="Tambahkan foto contoh kamar atau tipe kamar di lokasi ini. Foto akan tersimpan bersama galeri lokasi dengan tag 'Foto Kamar'."
 					/>
 				</div>
-
 				<div>
 					<label for="modal_location_status" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
 					<select id="modal_location_status" name="status" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90">

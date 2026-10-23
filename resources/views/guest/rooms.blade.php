@@ -72,17 +72,35 @@
                 @php
                     $guestPhotos = collect();
                     if ($selectedLocation->photo_path) {
-                        $guestPhotos->push(asset('storage/' . $selectedLocation->photo_path));
+                        $guestPhotos->push([
+                            'url' => asset('storage/' . $selectedLocation->photo_path),
+                            'badge' => 'Foto Lokasi',
+                            'type' => 'location',
+                        ]);
                     }
-                    foreach ($selectedLocation->photos as $photo) {
-                        $guestPhotos->push(asset('storage/' . $photo->path));
+                    // Location photos first, followed by room photos
+                    $sortedGuestPhotos = $selectedLocation->photos->sortBy(fn($p) => ($p->type ?? 'location') === 'room' ? 1 : 0);
+                    foreach ($sortedGuestPhotos as $photo) {
+                        $photoType = $photo->type ?? 'location';
+                        $guestPhotos->push([
+                            'url' => asset('storage/' . $photo->path),
+                            'badge' => $photoType === 'room' ? 'Foto Kamar' : 'Foto Lokasi',
+                            'type' => $photoType,
+                        ]);
                     }
                 @endphp
 
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center">
                     <div x-data="{ currentPhoto: 0, photos: @js($guestPhotos->values()) }" class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-900">
                         @if ($guestPhotos->isNotEmpty())
-                            <img :src="photos[currentPhoto]" alt="Foto {{ $selectedLocation->name }}" class="h-56 w-full object-cover sm:h-72" />
+                            <img :src="photos[currentPhoto].url" alt="Foto {{ $selectedLocation->name }}" class="h-56 w-full object-cover sm:h-72" />
+                            <!-- Photo Tag Badge -->
+                            <div class="absolute top-3 start-3 z-10 pointer-events-none">
+                                <span class="rounded-lg px-2.5 py-1 text-xs font-semibold shadow-md backdrop-blur-md"
+                                    :class="photos[currentPhoto].type === 'room' ? 'bg-purple-600/90 text-white' : 'bg-brand-600/90 text-white'"
+                                    x-text="photos[currentPhoto].badge">
+                                </span>
+                            </div>
                             @if ($guestPhotos->count() > 1)
                                 <button type="button" @click="currentPhoto = (currentPhoto - 1 + photos.length) % photos.length" aria-label="Foto sebelumnya" class="absolute start-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80">&#8249;</button>
                                 <button type="button" @click="currentPhoto = (currentPhoto + 1) % photos.length" aria-label="Foto berikutnya" class="absolute end-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-xl text-white hover:bg-black/80">&#8250;</button>

@@ -32,10 +32,12 @@ class LocationController extends Controller
     {
         $data = $request->validated();
         $photos = $request->file('photos', []) ?: [];
-        unset($data['photos']);
+        $roomPhotos = $request->file('room_photos', []) ?: [];
+        unset($data['photos'], $data['room_photos']);
 
         $location = Location::create($data);
-        $this->storePhotos($location, $photos);
+        $this->storePhotos($location, $photos, 'location');
+        $this->storePhotos($location, $roomPhotos, 'room');
 
         return redirect()->route('admin.locations.show', $location)
             ->with('success', 'Lokasi kos berhasil ditambahkan.');
@@ -73,10 +75,12 @@ class LocationController extends Controller
     {
         $data = $request->validated();
         $photos = $request->file('photos', []) ?: [];
-        unset($data['photos']);
+        $roomPhotos = $request->file('room_photos', []) ?: [];
+        unset($data['photos'], $data['room_photos']);
 
         $location->update($data);
-        $this->storePhotos($location, $photos);
+        $this->storePhotos($location, $photos, 'location');
+        $this->storePhotos($location, $roomPhotos, 'room');
 
         return redirect()->route('admin.locations.show', $location)
             ->with('success', 'Informasi lokasi kos berhasil diperbarui.');
@@ -161,11 +165,13 @@ class LocationController extends Controller
 
         return back()->with('success', "$deletedCount foto lokasi berhasil dihapus.");
     }
-    private function storePhotos(Location $location, array $photos): void
+
+    private function storePhotos(Location $location, array $photos, string $type = 'location'): void
     {
         foreach ($photos as $photo) {
             $location->photos()->create([
                 'path' => $photo->store('locations', 'public'),
+                'type' => $type,
             ]);
         }
     }
