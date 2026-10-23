@@ -86,20 +86,52 @@
 	<div x-show="isDeleteLocationOpen" x-cloak @keydown.escape.window="isDeleteLocationOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
 		<div @click="isDeleteLocationOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
 		<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
-			<h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Konfirmasi hapus lokasi</h2>
-			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Lokasi {{ $location->name }} akan dihapus permanen. Pastikan tidak ada penyewa aktif.</p>
-			<form method="POST" action="{{ route('admin.locations.destroy', $location) }}" class="mt-5 space-y-4">
-				@csrf
-				@method('DELETE')
-				<div class="flex-1">
-					<label for="modal_location_password_page" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Password admin</label>
-					<input id="modal_location_password_page" name="password" type="password" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-error-500 dark:border-gray-700 dark:text-white/90" />
+			<div class="mb-4 flex items-center gap-3">
+				<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
+					<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
+					</svg>
 				</div>
-				<div class="flex justify-end gap-3">
-					<button type="button" @click="isDeleteLocationOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">Batal</button>
-					<button type="submit" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600">Ya, hapus lokasi</button>
+				<div>
+					<h2 class="text-base font-semibold text-gray-800 dark:text-white/90">Konfirmasi Hapus Lokasi</h2>
+					<p class="text-xs text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan</p>
 				</div>
-			</form>
+			</div>
+
+			@if ($hasActiveTenants)
+				<!-- Red Warning when location still has active tenants -->
+				<div class="mb-4 rounded-xl border border-error-200 bg-error-50 p-4 text-sm text-error-700 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400">
+					<div class="flex items-start gap-3">
+						<svg class="mt-0.5 h-5 w-5 shrink-0 text-error-500" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+						</svg>
+						<div>
+							<strong class="font-semibold">Lokasi tidak dapat dihapus!</strong>
+							<p class="mt-1">Masih ada kamar yang sedang ditempati oleh penyewa aktif di lokasi ini. Kosongkan kamar atau pindahkan penyewa terlebih dahulu sebelum menghapus lokasi.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" @click="isDeleteLocationOpen = false" class="rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition">Tutup</button>
+				</div>
+			@else
+				<!-- Location has NO active tenants: prompt password to delete -->
+				<p class="text-sm text-gray-600 dark:text-gray-300">Lokasi <strong>{{ $location->name }}</strong> akan dihapus permanen. Masukkan password admin untuk melanjutkan.</p>
+
+				<form method="POST" action="{{ route('admin.locations.destroy', $location) }}" class="mt-4 space-y-4">
+					@csrf
+					@method('DELETE')
+					<div>
+						<label for="modal_location_password_page" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Password admin</label>
+						<input id="modal_location_password_page" name="password" type="password" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-error-500 dark:border-gray-700 dark:text-white/90" />
+					</div>
+					<div class="flex justify-end gap-3">
+						<button type="button" @click="isDeleteLocationOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition">Batal</button>
+						<button type="submit" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600 shadow-theme-xs transition">Ya, hapus lokasi</button>
+					</div>
+				</form>
+			@endif
 		</div>
 	</div>
 </div>

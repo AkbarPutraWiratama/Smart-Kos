@@ -56,14 +56,17 @@ class LocationController extends Controller
                 return $floorOrder === 'desc' ? -$comparison : $comparison;
             });
 
-        return view('admin.locations.show', compact('location', 'roomsByFloor', 'floorOrder'));
+        $hasActiveTenants = $location->rooms->contains(fn ($room) => $room->activeAssignment !== null);
+
+        return view('admin.locations.show', compact('location', 'roomsByFloor', 'floorOrder', 'hasActiveTenants'));
     }
 
     public function edit(Location $location): View
     {
         $location->load('photos');
+        $hasActiveTenants = $location->rooms()->whereHas('activeAssignment')->exists();
 
-        return view('admin.locations.edit', compact('location'));
+        return view('admin.locations.edit', compact('location', 'hasActiveTenants'));
     }
 
     public function update(LocationRequest $request, Location $location): RedirectResponse

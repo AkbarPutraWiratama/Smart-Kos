@@ -92,7 +92,7 @@
 				>
 					<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 						@foreach ($rooms as $room)
-							<div x-data="{ isRoomEditOpen: false, isDeleteRoomOpen: false }">
+							<div x-data="{ isRoomEditOpen: false, isDeleteRoomOpen: false, isConfirmSaveRoomOpen: false }">
 								<div role="button" tabindex="0" @click="isRoomEditOpen = true" @keydown.enter="isRoomEditOpen = true" @keydown.space.prevent="isRoomEditOpen = true" class="cursor-pointer rounded-xl border border-gray-200 p-4 transition hover:border-brand-500 hover:shadow-theme-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-800">
 									<div class="flex items-start justify-between gap-3">
 										<div>
@@ -106,6 +106,7 @@
 									<p class="mt-4 text-sm font-medium text-brand-500">Klik untuk edit kamar</p>
 								</div>
 
+								<!-- Modal Edit Kamar -->
 								<div x-show="isRoomEditOpen" x-cloak @keydown.escape.window="isRoomEditOpen = false" class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5">
 									<div @click="isRoomEditOpen = false" class="fixed inset-0 bg-gray-900/50"></div>
 									<div @click.stop class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
@@ -116,7 +117,7 @@
 											</div>
 											<button type="button" @click="isRoomEditOpen = false" aria-label="Tutup" class="text-2xl leading-none text-gray-400 hover:text-gray-700 dark:hover:text-white">&times;</button>
 										</div>
-										<form method="POST" action="{{ route('admin.locations.rooms.update', [$location, $room]) }}" class="space-y-4">
+										<form id="edit_room_form_{{ $room->id }}" method="POST" action="{{ route('admin.locations.rooms.update', [$location, $room]) }}" class="space-y-4">
 											@csrf
 											@method('PUT')
 											<div>
@@ -137,33 +138,79 @@
 											</div>
 											<div>
 												<label for="room_status_{{ $room->id }}" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Status kamar</label>
-												<select id="room_status_{{ $room->id }}" name="status" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90">
-													<option value="active" @selected($room->status === 'active')>Aktif</option>
-													<option value="inactive" @selected($room->status === 'inactive')>Nonaktif</option>
-												</select>
+												@if ($room->activeAssignment)
+													<select id="room_status_{{ $room->id }}" name="status" class="h-11 w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-100 px-4 text-sm text-gray-500 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+														<option value="active" selected>Aktif (Sedang Ditempati Penyewa)</option>
+													</select>
+													<p class="mt-1 text-xs text-warning-600 dark:text-warning-400">Status tidak dapat diubah ke nonaktif karena kamar sedang terisi oleh penyewa aktif.</p>
+												@else
+													<select id="room_status_{{ $room->id }}" name="status" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90">
+														<option value="active" @selected($room->status === 'active')>Aktif</option>
+														<option value="inactive" @selected($room->status === 'inactive')>Nonaktif</option>
+													</select>
+												@endif
 											</div>
-											<div>
-												<label for="room_password_{{ $room->id }}" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Password admin</label>
-												<input id="room_password_{{ $room->id }}" name="password" type="password" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
-											</div>
+
+											<input type="hidden" id="room_password_hidden_{{ $room->id }}" name="password" value="" />
+
 											<div class="flex justify-between gap-3 pt-2">
 												@if (! $room->activeAssignment)
-													<button type="button" @click="isDeleteRoomOpen = true" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600">Hapus kamar</button>
+													<button type="button" @click="isDeleteRoomOpen = true" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600 transition">Hapus kamar</button>
 												@endif
 												<div class="ms-auto flex gap-3">
-													<button type="button" @click="isRoomEditOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">Batal</button>
-													<button type="submit" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600">Simpan</button>
+													<button type="button" @click="isRoomEditOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition">Batal</button>
+													<button type="button" @click="isConfirmSaveRoomOpen = true" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">Simpan</button>
 												</div>
 											</div>
 										</form>
 									</div>
 								</div>
 
+								<!-- Modal Konfirmasi Simpan Perubahan Kamar -->
+								<div x-show="isConfirmSaveRoomOpen" x-cloak @keydown.escape.window="isConfirmSaveRoomOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
+									<div @click="isConfirmSaveRoomOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
+									<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+										<div class="mb-4 flex items-center gap-3">
+											<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
+												<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+													<path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+												</svg>
+											</div>
+											<div>
+												<h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Konfirmasi Simpan Perubahan</h3>
+												<p class="text-xs text-gray-500 dark:text-gray-400">Masukkan password admin untuk menyimpan</p>
+											</div>
+										</div>
+										<p class="text-sm text-gray-600 dark:text-gray-300">Konfirmasikan perubahan kamar <strong>{{ $room->room_number }}</strong> dengan memasukkan kata sandi admin Anda.</p>
+										<form @submit.prevent="document.getElementById('room_password_hidden_{{ $room->id }}').value = document.getElementById('modal_save_password_{{ $room->id }}').value; document.getElementById('edit_room_form_{{ $room->id }}').submit();" class="mt-5 space-y-4">
+											<div>
+												<label for="modal_save_password_{{ $room->id }}" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Password admin</label>
+												<input id="modal_save_password_{{ $room->id }}" type="password" required autofocus class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
+											</div>
+											<div class="flex justify-end gap-3 pt-2">
+												<button type="button" @click="isConfirmSaveRoomOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition">Batal</button>
+												<button type="submit" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">Konfirmasi & Simpan</button>
+											</div>
+										</form>
+									</div>
+								</div>
+
+								<!-- Modal Konfirmasi Hapus Kamar -->
 								<div x-show="isDeleteRoomOpen" x-cloak @keydown.escape.window="isDeleteRoomOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
 									<div @click="isDeleteRoomOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
 									<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
-										<h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Konfirmasi hapus kamar</h2>
-										<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Kamar {{ $room->room_number }} akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.</p>
+										<div class="mb-4 flex items-center gap-3">
+											<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
+												<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+													<path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
+												</svg>
+											</div>
+											<div>
+												<h2 class="text-base font-semibold text-gray-800 dark:text-white/90">Konfirmasi Hapus Kamar</h2>
+												<p class="text-xs text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan</p>
+											</div>
+										</div>
+										<p class="text-sm text-gray-600 dark:text-gray-300">Kamar <strong>{{ $room->room_number }}</strong> akan dihapus permanen. Masukkan password admin untuk melanjutkan.</p>
 										<form method="POST" action="{{ route('admin.locations.rooms.destroy', [$location, $room]) }}" class="mt-5 space-y-4">
 											@csrf
 											@method('DELETE')
@@ -171,9 +218,9 @@
 												<label for="delete_room_password_{{ $room->id }}" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Password admin</label>
 												<input id="delete_room_password_{{ $room->id }}" name="password" type="password" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-error-500 dark:border-gray-700 dark:text-white/90" />
 											</div>
-											<div class="flex justify-end gap-3">
-												<button type="button" @click="isDeleteRoomOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">Batal</button>
-												<button type="submit" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600">Ya, hapus kamar</button>
+											<div class="flex justify-end gap-3 pt-2">
+												<button type="button" @click="isDeleteRoomOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition">Batal</button>
+												<button type="submit" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600 shadow-theme-xs transition">Ya, hapus kamar</button>
 											</div>
 										</form>
 									</div>
@@ -321,21 +368,53 @@
 	<div x-show="isDeleteLocationOpen" x-cloak @keydown.escape.window="isDeleteLocationOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
 		<div @click="isDeleteLocationOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
 		<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
-			<h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Konfirmasi hapus lokasi</h2>
-			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Lokasi {{ $location->name }} akan dihapus permanen. Pastikan tidak ada penyewa aktif.</p>
-			<form method="POST" action="{{ route('admin.locations.destroy', $location) }}" class="mt-5 space-y-4">
+			<div class="mb-4 flex items-center gap-3">
+				<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
+					<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
+					</svg>
+				</div>
+				<div>
+					<h2 class="text-base font-semibold text-gray-800 dark:text-white/90">Konfirmasi Hapus Lokasi</h2>
+					<p class="text-xs text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan</p>
+				</div>
+			</div>
+
+			@if ($hasActiveTenants)
+				<!-- Red Warning when location still has active tenants -->
+				<div class="mb-4 rounded-xl border border-error-200 bg-error-50 p-4 text-sm text-error-700 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400">
+					<div class="flex items-start gap-3">
+						<svg class="mt-0.5 h-5 w-5 shrink-0 text-error-500" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+						</svg>
+						<div>
+							<strong class="font-semibold">Lokasi tidak dapat dihapus!</strong>
+							<p class="mt-1">Masih ada kamar yang sedang ditempati oleh penyewa aktif di lokasi ini. Kosongkan kamar atau pindahkan penyewa terlebih dahulu sebelum menghapus lokasi.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" @click="isDeleteLocationOpen = false" class="rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition">Tutup</button>
+				</div>
+			@else
+				<!-- Location has NO active tenants: prompt password to delete -->
+				<p class="text-sm text-gray-600 dark:text-gray-300">Lokasi <strong>{{ $location->name }}</strong> akan dihapus permanen. Masukkan password admin untuk melanjutkan.</p>
+
+				<form method="POST" action="{{ route('admin.locations.destroy', $location) }}" class="mt-4 space-y-4">
 					@csrf
 					@method('DELETE')
-					<div class="flex-1">
+					<div>
 						<label for="modal_location_password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Password admin</label>
 						<input id="modal_location_password" name="password" type="password" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-error-500 dark:border-gray-700 dark:text-white/90" />
 					</div>
 					<div class="flex justify-end gap-3">
-						<button type="button" @click="isDeleteLocationOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">Batal</button>
-						<button type="submit" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600">Ya, hapus lokasi</button>
+						<button type="button" @click="isDeleteLocationOpen = false" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition">Batal</button>
+						<button type="submit" class="rounded-lg bg-error-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-error-600 shadow-theme-xs transition">Ya, hapus lokasi</button>
 					</div>
 				</form>
+			@endif
 		</div>
 	</div>
-	</div>
+</div>
 @endsection

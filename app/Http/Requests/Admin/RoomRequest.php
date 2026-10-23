@@ -34,6 +34,12 @@ class RoomRequest extends FormRequest
             if ($this->filled('password') && ! Hash::check($this->password, $this->user()->password)) {
                 $validator->errors()->add('password', 'Kata sandi konfirmasi tidak sesuai.');
             }
+
+            // Invariant: If room is occupied by a tenant, status cannot be changed to inactive
+            $room = $this->route('room');
+            if ($room && $room->isOccupied() && $this->input('status') === 'inactive') {
+                $validator->errors()->add('status', 'Status kamar tidak dapat diubah menjadi nonaktif karena kamar sedang ditempati penyewa.');
+            }
         });
     }
 }

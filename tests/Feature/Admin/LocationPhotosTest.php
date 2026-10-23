@@ -176,4 +176,129 @@ class LocationPhotosTest extends TestCase
         Storage::disk('public')->assertMissing('locations/sakura_legacy.jpg');
         Storage::disk('public')->assertExists($photo3->path);
     }
+
+    public function test_delete_location_shows_red_warning_when_has_active_tenants(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $location = Location::create([
+            'name' => 'Kos Terisi',
+            'address' => 'Jl. Terisi No. 9',
+            'floor_count' => 1,
+            'status' => 'active',
+        ]);
+
+        $room = \App\Models\Room::create([
+            'location_id' => $location->id,
+            'floor_name' => 1,
+            'room_number' => 101,
+            'rent_amount' => 1000000,
+            'status' => 'active',
+        ]);
+
+        $tenantUser = User::factory()->create([
+            'role' => 'penyewa',
+            'status' => 'active',
+        ]);
+
+        $tenantProfile = \App\Models\TenantProfile::create([
+            'user_id' => $tenantUser->id,
+            'phone' => '081234567890',
+        ]);
+
+        \App\Models\RoomAssignment::create([
+            'room_id' => $room->id,
+            'tenant_id' => $tenantProfile->id,
+            'start_date' => now()->toDateString(),
+            'status' => 'active',
+            'rent_amount_snapshot' => 1000000,
+        ]);
+
+        // Viewing edit page should display the red warning in the modal
+        $response = $this->actingAs($admin)->get(route('admin.locations.edit', $location));
+        $response->assertStatus(200);
+        $response->assertSee('Lokasi tidak dapat dihapus!');
+        $response->assertSee('Masih ada kamar yang sedang ditempati oleh penyewa aktif');
+
+        // Viewing show page should also display the red warning in the modal
+        $response = $this->actingAs($admin)->get(route('admin.locations.show', $location));
+        $response->assertStatus(200);
+        $response->assertSee('Lokasi tidak dapat dihapus!');
+
+        // Attempting to delete should fail with session error
+        $deleteResponse = $this->actingAs($admin)->delete(route('admin.locations.destroy', $location), [
+            'password' => 'password',
+        ]);
+        $deleteResponse->assertRedirect();
+        $deleteResponse->assertSessionHasErrors('password');
+        $this->assertDatabaseHas('locations', ['id' => $location->id]);
+    }
+
+    public function test_occupied_room_status_cannot_be_changed_to_inactive(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $location = Location::create([
+            'name' => 'Kos Cempaka',
+            'address' => 'Jl. Cempaka No. 5',
+            'floor_count' => 1,
+            'status' => 'active',
+        ]);
+
+        $room = \App\Models\Room::create([
+            'location_id' => $location->id,
+            'floor_name' => 1,
+            'room_number' => 201,
+            'rent_amount' => 1500000,
+            'status' => 'active',
+        ]);
+
+        $tenantUser = User::factory()->create([
+            'role' => 'penyewa',
+            'status' => 'active',
+        ]);
+
+        $tenantProfile = \App\Models\TenantProfile::create([
+            'user_id' => $tenantUser->id,
+            'phone' => '0899999999',
+        ]);
+
+        \App\Models\RoomAssignment::create([
+            'room_id' => $room->id,
+            'tenant_id' => $tenantProfile->id,
+            'start_date' => now()->toDateString(),
+            'status' => 'active',
+            'rent_amount_snapshot' => 1500000,
+        ]);
+
+        // Trying to update status to inactive should fail validation
+        $response = $this->actingAs($admin)->put(route('admin.locations.rooms.update', [$location, $room]), [
+            'floor_name' => 1,
+            'room_number' => 201,
+            'rent_amount' => 1500000,
+            'status' => 'inactive',
+            'password' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors('status');
+        $this->assertEquals('active', $room->fresh()->status);
+
+        // Updating occupied room with active status succeeds
+        $responseSuccess = $this->actingAs($admin)->put(route('admin.locations.rooms.update', [$location, $room]), [
+            'floor_name' => 1,
+            'room_number' => 201,
+            'rent_amount' => 1600000,
+            'status' => 'active',
+            'password' => 'password',
+        ]);
+
+        $responseSuccess->assertRedirect(route('admin.locations.show', $location));
+        $this->assertEquals(1600000, $room->fresh()->rent_amount);
+    }
 }
