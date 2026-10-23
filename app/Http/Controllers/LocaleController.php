@@ -17,22 +17,10 @@ class LocaleController extends Controller
             "flag" => "us",
             "dir" => "ltr",
         ],
-        "ar" => [
-            "name" => "Arabic",
-            "native" => "العربية",
-            "flag" => "sa",
-            "dir" => "rtl",
-        ],
-        "es" => [
-            "name" => "Spanish",
-            "native" => "Español",
-            "flag" => "es",
-            "dir" => "ltr",
-        ],
-        "de" => [
-            "name" => "German",
-            "native" => "Deutsch",
-            "flag" => "de",
+        "id" => [
+            "name" => "Indonesia",
+            "native" => "Bahasa Indonesia",
+            "flag" => "id",
             "dir" => "ltr",
         ],
     ];

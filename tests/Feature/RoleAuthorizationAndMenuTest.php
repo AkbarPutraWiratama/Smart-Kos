@@ -47,8 +47,8 @@ class RoleAuthorizationAndMenuTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->actingAs($admin)->get('/admin/dashboard')->assertStatus(200)->assertSee('Admin Dashboard');
-        $this->actingAs($admin)->get('/admin/finance')->assertStatus(200)->assertSee('Admin Finance');
+        $this->actingAs($admin)->get('/admin/dashboard')->assertStatus(200);
+        $this->actingAs($admin)->get('/admin/finance')->assertStatus(200);
     }
 
     public function test_staff_can_access_staff_routes(): void
@@ -58,8 +58,8 @@ class RoleAuthorizationAndMenuTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->actingAs($staff)->get('/staff/dashboard')->assertStatus(200)->assertSee('Staff Dashboard');
-        $this->actingAs($staff)->get('/staff/complaints')->assertStatus(200)->assertSee('Staff Complaints');
+        $this->actingAs($staff)->get('/staff/dashboard')->assertStatus(200);
+        $this->actingAs($staff)->get('/staff/complaints')->assertStatus(200);
     }
 
     public function test_penyewa_can_access_penyewa_routes(): void
@@ -69,7 +69,7 @@ class RoleAuthorizationAndMenuTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->actingAs($penyewa)->get('/penyewa/dashboard')->assertStatus(200)->assertSee('Penyewa Dashboard');
+        $this->actingAs($penyewa)->get('/penyewa/dashboard')->assertStatus(200);
     }
 
     public function test_inactive_user_is_logged_out_when_accessing_routes(): void

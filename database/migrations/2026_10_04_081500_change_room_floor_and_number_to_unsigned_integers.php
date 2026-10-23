@@ -9,18 +9,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::table('rooms')
-            ->where('floor_name', 'like', 'Lantai %')
-            ->update([
-                'floor_name' => DB::raw("CAST(SUBSTRING_INDEX(floor_name, ' ', -1) AS UNSIGNED)"),
-            ]);
+        if (DB::getDriverName() === 'mysql') {
+            DB::table('rooms')
+                ->where('floor_name', 'like', 'Lantai %')
+                ->update([
+                    'floor_name' => DB::raw("CAST(SUBSTRING_INDEX(floor_name, ' ', -1) AS UNSIGNED)"),
+                ]);
 
-        $hasInvalidValues = DB::table('rooms')
-            ->whereRaw("floor_name NOT REGEXP '^[0-9]+$' OR room_number NOT REGEXP '^[0-9]+$'")
-            ->exists();
+            $hasInvalidValues = DB::table('rooms')
+                ->whereRaw("floor_name NOT REGEXP '^[0-9]+$' OR room_number NOT REGEXP '^[0-9]+$'")
+                ->exists();
 
-        if ($hasInvalidValues) {
-            throw new RuntimeException('Rooms contain non-numeric floor_name or room_number values.');
+            if ($hasInvalidValues) {
+                throw new RuntimeException('Rooms contain non-numeric floor_name or room_number values.');
+            }
         }
 
         Schema::table('rooms', function (Blueprint $table) {

@@ -2,8 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Location;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Room;
+use App\Models\RoomAssignment;
+use App\Models\TenantProfile;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -49,7 +53,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $tenantProfile = \App\Models\TenantProfile::firstOrCreate(
+        $tenantProfile = TenantProfile::firstOrCreate(
             ['user_id' => $penyewa->id],
             [
                 'phone' => '081234567890',
@@ -59,7 +63,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // 4. Demo Locations & Rooms
-        $location = \App\Models\Location::firstOrCreate(
+        $location = Location::firstOrCreate(
             ['name' => 'Kos Mawar Residence'],
             [
                 'address' => 'Jl. Mawar Raya No. 45, Jakarta Selatan',
@@ -72,7 +76,7 @@ class DatabaseSeeder extends Seeder
 
         // Lantai 1 Rooms
         for ($i = 101; $i <= 104; $i++) {
-            $room = \App\Models\Room::firstOrCreate(
+            $room = Room::firstOrCreate(
                 [
                     'location_id' => $location->id,
                     'floor_name' => 1,
@@ -86,7 +90,7 @@ class DatabaseSeeder extends Seeder
 
             // Assign room 101 to Ahmad Fauzi as occupied
             if ($i === 101) {
-                \App\Models\RoomAssignment::firstOrCreate(
+                RoomAssignment::firstOrCreate(
                     [
                         'room_id' => $room->id,
                         'tenant_id' => $tenantProfile->id,
@@ -102,7 +106,7 @@ class DatabaseSeeder extends Seeder
 
         // Lantai 2 Rooms
         for ($i = 201; $i <= 204; $i++) {
-            \App\Models\Room::firstOrCreate(
+            Room::firstOrCreate(
                 [
                     'location_id' => $location->id,
                     'floor_name' => 2,
@@ -116,7 +120,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5. Second Demo Location: Kos Melati Indah
-        $location2 = \App\Models\Location::firstOrCreate(
+        $location2 = Location::firstOrCreate(
             ['name' => 'Kos Melati Indah'],
             [
                 'address' => 'Jl. Melati Putih No. 18, Sleman, Yogyakarta',
@@ -129,7 +133,7 @@ class DatabaseSeeder extends Seeder
 
         // Location 2 - Lantai 1 Rooms
         for ($i = 101; $i <= 103; $i++) {
-            \App\Models\Room::firstOrCreate(
+            Room::firstOrCreate(
                 [
                     'location_id' => $location2->id,
                     'floor_name' => 1,
@@ -144,7 +148,7 @@ class DatabaseSeeder extends Seeder
 
         // Location 2 - Lantai 2 Rooms
         for ($i = 201; $i <= 203; $i++) {
-            \App\Models\Room::firstOrCreate(
+            Room::firstOrCreate(
                 [
                     'location_id' => $location2->id,
                     'floor_name' => 2,
@@ -158,4 +162,3 @@ class DatabaseSeeder extends Seeder
         }
     }
 }
-
