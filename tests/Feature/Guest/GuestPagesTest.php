@@ -81,4 +81,25 @@ class GuestPagesTest extends TestCase
         $response->assertDontSee('Rahasia Pribadi');
         $response->assertDontSee('081299998888');
     }
+
+    public function test_guest_can_see_location_photos_carousel(): void
+    {
+        $location = Location::create([
+            'name' => 'Kos Cantik',
+            'address' => 'Jl. Mawar No. 10',
+            'floor_count' => 1,
+            'status' => 'active',
+            'photo_path' => 'locations/legacy.jpg',
+        ]);
+
+        $location->photos()->create([
+            'path' => 'locations/extra1.jpg',
+        ]);
+
+        $response = $this->get('/rooms?location_id='.$location->id);
+
+        $response->assertStatus(200);
+        $response->assertSee('legacy.jpg', false);
+        $response->assertSee('extra1.jpg', false);
+    }
 }

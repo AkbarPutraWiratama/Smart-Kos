@@ -100,7 +100,7 @@ class LocationController extends Controller
             ->with('success', 'Lokasi ' . $locationName . ' berhasil dihapus.');
     }
 
-    public function destroyPhoto(SensitiveActionConfirmRequest $request, Location $location, LocationPhoto $photo): RedirectResponse
+    public function destroyPhoto(Request $request, Location $location, LocationPhoto $photo): RedirectResponse
     {
         abort_unless($photo->location_id === $location->id, 404);
 
@@ -111,7 +111,7 @@ class LocationController extends Controller
         return back()->with('success', 'Foto lokasi berhasil dihapus.');
     }
 
-    public function destroyLegacyPhoto(SensitiveActionConfirmRequest $request, Location $location): RedirectResponse
+    public function destroyLegacyPhoto(Request $request, Location $location): RedirectResponse
     {
         if (! $location->photo_path) {
             return back()->withErrors(['photo' => 'Foto lokasi tidak ditemukan.']);
@@ -124,6 +124,40 @@ class LocationController extends Controller
         return back()->with('success', 'Foto lokasi berhasil dihapus.');
     }
 
+    public function bulkDestroyPhotos(Request $request, Location $location): RedirectResponse
+    {
+        $validated = $request->validate([
+            'photo_ids' => ['nullable', 'array'],
+            'photo_ids.*' => ['integer'],
+            'delete_legacy' => ['nullable', 'boolean'],
+        ]);
+
+        $photoIds = $validated['photo_ids'] ?? [];
+        $deleteLegacy = (bool) ($validated['delete_legacy'] ?? false);
+
+        $deletedCount = 0;
+
+        if (! empty($photoIds)) {
+            $photos = $location->photos()->whereIn('id', $photoIds)->get();
+            foreach ($photos as $photo) {
+                Storage::disk('public')->delete($photo->path);
+                $photo->delete();
+                $deletedCount++;
+            }
+        }
+
+        if ($deleteLegacy && $location->photo_path) {
+            Storage::disk('public')->delete($location->photo_path);
+            $location->update(['photo_path' => null]);
+            $deletedCount++;
+        }
+
+        if ($deletedCount === 0) {
+            return back()->withErrors(['photos' => 'Pilih setidaknya satu foto untuk dihapus.']);
+        }
+
+        return back()->with('success', "$deletedCount foto lokasi berhasil dihapus.");
+    }
     private function storePhotos(Location $location, array $photos): void
     {
         foreach ($photos as $photo) {

@@ -19,8 +19,11 @@
 		@forelse ($locations as $location)
 			<a href="{{ route('admin.locations.show', $location) }}" class="group overflow-hidden rounded-2xl border border-gray-200 bg-white transition hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-theme-md dark:border-gray-800 dark:bg-white/[0.03]">
 				<div class="h-36 overflow-hidden bg-gray-100 dark:bg-gray-800">
-					@if ($location->photos->first())
-						<img src="{{ asset('storage/' . $location->photos->first()->path) }}" alt="{{ $location->name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+					@php
+						$cardPhoto = $location->photos->first()?->path ?? $location->photo_path;
+					@endphp
+					@if ($cardPhoto)
+						<img src="{{ asset('storage/' . $cardPhoto) }}" alt="{{ $location->name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
 					@else
 						<div class="flex h-full items-center justify-center text-sm text-gray-400 dark:text-gray-500">Belum ada foto lokasi</div>
 					@endif

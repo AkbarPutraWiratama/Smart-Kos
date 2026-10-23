@@ -2,10 +2,7 @@
     use App\Helpers\MenuHelper;
     use App\Helpers\SmartKosMenuHelper;
 
-    $user = auth()->user();
-    $menuGroups = ($user || request()->is('admin*') || request()->is('staff*') || request()->is('penyewa*'))
-        ? SmartKosMenuHelper::getMenuGroups()
-        : MenuHelper::getMenuGroups();
+    $menuGroups = SmartKosMenuHelper::getMenuGroups();
 
     // Get current path
     $currentPath = request()->path();
@@ -220,8 +217,5 @@
         </nav>
 
         <!-- Sidebar Widget -->
-        <div class="hidden [.sidebar-expanded_&]:block mt-auto">
-            @include('layouts.sidebar-widget')
-        </div>
     </div>
 </aside>
