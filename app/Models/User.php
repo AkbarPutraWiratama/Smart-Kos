@@ -73,6 +73,63 @@ class User extends Authenticatable
         return $this->status === 'active';
     }
 
+    /**
+     * Determine if account has been inactive for at least 7 days
+     * according to the application lifecycle policy.
+     */
+    public function isEligibleForDeletion(int $daysThreshold = 7): bool
+    {
+        if ($this->status !== 'inactive' || ! $this->inactive_at) {
+            return false;
+        }
+
+        return $this->inactive_at->diffInDays(now()) >= $daysThreshold;
+    }
+
+    /**
+     * Get remaining days until this inactive account becomes eligible for deletion.
+     */
+    public function daysUntilDeletionEligible(int $daysThreshold = 7): int
+    {
+        if ($this->status !== 'inactive' || ! $this->inactive_at) {
+            return $daysThreshold;
+        }
+
+        $daysInactive = $this->inactive_at->diffInDays(now());
+
+        return max(0, $daysThreshold - (int) $daysInactive);
+    }
+
+    /**
+     * Check if user has associated historical financial or operational records.
+     */
+    public function hasFinancialOrOperationalHistory(): bool
+    {
+        if ($this->submittedManualPayments()->exists() || $this->verifiedManualPayments()->exists()) {
+            return true;
+        }
+
+        if ($this->expenses()->exists() || $this->financialRecordsRecorded()->exists()) {
+            return true;
+        }
+
+        if ($this->payrollRecordsReceived()->exists() || $this->payrollRecordsRecorded()->exists()) {
+            return true;
+        }
+
+        if ($this->cashAdvancesReceived()->exists() || $this->cashAdvancesRecorded()->exists()) {
+            return true;
+        }
+
+        if ($this->tenantProfile) {
+            if ($this->tenantProfile->roomAssignments()->exists() || $this->tenantProfile->complaints()->exists()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function tenantProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(TenantProfile::class, 'user_id');

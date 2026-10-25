@@ -35,6 +35,11 @@ class TenantProfile extends Model
         return $this->hasMany(RoomAssignment::class, 'tenant_id');
     }
 
+    public function activeAssignment(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(RoomAssignment::class, 'tenant_id')->where('status', 'active');
+    }
+
     public function complaints(): HasMany
     {
         return $this->hasMany(Complaint::class, 'tenant_id');

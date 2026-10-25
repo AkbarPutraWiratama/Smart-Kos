@@ -106,6 +106,10 @@ Route::get('/videos', function () {
 // Protected Smart Kos Role Routes
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\TenantAssignmentController;
+use App\Http\Controllers\Tenant\DashboardController as TenantDashboardController;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
@@ -122,11 +126,37 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/locations/{location}/rooms/{room}', [RoomController::class, 'update'])->name('locations.rooms.update');
     Route::delete('/locations/{location}/rooms/{room}', [RoomController::class, 'destroy'])->name('locations.rooms.destroy');
 
+    // Tenant Account Management (Phase 12)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::patch('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
+    Route::patch('/users/{user}/reactivate', [UserController::class, 'reactivate'])->name('users.reactivate');
+    Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    // Staff Account Management (Phase 13)
+    Route::get('/staff-members', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/staff-members/create', [StaffController::class, 'create'])->name('staff.create');
+    Route::post('/staff-members', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/staff-members/{staff}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+    Route::put('/staff-members/{staff}', [StaffController::class, 'update'])->name('staff.update');
+    Route::patch('/staff-members/{staff}/deactivate', [StaffController::class, 'deactivate'])->name('staff.deactivate');
+    Route::patch('/staff-members/{staff}/reactivate', [StaffController::class, 'reactivate'])->name('staff.reactivate');
+    Route::post('/staff-members/{staff}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
+    Route::delete('/staff-members/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
+
+    // Tenant Room Assignment (Phase 15)
+    Route::get('/tenants', [TenantAssignmentController::class, 'index'])->name('tenants.index');
+    Route::post('/assignments', [TenantAssignmentController::class, 'store'])->name('assignments.store');
+    Route::patch('/assignments/{assignment}/change-room', [TenantAssignmentController::class, 'changeRoom'])->name('assignments.change-room');
+    Route::post('/assignments/{assignment}/end', [TenantAssignmentController::class, 'endAssignment'])->name('assignments.end');
+
     // Dummy placeholder pages (sidebar links)
-    Route::get('/tenants', fn () => view('admin.tenants.index'))->name('tenants.index');
     Route::get('/complaints', fn () => view('admin.complaints.index'))->name('complaints.index');
     Route::get('/finance', fn () => view('admin.finance.index'))->name('finance.index');
-    Route::get('/users', fn () => view('admin.users.index'))->name('users.index');
     Route::get('/account', fn () => view('admin.account'))->name('account');
 });
 
@@ -138,7 +168,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
 });
 
 Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')->group(function () {
-    Route::get('/dashboard', fn () => view('penyewa.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [TenantDashboardController::class, 'index'])->name('dashboard');
     Route::get('/payments', fn () => view('penyewa.payments.index'))->name('payments.index');
     Route::get('/complaints', fn () => view('penyewa.complaints.index'))->name('complaints.index');
     Route::get('/account', fn () => view('penyewa.account'))->name('account');
