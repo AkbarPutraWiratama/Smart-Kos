@@ -2482,3 +2482,23 @@ DO NOT EXPOSE SECRETS.
 
 Prefer a smaller, isolated Smart Kos change over a broad refactor.
 
+
+
+---
+
+# 78. Location & Room Photo Management Extension
+
+### Overview
+Locations feature two separate photo upload and management sections:
+1. **Foto Lokasi (Location Photos)**: General facility and building exterior/interior photos (`type = 'location'`).
+2. **Foto Kamar (Room Photos)**: Room samples, model rooms, and typical room layouts (`type = 'room'`).
+
+### Architectural Implementation:
+- **Database Schema**: `location_photos` table includes a `type` string column (`default('location')`).
+- **Validation**: `LocationRequest` validates both `photos` and `room_photos` arrays independently (up to 10 photos each, 4MB max).
+- **Storage & Display Rules**:
+  - Saved files reside in `public/storage/locations/`.
+  - In Edit Lokasi forms, photos are separated into their respective section cards by `type`.
+  - Visual badges ("Foto Lokasi" and "Foto Kamar") are rendered on stored photo cards, preview uploads, and gallery carousels.
+  - In all gallery carousels (Admin Detail Lokasi and Guest Rooms view), photos tagged with **Foto Lokasi** always appear first (leftmost/initial slides), followed by **Foto Kamar**.
+  - Photo deletion features a non-blocking confirmation dialog (Confirm/Cancel) with single and bulk-selection checkboxes. Location deletion retains invariant password confirmation and strictly blocks deletion if active tenant assignments exist.

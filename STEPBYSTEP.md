@@ -593,6 +593,20 @@ Google Maps location
 number of floors
 ```
 
+Location photo organization:
+
+```text
+location photos (exterior/facility, tagged 'Foto Lokasi')
+room photos (sample room views, tagged 'Foto Kamar')
+```
+
+Photo gallery ordering:
+
+```text
+Photos tagged 'Foto Lokasi' are sorted to appear first (leftmost/initial slides).
+Photos tagged 'Foto Kamar' follow afterwards.
+```
+
 Room fields:
 
 ```text

@@ -60,8 +60,9 @@ Users & Accounts
 
         # 6.1 `location_photos`
 
-        Stores additional photos for a location. The legacy `locations.photo_path`
-        field remains readable for existing records, while new uploads are stored here.
+        Stores additional photos for a location (both general location photos and room sample photos).
+        The legacy `locations.photo_path` field remains readable for existing records, while new uploads
+        are stored here with a `type` distinguishing between location and room photos.
 
         ```text
         location_photos
@@ -69,11 +70,12 @@ Users & Accounts
         id
         location_id
         path
+        type ('location' | 'room')
         created_at
         updated_at
         ```
 
-        A location can have multiple photos.
+        A location can have multiple photos categorized by type.
 
 # 3. High-Level ERD
 
@@ -121,6 +123,7 @@ erDiagram
         bigint id PK
         bigint location_id FK
         varchar path
+        varchar type
         timestamp created_at
         timestamp updated_at
       }
