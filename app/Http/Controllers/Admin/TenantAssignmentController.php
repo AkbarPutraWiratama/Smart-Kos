@@ -22,9 +22,20 @@ class TenantAssignmentController extends Controller
      */
     public function index(Request $request): View
     {
-        $locations = Location::where('status', 'active')->with(['rooms' => function ($q) {
-            $q->where('status', 'active');
-        }])->get();
+        $locations = Location::where('status', 'active')
+            ->with([
+                'photos',
+                'rooms' => function ($q) {
+                    $q->where('status', 'active');
+                },
+            ])
+            ->withCount([
+                'rooms',
+                'rooms as active_rooms_count' => function ($q) {
+                    $q->where('status', 'active');
+                },
+            ])
+            ->get();
 
         $selectedLocationId = $request->input('location_id', $locations->first()?->id);
         $statusTab = $request->input('tab', 'visualization'); // 'visualization' | 'assigned' | 'unassigned'

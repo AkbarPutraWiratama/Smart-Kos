@@ -63,7 +63,8 @@ class StaffController extends Controller
         User::create([
             'name'     => $validated['name'],
             'username' => $validated['username'],
-            'email'    => $validated['email'],
+            'email'    => $validated['email'] ?? null,
+            'phone'    => $validated['phone'] ?? null,
             'password' => Hash::make($validated['password']),
             'role'     => 'staff',
             'status'   => 'active',
@@ -99,7 +100,8 @@ class StaffController extends Controller
         $userData = [
             'name'     => $validated['name'],
             'username' => $validated['username'],
-            'email'    => $validated['email'],
+            'email'    => $validated['email'] ?? null,
+            'phone'    => $validated['phone'] ?? null,
         ];
 
         if (! empty($validated['password'])) {

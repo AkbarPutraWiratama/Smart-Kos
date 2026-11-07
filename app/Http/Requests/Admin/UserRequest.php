@@ -28,7 +28,7 @@ class UserRequest extends FormRequest
                     : Rule::unique('users', 'username'),
             ],
             'email' => [
-                'required',
+                'nullable',
                 'email',
                 'max:255',
                 $user

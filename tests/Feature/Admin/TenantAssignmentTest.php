@@ -79,6 +79,26 @@ class TenantAssignmentTest extends TestCase
         $response->assertSee('Kos Melati Indah');
     }
 
+    public function test_admin_can_view_and_switch_locations_via_side_scrolling_cards(): void
+    {
+        $secondLocation = Location::create([
+            'name'        => 'Kos Mawar Residence',
+            'address'     => 'Jl. Mawar Raya No. 45',
+            'floor_count' => 3,
+            'status'      => 'active',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.tenants.index', [
+            'location_id' => $this->location->id,
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Kos Melati Indah');
+        $response->assertSee('Kos Mawar Residence');
+        $response->assertSee('Lokasi Terpilih');
+        $response->assertSee('Klik untuk pilih lokasi');
+    }
+
     public function test_admin_can_assign_tenant_to_room(): void
     {
         $response = $this->actingAs($this->admin)->post(route('admin.assignments.store'), [

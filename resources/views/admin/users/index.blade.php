@@ -42,7 +42,7 @@
     <!-- Main Table Card -->
     <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white pt-4 dark:border-white/[0.05] dark:bg-white/[0.03]">
         <!-- Table Header & Actions -->
-        <div class="flex flex-col gap-4 px-6 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-4 px-4 sm:px-6 mb-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
                     Daftar Akun Penyewa
@@ -51,29 +51,29 @@
                     Kelola akun penyewa kos, status aktif/nonaktif, dan kredensial akses.
                 </p>
             </div>
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full lg:w-auto">
                 <!-- Search & Filter Form -->
-                <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap items-center gap-2">
-                    <div class="relative">
+                <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-1 sm:flex-initial flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+                    <div class="relative w-full sm:w-64">
                         <input
                             type="text"
                             name="search"
                             value="{{ request('search') }}"
-                            placeholder="Cari nama, username, email..."
-                            class="h-10 w-48 sm:w-64 rounded-lg border border-gray-300 bg-transparent px-3.5 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
+                            placeholder="Cari nama, username..."
+                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3.5 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
                         />
                     </div>
                     <select
                         name="status"
                         onchange="this.form.submit()"
-                        class="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
+                        class="h-10 w-full sm:w-auto rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
                     >
                         <option value="">Semua Status</option>
                         <option value="active" @selected(request('status') === 'active')>Aktif</option>
                         <option value="inactive" @selected(request('status') === 'inactive')>Nonaktif</option>
                     </select>
                     @if (request('search') || request('status'))
-                        <a href="{{ route('admin.users.index') }}" class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 px-3 text-xs text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">
+                        <a href="{{ route('admin.users.index') }}" class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 px-3 text-xs text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 shrink-0">
                             Reset
                         </a>
                     @endif
@@ -81,7 +81,7 @@
 
                 <a
                     href="{{ route('admin.users.create') }}"
-                    class="inline-flex h-10 items-center justify-center rounded-lg bg-brand-500 px-4 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition"
+                    class="inline-flex h-10 items-center justify-center rounded-lg bg-brand-500 px-4 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition shrink-0 w-full sm:w-auto"
                 >
                     + Tambah Penyewa
                 </a>
@@ -187,7 +187,7 @@
                                             {{ $tenant->name }}
                                         </p>
                                         <p class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                            {{ $tenant->email }}
+                                            {{ $tenant->email ?: '-' }}
                                         </p>
                                     </div>
                                 </div>

@@ -131,6 +131,9 @@ class RoomStatusVisualizationTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Lantai 2');
         $response->assertSee('Lantai 1');
+        $response->assertSee('grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5', false);
+        $response->assertSee('Terkunci dari Visualisasi');
+        $response->assertSee('isRoomLocked = true', false);
 
         // Check Floor 2 rooms
         foreach ([101, 102, 103, 104, 105] as $num) {

@@ -88,6 +88,26 @@ class TenantManagementTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_create_tenant_without_email(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
+            'name'          => 'Tanpa Email Penyewa',
+            'username'      => 'tanpaemail',
+            'password'      => 'secretpassword123',
+            'phone'         => '081234567890',
+        ]);
+
+        $response->assertRedirect(route('admin.users.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('users', [
+            'name'     => 'Tanpa Email Penyewa',
+            'username' => 'tanpaemail',
+            'email'    => null,
+            'role'     => 'penyewa',
+        ]);
+    }
+
     public function test_admin_cannot_create_tenant_with_duplicate_username_or_email(): void
     {
         User::factory()->create([

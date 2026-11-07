@@ -28,13 +28,14 @@ class StaffRequest extends FormRequest
                     : Rule::unique('users', 'username'),
             ],
             'email' => [
-                'required',
+                'nullable',
                 'email',
                 'max:255',
                 $staff
                     ? Rule::unique('users', 'email')->ignore($staff->id)
                     : Rule::unique('users', 'email'),
             ],
+            'phone'    => ['nullable', 'string', 'max:30'],
             'password' => $staff
                 ? ['nullable', 'string']           // optional on update
                 : ['required', 'string', 'min:8'],  // required on create

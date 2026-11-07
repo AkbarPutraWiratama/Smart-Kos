@@ -7,51 +7,172 @@
     isEndAssignmentModalOpen: false,
     isManageAssignmentModalOpen: false,
     currentAssignment: null,
-    selectedTenantId: null
-}" class="space-y-6">
+    selectedTenantId: null,
+    isRoomLocked: false,
+    lockedRoomId: ''
+}" class="space-y-6 w-full max-w-full min-w-0">
 
     <x-common.page-breadcrumb pageTitle="Status Penyewa" />
 
-    <!-- Filter by Location Bar -->
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-        <div class="flex items-center gap-3">
-            <label for="location_select" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Pilih Lokasi Kos:
-            </label>
-            <form method="GET" action="{{ route('admin.tenants.index') }}" class="inline-block">
-                <input type="hidden" name="tab" value="{{ $statusTab }}" />
-                <select
-                    id="location_select"
-                    name="location_id"
-                    onchange="this.form.submit()"
-                    class="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm font-medium text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
-                >
-                    @foreach ($locations as $loc)
-                        <option value="{{ $loc->id }}" @selected((string)$selectedLocationId === (string)$loc->id)>
-                            {{ $loc->name }} ({{ $loc->rooms->count() }} Kamar)
-                        </option>
-                    @endforeach
-                </select>
-            </form>
-        </div>
-
+    <!-- Header Lokasi Kos -->
+    <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            @if ($availableRooms->isNotEmpty() && $allUnassignedProfiles->isNotEmpty())
-                <button
-                    type="button"
-                    @click="isAssignModalOpen = true; selectedTenantId = null"
-                    class="inline-flex h-10 items-center justify-center rounded-lg bg-brand-500 px-4 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition"
-                >
-                    + Tugaskan Kamar
-                </button>
-            @endif
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                Pilih Lokasi Kos
+            </h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Pilih atau geser kartu lokasi kos untuk memantau status hunian, tingkat okupansi, dan denah kamar.
+            </p>
+        </div>
+    </div>
+
+    <!-- Side-scrolling Location Cards (Strictly Isolated Horizontal Scroll) -->
+    <div
+        class="w-full max-w-full min-w-0"
+        x-data="{
+            canScrollLeft: false,
+            canScrollRight: false,
+            checkScroll() {
+                const el = this.$refs.scrollContainer;
+                if (!el) return;
+                this.canScrollLeft = el.scrollLeft > 10;
+                this.canScrollRight = el.scrollLeft < (el.scrollWidth - el.clientWidth - 10);
+            },
+            scrollLeft() {
+                this.$refs.scrollContainer.scrollBy({ left: -320, behavior: 'smooth' });
+            },
+            scrollRight() {
+                this.$refs.scrollContainer.scrollBy({ left: 320, behavior: 'smooth' });
+            }
+        }"
+        x-init="$nextTick(() => { checkScroll(); }); window.addEventListener('resize', () => checkScroll())"
+    >
+        <div class="relative w-full max-w-full min-w-0">
+            <!-- Left Scroll Arrow (Desktop) -->
+            <button
+                type="button"
+                x-show="canScrollLeft"
+                x-cloak
+                @click="scrollLeft()"
+                aria-label="Scroll left"
+                class="hidden sm:flex absolute -start-3 top-1/2 -translate-y-1/2 z-20 h-9 w-9 items-center justify-center rounded-full bg-white shadow-theme-md border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 transition"
+            >
+                <svg class="h-4 w-4 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                </svg>
+            </button>
+
+            <!-- Scroll Container (overscroll-x-contain ensures scrolling stays strictly inside the cards container) -->
+            <div
+                x-ref="scrollContainer"
+                @scroll.debounce.50ms="checkScroll()"
+                class="flex gap-3.5 sm:gap-4 overflow-x-auto overscroll-x-contain pb-3 pt-1 custom-scrollbar snap-x snap-mandatory w-full max-w-full min-w-0"
+            >
+                @forelse ($locations as $loc)
+                    @php
+                        $isSelected = (string)$selectedLocationId === (string)$loc->id;
+                        $cardPhoto = $loc->photos->firstWhere('type', 'location')?->path ?? $loc->photo_path ?? $loc->photos->first()?->path;
+                        $activeCount = $loc->active_rooms_count ?? $loc->rooms->where('status', 'active')->count();
+                        $totalCount = $loc->rooms_count ?? $loc->rooms->count();
+                    @endphp
+                    <a
+                        href="{{ route('admin.tenants.index', ['location_id' => $loc->id, 'tab' => $statusTab]) }}"
+                        class="group relative flex h-32 sm:h-36 w-[290px] sm:w-[340px] shrink-0 snap-start overflow-hidden rounded-2xl transition hover:-translate-y-0.5 {{ $isSelected ? 'border-2 border-brand-500 bg-brand-50/15 shadow-theme-md dark:border-brand-400 dark:bg-brand-500/10' : 'border border-gray-200 bg-white hover:border-brand-300 hover:shadow-theme-sm dark:border-gray-800 dark:bg-white/[0.03]' }}"
+                    >
+                        <!-- Left Thumbnail -->
+                        <div class="relative w-28 sm:w-32 shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                            @if ($cardPhoto)
+                                <img src="{{ asset('storage/' . $cardPhoto) }}" alt="{{ $loc->name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                            @else
+                                <div class="flex h-full w-full items-center justify-center p-2 text-center text-[11px] leading-tight text-gray-400 dark:text-gray-500">
+                                    Belum ada foto
+                                </div>
+                            @endif
+
+                            @if ($isSelected)
+                                <div class="absolute top-2 start-2">
+                                    <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-white shadow-theme-xs">
+                                        <svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Right Details Content -->
+                        <div class="flex flex-1 flex-col justify-between p-3 sm:p-3.5 min-w-0">
+                            <div>
+                                <div class="flex items-start justify-between gap-1.5">
+                                    <h4 class="truncate font-semibold text-sm text-gray-800 group-hover:text-brand-500 dark:text-white/90 dark:group-hover:text-brand-400">
+                                        {{ $loc->name }}
+                                    </h4>
+                                    <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium {{ $loc->status === 'active' ? 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' }}">
+                                        {{ $loc->status === 'active' ? 'Aktif' : 'Nonaktif' }}
+                                    </span>
+                                </div>
+                                <p class="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $loc->address }}
+                                </p>
+                            </div>
+
+                            <!-- Stats Row -->
+                            <div class="flex items-center gap-2.5 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 pt-1.5 dark:border-gray-800">
+                                <div>
+                                    <span>Lantai: </span>
+                                    <strong class="font-semibold text-gray-800 dark:text-white/90">{{ $loc->floor_count }}</strong>
+                                </div>
+                                <span class="text-gray-300 dark:text-gray-700">&bull;</span>
+                                <div>
+                                    <span>Kamar: </span>
+                                    <strong class="font-semibold text-gray-800 dark:text-white/90">{{ $activeCount }}/{{ $totalCount }}</strong>
+                                </div>
+                            </div>
+
+                            <!-- Action / Selection Indicator -->
+                            <div class="text-xs">
+                                @if ($isSelected)
+                                    <span class="flex items-center gap-1 font-semibold text-brand-500 dark:text-brand-400 text-[11px] sm:text-xs">
+                                        <svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                        </svg>
+                                        Lokasi Terpilih
+                                    </span>
+                                @else
+                                    <span class="font-medium text-gray-400 group-hover:text-brand-500 dark:text-gray-500 text-[11px] sm:text-xs">
+                                        Klik untuk pilih lokasi &rarr;
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @empty
+                    <div class="w-full rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-500 dark:border-gray-700 dark:bg-white/[0.03] dark:text-gray-400">
+                        Belum ada lokasi kos aktif yang terdaftar.
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Right Scroll Arrow (Desktop) -->
+            <button
+                type="button"
+                x-show="canScrollRight"
+                x-cloak
+                @click="scrollRight()"
+                aria-label="Scroll right"
+                class="hidden sm:flex absolute -end-3 top-1/2 -translate-y-1/2 z-20 h-9 w-9 items-center justify-center rounded-full bg-white shadow-theme-md border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 transition"
+            >
+                <svg class="h-4 w-4 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                </svg>
+            </button>
         </div>
     </div>
 
     <!-- Metrics Cards -->
     <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Kamar Aktif</p>
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Kamar</p>
             <p class="mt-2 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $metrics['total_rooms'] }}</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
@@ -61,16 +182,16 @@
             </p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-            <p class="text-xs font-medium text-blue-600 dark:text-blue-400">Kamar Kosong</p>
+            <p class="text-xs font-medium text-blue-600 dark:text-blue-400">Kamar Kosong (Tersedia)</p>
             <p class="mt-2 text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $metrics['empty_rooms'] }}</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-            <p class="text-xs font-medium text-warning-600 dark:text-warning-400">Penyewa Belum Ditugaskan</p>
+            <p class="text-xs font-medium text-warning-600 dark:text-warning-400">Penyewa Belum Ditempatkan</p>
             <p class="mt-2 text-2xl font-bold text-warning-600 dark:text-warning-400">{{ $metrics['unassigned_count'] }}</p>
         </div>
     </div>
 
-    <!-- Navigation Tabs (Visualisasi Denah Kamar vs Penyewa di Kamar vs Belum Ditugaskan) -->
+    <!-- Navigation Tabs -->
     <div class="border-b border-gray-200 dark:border-gray-800">
         <nav class="-mb-px flex gap-6" aria-label="Tabs">
             <a
@@ -83,13 +204,13 @@
                 href="{{ route('admin.tenants.index', ['location_id' => $selectedLocationId, 'tab' => 'assigned']) }}"
                 class="border-b-2 py-3 text-sm font-semibold transition {{ $statusTab === 'assigned' ? 'border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }}"
             >
-                Penyewa di Kamar ({{ $assignedTenants->total() }})
+                Penghuni Kamar ({{ $assignedTenants->total() }})
             </a>
             <a
                 href="{{ route('admin.tenants.index', ['location_id' => $selectedLocationId, 'tab' => 'unassigned']) }}"
                 class="border-b-2 py-3 text-sm font-semibold transition {{ $statusTab === 'unassigned' ? 'border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }}"
             >
-                Penyewa Belum Ada Kamar ({{ $unassignedTenants->total() }})
+                Penyewa Belum Ditempatkan ({{ $unassignedTenants->total() }})
             </a>
         </nav>
     </div>
@@ -106,10 +227,10 @@
         <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white pt-4 dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div class="px-6 mb-4">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                    Daftar Kamar Terisi & Penyewa Aktif
+                    Daftar Kamar Terisi dan Penghuni Aktif
                 </h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Status kamar yang sedang dihuni di lokasi terpilih. Anda dapat memindahkan penyewa atau menyelesaikan sewa.
+                    Daftar kamar yang sedang dihuni pada lokasi kos terpilih. Anda dapat memindahkan kamar penghuni atau mengakhiri masa sewa.
                 </p>
             </div>
 
@@ -136,7 +257,7 @@
                             </div>
                             <div class="shrink-0 flex items-center gap-1.5">
                                 <span class="rounded-full bg-green-50 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:bg-green-500/15 dark:text-green-500">
-                                    Ditempati
+                                    Terisi
                                 </span>
                                 <svg class="h-4 w-4 text-gray-400 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
@@ -145,13 +266,13 @@
                         </div>
 
                         <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 border-t border-gray-100 pt-2 dark:border-gray-800">
-                            <span>Sewa: Rp {{ number_format($assignment->rent_amount_snapshot, 0, ',', '.') }}/bln</span>
-                            <span class="text-brand-500 font-medium">Ketuk untuk kelola &rarr;</span>
+                            <span>Tarif Sewa: Rp {{ number_format($assignment->rent_amount_snapshot, 0, ',', '.') }}/bulan</span>
+                            <span class="text-brand-500 font-medium">Kelola Hunian &rarr;</span>
                         </div>
                     </div>
                 @empty
                     <div class="p-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                        Tidak ada kamar yang sedang terisi di lokasi ini.
+                        Belum ada kamar yang sedang terisi pada lokasi kos ini.
                     </div>
                 @endforelse
             </div>
@@ -168,13 +289,13 @@
                                 Penyewa
                             </th>
                             <th class="px-6 py-3.5 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                                Kontak
+                                Kontak (No. HP)
                             </th>
                             <th class="px-6 py-3.5 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400">
                                 Tarif Sewa
                             </th>
                             <th class="px-6 py-3.5 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                                Tanggal Mulai
+                                Tanggal Mulai Sewa
                             </th>
                             <th class="px-6 py-3.5 text-end text-theme-xs font-medium text-gray-500 dark:text-gray-400">
                                 <span class="sr-only">Aksi</span>
@@ -221,14 +342,14 @@
                                 </td>
                                 <td class="px-6 py-4 text-end">
                                     <span class="inline-flex items-center text-xs font-medium text-brand-500 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition">
-                                        Kelola Sewa &rarr;
+                                        Kelola Hunian &rarr;
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="px-6 py-12 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    Tidak ada kamar yang sedang terisi di lokasi ini.
+                                    Belum ada kamar yang sedang terisi pada lokasi kos ini.
                                 </td>
                             </tr>
                         @endforelse
@@ -247,10 +368,10 @@
         <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white pt-4 dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div class="px-6 mb-4">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                    Daftar Penyewa Belum Ditugaskan
+                    Daftar Penyewa Belum Ditempatkan
                 </h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Akun penyewa aktif yang belum terdaftar di kamar manapun. Pilih kamar kosong untuk menempatkan mereka.
+                    Daftar akun penyewa aktif yang belum ditempatkan pada kamar kos. Pilih kamar kosong yang tersedia untuk menempatkan mereka.
                 </p>
             </div>
 
@@ -258,7 +379,7 @@
             <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
                 @forelse ($unassignedTenants as $profile)
                     <div
-                        @click="isAssignModalOpen = true; selectedTenantId = {{ $profile->id }}"
+                        @click="isAssignModalOpen = true; isRoomLocked = false; lockedRoomId = ''; selectedTenantId = {{ $profile->id }}"
                         class="p-4 space-y-2 cursor-pointer transition hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-white/[0.03] dark:active:bg-white/[0.05]"
                     >
                         <div class="flex items-center justify-between gap-3">
@@ -277,7 +398,7 @@
                             </div>
                             <div class="shrink-0 flex items-center gap-1.5">
                                 <span class="rounded-full bg-warning-50 px-2 py-0.5 text-[11px] font-medium text-warning-700 dark:bg-warning-500/15 dark:text-warning-400">
-                                    Belum ada kamar
+                                    Belum Ditempatkan
                                 </span>
                                 <svg class="h-4 w-4 text-gray-400 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
@@ -287,12 +408,12 @@
 
                         <div class="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 pt-1">
                             <span>Terdaftar: {{ $profile->registered_at ? $profile->registered_at->format('d M Y') : '-' }}</span>
-                            <span class="text-brand-500 font-medium">Ketuk untuk tugaskan &rarr;</span>
+                            <span class="text-brand-500 font-medium">Tempatkan ke Kamar &rarr;</span>
                         </div>
                     </div>
                 @empty
                     <div class="p-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                        Semua penyewa aktif telah memiliki kamar.
+                        Seluruh penyewa aktif telah ditempatkan pada kamar kos.
                     </div>
                 @endforelse
             </div>
@@ -306,13 +427,13 @@
                                 Penyewa
                             </th>
                             <th class="px-6 py-3.5 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                                Username
+                                Nama Pengguna
                             </th>
                             <th class="px-6 py-3.5 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                                Nomor HP
+                                Nomor WhatsApp / HP
                             </th>
                             <th class="px-6 py-3.5 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400">
-                                Terdaftar Sejak
+                                Tanggal Terdaftar
                             </th>
                             <th class="px-6 py-3.5 text-end text-theme-xs font-medium text-gray-500 dark:text-gray-400">
                                 <span class="sr-only">Aksi</span>
@@ -322,7 +443,7 @@
                     <tbody class="divide-y divide-gray-100 dark:divide-white/[0.05]">
                         @forelse ($unassignedTenants as $profile)
                             <tr
-                                @click="isAssignModalOpen = true; selectedTenantId = {{ $profile->id }}"
+                                @click="isAssignModalOpen = true; isRoomLocked = false; lockedRoomId = ''; selectedTenantId = {{ $profile->id }}"
                                 class="group cursor-pointer transition hover:bg-gray-50 dark:hover:bg-white/[0.03]"
                             >
                                 <td class="px-6 py-4">
@@ -351,14 +472,14 @@
                                 </td>
                                 <td class="px-6 py-4 text-end">
                                     <span class="inline-flex items-center text-xs font-medium text-brand-500 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition">
-                                        Tugaskan &rarr;
+                                        Tempatkan &rarr;
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    Semua penyewa aktif telah memiliki kamar.
+                                    Seluruh penyewa aktif telah ditempatkan pada kamar kos.
                                 </td>
                             </tr>
                         @endforelse
@@ -420,7 +541,7 @@
                     </div>
 
                     <p class="mt-4 mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                        Pilih Tindakan Penugasan
+                        Pilih Tindakan Pengelolaan Hunian
                     </p>
 
                     <div class="space-y-2.5">
@@ -438,7 +559,7 @@
                                         Pindah Kamar
                                     </p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        Pindahkan penyewa ke kamar kosong lainnya
+                                        Pindahkan penghuni ke kamar kosong lain yang tersedia
                                     </p>
                                 </div>
                             </div>
@@ -456,10 +577,10 @@
                                 </span>
                                 <div>
                                     <p class="font-medium text-sm text-gray-800 group-hover:text-warning-700 dark:text-white/90 dark:group-hover:text-warning-400">
-                                        Selesai Sewa (Checkout)
+                                        Akhiri Masa Sewa (Checkout)
                                     </p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        Akhiri masa sewa dan kosongkan kamar ini
+                                        Selesaikan masa sewa penghuni dan kosongkan kembali kamar ini
                                     </p>
                                 </div>
                             </div>
@@ -485,10 +606,10 @@
     <div
         x-show="isAssignModalOpen"
         x-cloak
-        @keydown.escape.window="isAssignModalOpen = false"
+        @keydown.escape.window="isAssignModalOpen = false; isRoomLocked = false; lockedRoomId = ''"
         class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5"
     >
-        <div @click="isAssignModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
+        <div @click="isAssignModalOpen = false; isRoomLocked = false; lockedRoomId = ''" class="fixed inset-0 bg-gray-900/60"></div>
         <div @click.stop class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
             <div class="mb-4 flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
@@ -497,8 +618,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Tugaskan Kamar ke Penyewa</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Pilih penyewa dan kamar kosong yang tersedia</p>
+                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Penempatan Kamar Penyewa</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Tentukan penyewa dan kamar kosong yang akan ditempati</p>
                 </div>
             </div>
 
@@ -524,14 +645,26 @@
                 </div>
 
                 <div>
-                    <label for="assign_room_id" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Pilih Kamar Kosong <span class="text-error-500">*</span>
-                    </label>
+                    <div class="mb-2 flex items-center justify-between">
+                        <label for="assign_room_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Pilih Kamar Kosong <span class="text-error-500">*</span>
+                        </label>
+                        <span x-show="isRoomLocked" x-cloak class="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-400">
+                            <svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                            </svg>
+                            Terkunci dari Visualisasi
+                        </span>
+                    </div>
+
                     <select
                         id="assign_room_id"
                         name="room_id"
+                        x-model="lockedRoomId"
+                        :disabled="isRoomLocked"
+                        :class="isRoomLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 opacity-90' : 'bg-transparent text-gray-800 dark:text-white/90'"
                         required
-                        class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
+                        class="h-11 w-full rounded-lg border border-gray-300 px-4 text-sm outline-none focus:border-brand-500 dark:border-gray-700 transition"
                     >
                         <option value="">-- Pilih Kamar --</option>
                         @foreach ($availableRooms as $ar)
@@ -540,6 +673,13 @@
                             </option>
                         @endforeach
                     </select>
+
+                    <input type="hidden" name="room_id" :value="lockedRoomId" :disabled="!isRoomLocked">
+
+                    <p x-show="isRoomLocked" x-cloak class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                        Kamar otomatis dikunci sesuai kamar yang Anda klik pada denah visualisasi agar tidak tertukar.
+                    </p>
+
                     @if ($availableRooms->isEmpty())
                         <p class="mt-1 text-xs text-error-500">Tidak ada kamar kosong yang tersedia di lokasi ini.</p>
                     @endif
@@ -561,7 +701,7 @@
                     </div>
                     <div>
                         <label for="assign_end_date" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Tanggal Selesai (Opsional)
+                            Tanggal Berakhir Sewa (Opsional)
                         </label>
                         <input
                             id="assign_end_date"
@@ -575,7 +715,7 @@
                 <div class="flex justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                     <button
                         type="button"
-                        @click="isAssignModalOpen = false"
+                        @click="isAssignModalOpen = false; isRoomLocked = false; lockedRoomId = ''"
                         class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition"
                     >
                         Batal
@@ -585,7 +725,7 @@
                         @disabled($availableRooms->isEmpty())
                         class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition disabled:opacity-50"
                     >
-                        Simpan Penugasan
+                        Simpan Penempatan Kamar
                     </button>
                 </div>
             </form>
@@ -608,8 +748,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Pindah Kamar Penyewa</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Pindahkan penyewa ke kamar kosong lainnya</p>
+                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Pindah Kamar Penghuni</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Pindahkan penghuni ke kamar kosong lain yang tersedia</p>
                 </div>
             </div>
 
@@ -623,13 +763,13 @@
                     @method('PATCH')
 
                     <div class="rounded-xl bg-gray-50 p-3 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                        <p>Penyewa: <strong x-text="currentAssignment.tenant_profile?.user?.name"></strong></p>
+                        <p>Penghuni: <strong x-text="currentAssignment.tenant_profile?.user?.name"></strong></p>
                         <p class="mt-0.5">Kamar Saat Ini: <strong x-text="'Kamar ' + currentAssignment.room?.room_number"></strong></p>
                     </div>
 
                     <div>
                         <label for="new_room_id" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Pilih Kamar Tujuan <span class="text-error-500">*</span>
+                            Pilih Kamar Baru <span class="text-error-500">*</span>
                         </label>
                         <select
                             id="new_room_id"
@@ -648,7 +788,7 @@
 
                     <div>
                         <label for="transfer_date" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Tanggal Pindah <span class="text-error-500">*</span>
+                            Tanggal Efektif Pindah <span class="text-error-500">*</span>
                         </label>
                         <input
                             id="transfer_date"
@@ -672,7 +812,7 @@
                             type="submit"
                             class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-blue-700 transition"
                         >
-                            Proses Pindah
+                            Konfirmasi Pindah Kamar
                         </button>
                     </div>
                 </form>
@@ -696,15 +836,15 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Selesai Sewa / Checkout</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Kosongkan kamar dan akhiri penugasan penyewa</p>
+                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Akhiri Masa Sewa (Checkout)</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Selesaikan masa sewa penghuni dan kosongkan kembali kamar ini</p>
                 </div>
             </div>
 
             <template x-if="currentAssignment">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-300">
-                        Penugasan untuk penyewa <strong x-text="currentAssignment.tenant_profile?.user?.name"></strong> pada <strong x-text="'Kamar ' + currentAssignment.room?.room_number"></strong> akan diakhiri. Kamar akan kembali berstatus kosong.
+                        Masa sewa untuk penyewa <strong x-text="currentAssignment.tenant_profile?.user?.name"></strong> pada <strong x-text="'Kamar ' + currentAssignment.room?.room_number"></strong> akan diakhiri. Status kamar akan kembali kosong dan siap dihuni.
                     </p>
 
                     <form
@@ -715,7 +855,7 @@
                         @csrf
                         <div>
                             <label for="modal_end_password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Password Admin Konfirmasi
+                                Kata Sandi Konfirmasi Admin
                             </label>
                             <input
                                 id="modal_end_password"

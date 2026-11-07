@@ -55,21 +55,35 @@
 
                     <div>
                         <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email <span class="text-error-500">*</span>
+                            Email <span class="text-xs font-normal text-gray-400 dark:text-gray-500">(Opsional)</span>
                         </label>
                         <input
                             id="email"
                             name="email"
                             type="email"
                             value="{{ old('email') }}"
-                            required
-                            placeholder="andi@example.com"
+                            placeholder="Contoh: andi@example.com (opsional)"
                             class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
                         />
                         @error('email')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
+                        <label for="phone" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Nomor Handphone / WhatsApp
+                        </label>
+                        <input
+                            id="phone"
+                            name="phone"
+                            type="text"
+                            value="{{ old('phone') }}"
+                            placeholder="Contoh: 081234567890"
+                            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
+                        />
+                        @error('phone')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div class="md:col-span-2">
                         <label for="password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Kata Sandi Awal <span class="text-error-500">*</span>
                         </label>
@@ -87,16 +101,16 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5 dark:border-gray-800">
+            <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 border-t border-gray-100 pt-5 dark:border-gray-800">
                 <a
                     href="{{ route('admin.staff.index') }}"
-                    class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition"
+                    class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition w-full sm:w-auto"
                 >
                     Batal
                 </a>
                 <button
                     type="submit"
-                    class="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition"
+                    class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition w-full sm:w-auto"
                 >
                     Simpan Akun Staff
                 </button>

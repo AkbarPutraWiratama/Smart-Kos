@@ -36,17 +36,17 @@
                         @endif
                     </div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Username: <span class="font-mono">{{ $staff->username }}</span> &bull; Role: Staff Operasional &bull; Email: {{ $staff->email }}
+                        Username: <span class="font-mono">{{ $staff->username }}</span> &bull; HP: {{ $staff->phone ?? '-' }} &bull; Role: Staff Operasional
                     </p>
                 </div>
             </div>
 
             <!-- Quick Action Buttons -->
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                 <button
                     type="button"
                     @click="isResetPasswordModalOpen = true"
-                    class="rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-theme-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.05] transition"
+                    class="rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-theme-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.05] transition text-center"
                 >
                     Reset Password
                 </button>
@@ -55,7 +55,7 @@
                     <button
                         type="button"
                         @click="isDeactivateModalOpen = true"
-                        class="rounded-lg bg-warning-500/10 px-3.5 py-2 text-theme-xs font-medium text-warning-700 hover:bg-warning-500/20 dark:bg-warning-500/20 dark:text-warning-400 transition"
+                        class="rounded-lg bg-warning-500/10 px-3.5 py-2 text-theme-xs font-medium text-warning-700 hover:bg-warning-500/20 dark:bg-warning-500/20 dark:text-warning-400 transition text-center"
                     >
                         Nonaktifkan Akun
                     </button>
@@ -63,7 +63,7 @@
                     <button
                         type="button"
                         @click="isReactivateModalOpen = true"
-                        class="rounded-lg bg-green-50 px-3.5 py-2 text-theme-xs font-medium text-green-700 hover:bg-green-100 dark:bg-green-500/15 dark:text-green-400 transition"
+                        class="rounded-lg bg-green-50 px-3.5 py-2 text-theme-xs font-medium text-green-700 hover:bg-green-100 dark:bg-green-500/15 dark:text-green-400 transition text-center"
                     >
                         Aktifkan Kembali
                     </button>
@@ -71,7 +71,7 @@
                     <button
                         type="button"
                         @click="isDeleteModalOpen = true"
-                        class="rounded-lg bg-error-500/10 px-3.5 py-2 text-theme-xs font-medium text-error-700 hover:bg-error-500/20 dark:bg-error-500/20 dark:text-error-400 transition"
+                        class="col-span-2 sm:col-span-1 rounded-lg bg-error-500/10 px-3.5 py-2 text-theme-xs font-medium text-error-700 hover:bg-error-500/20 dark:bg-error-500/20 dark:text-error-400 transition text-center"
                     >
                         Hapus Akun
                     </button>
@@ -166,33 +166,48 @@
                     @error('username')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
                 </div>
 
-                <div class="md:col-span-2">
+                <div>
                     <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Email <span class="text-error-500">*</span>
+                        Email <span class="text-xs font-normal text-gray-400 dark:text-gray-500">(Opsional)</span>
                     </label>
                     <input
                         id="email"
                         name="email"
                         type="email"
                         value="{{ old('email', $staff->email) }}"
-                        required
+                        placeholder="Contoh: staff@example.com (opsional)"
                         class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
                     />
                     @error('email')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
                 </div>
+
+                <div>
+                    <label for="phone" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Nomor Handphone / WhatsApp
+                    </label>
+                    <input
+                        id="phone"
+                        name="phone"
+                        type="text"
+                        value="{{ old('phone', $staff->phone) }}"
+                        placeholder="Contoh: 081234567890"
+                        class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
+                    />
+                    @error('phone')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
+                </div>
             </div>
 
             <!-- Submit Buttons -->
-            <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5 dark:border-gray-800">
+            <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 border-t border-gray-100 pt-5 dark:border-gray-800">
                 <a
                     href="{{ route('admin.staff.index') }}"
-                    class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition"
+                    class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition w-full sm:w-auto"
                 >
                     Kembali
                 </a>
                 <button
                     type="submit"
-                    class="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition"
+                    class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition w-full sm:w-auto"
                 >
                     Simpan Perubahan
                 </button>

@@ -56,6 +56,7 @@ class StaffManagementTest extends TestCase
             'name'     => 'Agus Setiawan',
             'username' => 'agusstaff',
             'email'    => 'agus@staff.test',
+            'phone'    => '081299887766',
             'password' => 'staffsecret123',
         ]);
 
@@ -66,6 +67,7 @@ class StaffManagementTest extends TestCase
             'name'     => 'Agus Setiawan',
             'username' => 'agusstaff',
             'email'    => 'agus@staff.test',
+            'phone'    => '081299887766',
             'role'     => 'staff',
             'status'   => 'active',
         ]);
@@ -73,6 +75,25 @@ class StaffManagementTest extends TestCase
         $user = User::where('username', 'agusstaff')->first();
         $this->assertNotNull($user);
         $this->assertTrue(Hash::check('staffsecret123', $user->password));
+    }
+
+    public function test_admin_can_create_staff_without_email(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.staff.store'), [
+            'name'     => 'Staff Tanpa Email',
+            'username' => 'staffnoemail',
+            'password' => 'staffsecret123',
+        ]);
+
+        $response->assertRedirect(route('admin.staff.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('users', [
+            'name'     => 'Staff Tanpa Email',
+            'username' => 'staffnoemail',
+            'email'    => null,
+            'role'     => 'staff',
+        ]);
     }
 
     public function test_admin_cannot_create_staff_with_duplicate_username_or_email(): void
@@ -121,6 +142,7 @@ class StaffManagementTest extends TestCase
             'name'     => 'New Staff Name',
             'username' => 'newstaffuser',
             'email'    => 'newstaff@test.com',
+            'phone'    => '089988776655',
         ]);
 
         $response->assertRedirect(route('admin.staff.index'));
@@ -131,6 +153,7 @@ class StaffManagementTest extends TestCase
             'name'     => 'New Staff Name',
             'username' => 'newstaffuser',
             'email'    => 'newstaff@test.com',
+            'phone'    => '089988776655',
         ]);
     }
 

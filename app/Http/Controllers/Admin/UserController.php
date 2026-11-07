@@ -69,7 +69,7 @@ class UserController extends Controller
             $user = User::create([
                 'name'     => $validated['name'],
                 'username' => $validated['username'],
-                'email'    => $validated['email'],
+                'email'    => $validated['email'] ?? null,
                 'password' => Hash::make($validated['password']),
                 'role'     => 'penyewa',
                 'status'   => 'active',
@@ -118,7 +118,7 @@ class UserController extends Controller
             $userData = [
                 'name'     => $validated['name'],
                 'username' => $validated['username'],
-                'email'    => $validated['email'],
+                'email'    => $validated['email'] ?? null,
             ];
 
             if (! empty($validated['password'])) {
