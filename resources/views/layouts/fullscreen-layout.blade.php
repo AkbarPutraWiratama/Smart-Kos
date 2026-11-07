@@ -43,14 +43,12 @@
             });
 
             Alpine.store('sidebar', {
-                // Initialize based on screen size
-                isExpanded: window.innerWidth >= 1280, // true for desktop, false for mobile
+                isExpanded: false,
                 isMobileOpen: false,
                 isHovered: false,
 
                 toggleExpanded() {
                     this.isExpanded = !this.isExpanded;
-                    // When toggling desktop sidebar, ensure mobile menu is closed
                     this.isMobileOpen = false;
                 },
 
@@ -100,14 +98,10 @@
     </script>
 </head>
 
-<body x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
+<body x-init="$store.sidebar.isExpanded = false;
 const checkMobile = () => {
     if (window.innerWidth < 1280) {
         $store.sidebar.setMobileOpen(false);
-        $store.sidebar.isExpanded = false;
-    } else {
-        $store.sidebar.isMobileOpen = false;
-        $store.sidebar.isExpanded = true;
     }
 };
 window.addEventListener('resize', checkMobile);">

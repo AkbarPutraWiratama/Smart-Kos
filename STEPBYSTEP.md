@@ -830,7 +830,7 @@ Tenant should only receive data belonging to the tenant's own active assignment.
 
 ---
 
-# 24. Phase 18 — Tenant Account Page
+# 24. Phase 18 — Tenant Account Page (Completed)
 
 Tenant can change:
 
@@ -854,7 +854,7 @@ unless a future requirement explicitly authorizes it.
 
 ---
 
-# 25. Phase 19 — Staff Dashboard
+# 25. Phase 19 — Staff Dashboard (Completed)
 
 Staff dashboard:
 
@@ -871,7 +871,7 @@ Staff can see payment status but not the rental nominal amount where the busines
 
 ---
 
-# 26. Phase 20 — Staff Post Creation
+# 26. Phase 20 — Staff Post Creation (Completed)
 
 Staff can create announcements targeted to:
 

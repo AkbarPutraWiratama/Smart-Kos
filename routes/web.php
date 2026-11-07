@@ -110,6 +110,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\TenantAssignmentController;
 use App\Http\Controllers\Tenant\DashboardController as TenantDashboardController;
+use App\Http\Controllers\Tenant\AccountController as TenantAccountController;
+use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Staff\PostController as StaffPostController;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
@@ -161,7 +164,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
-    Route::get('/dashboard', fn () => view('staff.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/posts', [StaffPostController::class, 'index'])->name('posts.index');
+    Route::get('/posts/create', [StaffPostController::class, 'create'])->name('posts.create');
+    Route::post('/posts', [StaffPostController::class, 'store'])->name('posts.store');
+    Route::delete('/posts/{post}', [StaffPostController::class, 'destroy'])->name('posts.destroy');
     Route::get('/payments', fn () => view('staff.payments.index'))->name('payments.index');
     Route::get('/complaints', fn () => view('staff.complaints.index'))->name('complaints.index');
     Route::get('/account', fn () => view('staff.account'))->name('account');
@@ -171,7 +178,9 @@ Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')
     Route::get('/dashboard', [TenantDashboardController::class, 'index'])->name('dashboard');
     Route::get('/payments', fn () => view('penyewa.payments.index'))->name('payments.index');
     Route::get('/complaints', fn () => view('penyewa.complaints.index'))->name('complaints.index');
-    Route::get('/account', fn () => view('penyewa.account'))->name('account');
+    Route::get('/account', [TenantAccountController::class, 'index'])->name('account');
+    Route::put('/account/profile', [TenantAccountController::class, 'updateProfile'])->name('account.profile');
+    Route::put('/account/password', [TenantAccountController::class, 'updatePassword'])->name('account.password');
 });
 
 

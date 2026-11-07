@@ -64,13 +64,14 @@
                 isHovered: false,
 
                 init() {
-                    const savedState = localStorage.getItem('sidebarExpanded');
-                    if (window.innerWidth >= 1280) {
-                        this.isExpanded = savedState === null ? true : savedState === 'true';
-                    } else {
-                        this.isExpanded = false;
-                    }
+                    // Default to collapsed / mengecil state (false) across all roles to prevent opening/closing flash
+                    this.isExpanded = false;
                     this.isMobileOpen = false;
+                    this.isHovered = false;
+
+                    if (localStorage.getItem('sidebarExpanded') === 'true') {
+                        localStorage.setItem('sidebarExpanded', 'false');
+                    }
 
                     window.addEventListener('resize', () => {
                         this.handleResize();
@@ -79,23 +80,14 @@
 
                 handleResize() {
                     if (window.innerWidth < 1280) {
-                        if (this.isMobileOpen) {
-                             this.isMobileOpen = false;
-                        }
-                    } else {
                         this.isMobileOpen = false;
-                        const savedState = localStorage.getItem('sidebarExpanded');
-                        this.isExpanded = savedState === null ? true : savedState === 'true';
                     }
+                    this.isExpanded = false;
                 },
 
                 toggleExpanded() {
                     this.isExpanded = !this.isExpanded;
                     this.isMobileOpen = false;
-                    
-                    if (window.innerWidth >= 1280) {
-                        localStorage.setItem('sidebarExpanded', this.isExpanded);
-                    }
                 },
 
                 toggleMobileOpen() {
@@ -146,7 +138,7 @@
 
 <body>
 
-    <div class="min-h-screen xl:flex sidebar-expanded" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
+    <div class="min-h-screen xl:flex" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
         @include('layouts.backdrop')
         @include('layouts.sidebar')
 
