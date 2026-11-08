@@ -9,7 +9,14 @@
     currentAssignment: null,
     selectedTenantId: null,
     isRoomLocked: false,
-    lockedRoomId: ''
+    lockedRoomId: '',
+    assignStartDate: '{{ date('Y-m-d') }}',
+    get minEndDate() {
+        if (!this.assignStartDate) return '';
+        const d = new Date(this.assignStartDate);
+        d.setMonth(d.getMonth() + 1);
+        return d.toISOString().split('T')[0];
+    }
 }" class="space-y-6 w-full max-w-full min-w-0">
 
     <x-common.page-breadcrumb pageTitle="Status Penyewa" />
@@ -694,21 +701,27 @@
                             id="assign_start_date"
                             name="start_date"
                             type="date"
-                            value="{{ date('Y-m-d') }}"
+                            x-model="assignStartDate"
+                            :value="assignStartDate"
                             required
-                            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
+                            @click="$el.showPicker()"
+                            class="h-11 w-full cursor-pointer rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
                         />
                     </div>
                     <div>
                         <label for="assign_end_date" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Tanggal Berakhir Sewa (Opsional)
+                            Tanggal Berakhir Sewa <span class="text-error-500">*</span>
                         </label>
                         <input
                             id="assign_end_date"
                             name="end_date"
                             type="date"
-                            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
+                            required
+                            :min="minEndDate"
+                            @click="$el.showPicker()"
+                            class="h-11 w-full cursor-pointer rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90"
                         />
+                        <p class="mt-1 text-xs text-gray-400">Minimal 1 bulan dari tanggal mulai</p>
                     </div>
                 </div>
 

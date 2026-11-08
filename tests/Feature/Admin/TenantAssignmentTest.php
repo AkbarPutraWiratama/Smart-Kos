@@ -105,6 +105,7 @@ class TenantAssignmentTest extends TestCase
             'tenant_id'  => $this->tenantProfile->id,
             'room_id'    => $this->room1->id,
             'start_date' => '2026-10-25',
+            'end_date'   => '2026-11-25',
         ]);
 
         $response->assertRedirect();

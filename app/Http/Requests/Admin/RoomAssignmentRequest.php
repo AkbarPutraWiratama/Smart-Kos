@@ -19,7 +19,7 @@ class RoomAssignmentRequest extends FormRequest
             'tenant_id'  => ['required', 'exists:tenant_profiles,id'],
             'room_id'    => ['required', 'exists:rooms,id'],
             'start_date' => ['required', 'date'],
-            'end_date'   => ['nullable', 'date', 'after_or_equal:start_date'],
+            'end_date'   => ['required', 'date'],
         ];
     }
 
@@ -51,6 +51,19 @@ class RoomAssignmentRequest extends FormRequest
                 }
             }
 
+            // Validate end_date is at least 1 month after start_date
+            $startDate = $this->input('start_date');
+            $endDate   = $this->input('end_date');
+
+            if ($startDate && $endDate) {
+                $start = \Carbon\Carbon::parse($startDate);
+                $end   = \Carbon\Carbon::parse($endDate);
+
+                if ($end->lt($start->copy()->addMonth())) {
+                    $v->errors()->add('end_date', 'Tanggal berakhir sewa minimal 1 bulan dari tanggal mulai sewa.');
+                }
+            }
+
             if ($tenantId) {
                 $tenant = TenantProfile::find($tenantId);
                 if ($tenant) {
@@ -78,10 +91,11 @@ class RoomAssignmentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'tenant_id.required' => 'Pilih penyewa yang akan ditugaskan ke kamar.',
-            'room_id.required'   => 'Pilih kamar yang akan ditempati penyewa.',
-            'start_date.required'=> 'Tanggal mulai sewa wajib diisi.',
-            'end_date.after_or_equal' => 'Tanggal selesai sewa harus sama atau setelah tanggal mulai.',
+            'tenant_id.required'  => 'Pilih penyewa yang akan ditugaskan ke kamar.',
+            'room_id.required'    => 'Pilih kamar yang akan ditempati penyewa.',
+            'start_date.required' => 'Tanggal mulai sewa wajib diisi.',
+            'end_date.required'   => 'Tanggal berakhir sewa wajib diisi.',
+            'end_date.date'       => 'Format tanggal berakhir tidak valid.',
         ];
     }
 }
