@@ -6,8 +6,16 @@
 <div
     x-data="{
         isCreateModalOpen: false,
-        selectedAnnouncement: null,
-        isAnnouncementModalOpen: false,
+        isEditModalOpen: false,
+        isDeleteConfirmOpen: false,
+        editingPost: null,
+        editTitle: '',
+        editContent: '',
+        editTargetType: 'all',
+        editLocationId: '',
+        editRoomId: '',
+        editHasExpiry: false,
+        editExpiresAt: '',
         targetType: 'all',
         selectedLocationId: '',
         allRooms: {{ Js::from($allRooms->map(fn($r) => [
@@ -18,6 +26,10 @@
         get filteredRooms() {
             if (!this.selectedLocationId) return [];
             return this.allRooms.filter(r => String(r.location_id) === String(this.selectedLocationId));
+        },
+        get editFilteredRooms() {
+            if (!this.editLocationId) return [];
+            return this.allRooms.filter(r => String(r.location_id) === String(this.editLocationId));
         }
     }"
     class="space-y-6"
@@ -81,16 +93,15 @@
 
             <!-- Quick Action Links -->
             <div class="flex flex-wrap items-center gap-2 pt-2 sm:pt-0">
-                <button
-                    type="button"
-                    @click="isCreateModalOpen = true"
-                    class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white shadow-theme-xs transition hover:bg-brand-600 active:scale-95 dark:bg-brand-500 dark:hover:bg-brand-600"
+                <a
+                    href="{{ route('staff.posts.index') }}"
+                    class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 shadow-theme-xs transition hover:bg-gray-50 active:scale-95 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
                 >
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    <svg class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Buat Pengumuman</span>
-                </button>
+                    <span>Riwayat Pengumuman</span>
+                </a>
 
                 <a
                     href="{{ route('staff.payments.index') }}"
@@ -387,15 +398,15 @@
         </div>
     </div>
 
-    <!-- 5. Announcements Section (Papan Pengumuman) -->
+    {{-- â”€â”€ 5. Announcements Section (Papan Pengumuman) â”€â”€ --}}
     <div class="rounded-2xl border border-gray-200 bg-white p-5 md:p-6 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
             <div>
                 <h3 class="text-base font-bold text-gray-800 dark:text-white/90">
-                    Papan Pengumuman & Informasi
+                    Papan Pengumuman &amp; Informasi
                 </h3>
                 <p class="text-xs text-gray-400">
-                    Pengumuman aktif yang diterbitkan untuk kos & penghuni
+                    Klik pengumuman untuk mengedit â€” {{ $activeAnnouncementsCount }} aktif
                 </p>
             </div>
 
@@ -407,289 +418,34 @@
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                     </svg>
-                    <span>Kelola Riwayat Pengumuman</span>
+                    <span>Riwayat</span>
                 </a>
-
                 <button
                     type="button"
                     @click="isCreateModalOpen = true"
-                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 transition"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3.5 py-2 text-xs font-semibold text-white shadow-theme-xs transition hover:bg-brand-600 active:scale-95"
                 >
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>Tambah Pengumuman</span>
+                    Buat Pengumuman
                 </button>
             </div>
         </div>
 
-        <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            @forelse ($announcements as $post)
-                @php
-                    $primaryTarget = $post->targets->first();
-                    $targetLabel = 'Semua Lokasi';
-                    $targetBadgeClass = 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400';
-
-                    if ($primaryTarget?->target_type === 'location' && $primaryTarget->location) {
-                        $targetLabel = $primaryTarget->location->name;
-                        $targetBadgeClass = 'bg-blue-light-50 text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400';
-                    } elseif ($primaryTarget?->target_type === 'room' && $primaryTarget->room) {
-                        $targetLabel = 'Kamar ' . $primaryTarget->room->room_number . ' (' . ($primaryTarget->room->location->name ?? '') . ')';
-                        $targetBadgeClass = 'bg-theme-purple-500/10 text-theme-purple-500 dark:bg-theme-purple-500/20';
-                    }
-                @endphp
-                <div class="flex flex-col justify-between rounded-xl border border-gray-100 bg-gray-50/50 p-4 transition hover:border-gray-200 hover:bg-white hover:shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.02] dark:hover:border-gray-700 dark:hover:bg-white/[0.04]">
-                    <div>
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold {{ $targetBadgeClass }}">
-                                {{ $targetLabel }}
-                            </span>
-                            <span class="text-[11px] text-gray-400">
-                                {{ $post->published_at ? $post->published_at->translatedFormat('d M Y') : $post->created_at->translatedFormat('d M Y') }}
-                            </span>
-                        </div>
-
-                        @if ($post->image_path)
-                            <div class="mt-2.5 overflow-hidden rounded-lg">
-                                <img src="{{ asset('storage/' . $post->image_path) }}" alt="{{ $post->title }}" class="h-32 w-full object-cover">
-                            </div>
-                        @endif
-
-                        <h4 class="mt-2.5 text-sm font-bold text-gray-800 line-clamp-1 dark:text-white/90">
-                            {{ $post->title }}
-                        </h4>
-
-                        <p class="mt-1.5 text-xs text-gray-500 line-clamp-3 leading-relaxed dark:text-gray-400">
-                            {{ $post->content }}
-                        </p>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between dark:border-gray-800/80">
-                        <span class="text-[11px] text-gray-400">
-                            Oleh: <span class="font-medium text-gray-600 dark:text-gray-300">{{ $post->author->name ?? 'Admin/Staff' }}</span>
-                        </span>
-
-                        <button
-                            type="button"
-                            @click="selectedAnnouncement = {
-                                title: '{{ addslashes($post->title) }}',
-                                content: `{{ addslashes($post->content) }}`,
-                                date: '{{ $post->published_at ? $post->published_at->translatedFormat('d F Y, H:i') : $post->created_at->translatedFormat('d F Y, H:i') }}',
-                                author: '{{ addslashes($post->author->name ?? 'Staff') }}',
-                                target: '{{ addslashes($targetLabel) }}',
-                                image: '{{ $post->image_path ? asset('storage/' . $post->image_path) : '' }}'
-                            }; isAnnouncementModalOpen = true;"
-                            class="text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
-                        >
-                            Baca &rarr;
-                        </button>
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-full py-8 text-center text-gray-400">
-                    <p class="text-xs">Belum ada pengumuman yang diterbitkan untuk target lokasi ini.</p>
-                </div>
-            @endforelse
-        </div>
+        @include('components.smart-kos.announcement-list-editable', [
+            'announcements'    => $announcements,
+            'locations'        => $locations,
+            'allRooms'         => $allRooms,
+            'updateRouteName'  => 'staff.posts.update',
+            'destroyRouteName' => 'staff.posts.destroy',
+        ])
     </div>
 
-    <!-- 6. Modal: Create Post (Staff Announcement) -->
-    <div
-        x-show="isCreateModalOpen"
-        x-cloak
-        class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto bg-gray-900/60 p-4 backdrop-blur-sm"
-        @keydown.escape.window="isCreateModalOpen = false"
-    >
-        <div
-            @click.outside="isCreateModalOpen = false"
-            class="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900"
-        >
-            <div class="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
-                <div class="flex items-center gap-2">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                        </svg>
-                    </span>
-                    <h3 class="text-base font-bold text-gray-800 dark:text-white/90">
-                        Buat Pengumuman Baru
-                    </h3>
-                </div>
-                <button
-                    type="button"
-                    @click="isCreateModalOpen = false"
-                    class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                >
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <form action="{{ route('staff.posts.store') }}" method="POST" enctype="multipart/form-data" class="mt-4 space-y-4">
-                @csrf
-
-                <!-- Title -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        Judul Pengumuman <span class="text-error-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="title"
-                        required
-                        maxlength="255"
-                        placeholder="Contoh: Jadwal Pemeliharaan Toren Air"
-                        class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs text-gray-800 shadow-theme-xs focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                    />
-                </div>
-
-                <!-- Target Type -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        Target Penerima <span class="text-error-500">*</span>
-                    </label>
-                    <div class="mt-1.5 grid grid-cols-3 gap-2">
-                        <label class="flex cursor-pointer items-center justify-center rounded-xl border p-2.5 text-xs transition" :class="targetType === 'all' ? 'border-brand-500 bg-brand-50 text-brand-700 font-semibold dark:bg-brand-500/15 dark:text-brand-400' : 'border-gray-200 hover:bg-gray-50 text-gray-600 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800'">
-                            <input type="radio" name="target_type" value="all" x-model="targetType" class="sr-only">
-                            <span>Semua Lokasi</span>
-                        </label>
-                        <label class="flex cursor-pointer items-center justify-center rounded-xl border p-2.5 text-xs transition" :class="targetType === 'location' ? 'border-brand-500 bg-brand-50 text-brand-700 font-semibold dark:bg-brand-500/15 dark:text-brand-400' : 'border-gray-200 hover:bg-gray-50 text-gray-600 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800'">
-                            <input type="radio" name="target_type" value="location" x-model="targetType" class="sr-only">
-                            <span>Satu Lokasi</span>
-                        </label>
-                        <label class="flex cursor-pointer items-center justify-center rounded-xl border p-2.5 text-xs transition" :class="targetType === 'room' ? 'border-brand-500 bg-brand-50 text-brand-700 font-semibold dark:bg-brand-500/15 dark:text-brand-400' : 'border-gray-200 hover:bg-gray-50 text-gray-600 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800'">
-                            <input type="radio" name="target_type" value="room" x-model="targetType" class="sr-only">
-                            <span>Kamar Tertentu</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Location Select (when target is location or room) -->
-                <div x-show="targetType === 'location' || targetType === 'room'" x-cloak>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        Pilih Lokasi Kos <span class="text-error-500">*</span>
-                    </label>
-                    <select
-                        name="location_id"
-                        x-model="selectedLocationId"
-                        :required="targetType === 'location' || targetType === 'room'"
-                        class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs text-gray-800 shadow-theme-xs focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                    >
-                        <option value="">-- Pilih Lokasi Kos --</option>
-                        @foreach ($locations as $loc)
-                            <option value="{{ $loc->id }}">{{ $loc->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Room Select (when target is room) -->
-                <div x-show="targetType === 'room'" x-cloak>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        Pilih Kamar <span class="text-error-500">*</span>
-                    </label>
-                    <select
-                        name="room_id"
-                        :required="targetType === 'room'"
-                        class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs text-gray-800 shadow-theme-xs focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                    >
-                        <option value="">-- Pilih Kamar --</option>
-                        <template x-for="r in filteredRooms" :key="r.id">
-                            <option :value="r.id" x-text="r.label"></option>
-                        </template>
-                    </select>
-                    <p x-show="selectedLocationId && filteredRooms.length === 0" class="mt-1 text-[11px] text-warning-600">
-                        Tidak ada kamar terdaftar pada lokasi yang dipilih.
-                    </p>
-                </div>
-
-                <!-- Content -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        Isi Pengumuman <span class="text-error-500">*</span>
-                    </label>
-                    <textarea
-                        name="content"
-                        rows="4"
-                        required
-                        placeholder="Tuliskan informasi penting pengumuman di sini..."
-                        class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs text-gray-800 shadow-theme-xs focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
-                    ></textarea>
-                </div>
-
-                <!-- Optional Image -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        Lampiran Gambar (Opsional)
-                    </label>
-                    <input
-                        type="file"
-                        name="image"
-                        accept="image/jpeg,image/png,image/jpg,image/webp"
-                        class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3.5 py-1.5 text-xs text-gray-800 shadow-theme-xs file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:file:bg-gray-800 dark:file:text-gray-300"
-                    />
-                </div>
-
-                <!-- Actions -->
-                <div class="mt-5 flex items-center justify-end gap-2 border-t border-gray-100 pt-4 dark:border-gray-800">
-                    <button
-                        type="button"
-                        @click="isCreateModalOpen = false"
-                        class="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 active:scale-95 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
-                    >
-                        Batal
-                    </button>
-                    <button
-                        type="submit"
-                        class="rounded-xl bg-brand-500 px-4 py-2 text-xs font-semibold text-white shadow-theme-xs hover:bg-brand-600 active:scale-95 transition"
-                    >
-                        Publikasikan Pengumuman
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 7. Modal: Read Full Announcement -->
-    <div
-        x-show="isAnnouncementModalOpen"
-        x-cloak
-        class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto bg-gray-900/60 p-4 backdrop-blur-sm"
-        @keydown.escape.window="isAnnouncementModalOpen = false"
-    >
-        <div
-            @click.outside="isAnnouncementModalOpen = false"
-            class="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900"
-        >
-            <div class="flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
-                <span class="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-500/15 dark:text-brand-400" x-text="selectedAnnouncement?.target"></span>
-                <span class="text-xs text-gray-400" x-text="selectedAnnouncement?.date"></span>
-            </div>
-
-            <h3 class="mt-3 text-lg font-bold text-gray-900 dark:text-white" x-text="selectedAnnouncement?.title"></h3>
-            
-            <p class="mt-1 text-xs text-gray-400">
-                Dipublikasikan oleh: <span class="font-medium text-gray-600 dark:text-gray-300" x-text="selectedAnnouncement?.author"></span>
-            </p>
-
-            <template x-if="selectedAnnouncement?.image">
-                <div class="mt-3 overflow-hidden rounded-xl">
-                    <img :src="selectedAnnouncement.image" alt="Lampiran Pengumuman" class="max-h-60 w-full object-cover">
-                </div>
-            </template>
-
-            <div class="mt-4 rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-700 whitespace-pre-line dark:bg-white/[0.02] dark:text-gray-300" x-text="selectedAnnouncement?.content"></div>
-
-            <div class="mt-5 flex justify-end">
-                <button
-                    type="button"
-                    @click="isAnnouncementModalOpen = false"
-                    class="rounded-xl bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200 active:scale-95 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                >
-                    Tutup
-                </button>
-            </div>
-        </div>
-    </div>
+    {{-- â”€â”€ 6. Create Post Modal (shared component) â”€â”€ --}}
+    <x-smart-kos.create-post-modal
+        storeRoute="staff.posts.store"
+        :locations="$locations"
+    />
 </div>
 @endsection

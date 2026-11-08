@@ -29,6 +29,10 @@ class StorePostRequest extends FormRequest
             'target_type' => ['required', 'in:all,location,room'],
             'location_id' => ['nullable', 'required_if:target_type,location,room', 'exists:locations,id'],
             'room_id'     => ['nullable', 'required_if:target_type,room', 'exists:rooms,id'],
+            'expires_at'  => ['nullable', 'date', 'after:now'],
+            'images'      => ['nullable', 'array', 'max:10'],
+            'images.*'    => ['image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            // Legacy single image kept for backward compat
             'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
@@ -69,10 +73,12 @@ class StorePostRequest extends FormRequest
             'location_id.exists'      => 'Lokasi kos yang dipilih tidak ditemukan.',
             'room_id.required_if'     => 'Kamar wajib dipilih untuk target kamar tertentu.',
             'room_id.exists'          => 'Kamar yang dipilih tidak ditemukan.',
-            'image.image'             => 'File lampiran harus berupa gambar.',
-            'image.mimes'             => 'Format gambar yang didukung adalah JPEG, PNG, JPG, atau WEBP.',
-            'image.max'               => 'Ukuran gambar maksimal adalah 2MB.',
+            'expires_at.after'        => 'Tanggal kedaluwarsa harus di masa yang akan datang.',
+            'expires_at.date'         => 'Format tanggal kedaluwarsa tidak valid.',
+            'images.max'              => 'Maksimal 10 foto yang dapat diunggah sekaligus.',
+            'images.*.image'          => 'Setiap lampiran harus berupa gambar.',
+            'images.*.mimes'          => 'Format gambar yang didukung adalah JPEG, PNG, JPG, atau WEBP.',
+            'images.*.max'            => 'Ukuran setiap gambar maksimal adalah 2MB.',
         ];
     }
 }
-

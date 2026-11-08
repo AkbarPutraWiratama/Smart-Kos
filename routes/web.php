@@ -104,7 +104,9 @@ Route::get('/videos', function () {
 })->name('videos');
 
 // Protected Smart Kos Role Routes
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
@@ -115,7 +117,13 @@ use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\PostController as StaffPostController;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/riwayat-pengumuman', [AdminPostController::class, 'index'])->name('posts.index');
+    Route::post('/posts', [AdminPostController::class, 'store'])->name('posts.store');
+    Route::put('/posts/{post}', [AdminPostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post}', [AdminPostController::class, 'destroy'])->name('posts.destroy');
+    Route::delete('/posts-trash/{id}/force', [AdminPostController::class, 'forceDestroy'])->name('posts.force-destroy');
+    Route::delete('/posts-trash/destroy-all', [AdminPostController::class, 'destroyAll'])->name('posts.destroy-all');
 
     // Location CRUD (Phase 10)
     Route::resource('locations', LocationController::class);
@@ -165,10 +173,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/posts', [StaffPostController::class, 'index'])->name('posts.index');
+    Route::get('/riwayat-pengumuman', [StaffPostController::class, 'index'])->name('posts.index');
     Route::get('/posts/create', [StaffPostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [StaffPostController::class, 'store'])->name('posts.store');
+    Route::put('/posts/{post}', [StaffPostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [StaffPostController::class, 'destroy'])->name('posts.destroy');
+    Route::delete('/posts-trash/{id}/force', [StaffPostController::class, 'forceDestroy'])->name('posts.force-destroy');
+    Route::delete('/posts-trash/destroy-all', [StaffPostController::class, 'destroyAll'])->name('posts.destroy-all');
     Route::get('/payments', fn () => view('staff.payments.index'))->name('payments.index');
     Route::get('/complaints', fn () => view('staff.complaints.index'))->name('complaints.index');
     Route::get('/account', fn () => view('staff.account'))->name('account');

@@ -9,7 +9,6 @@ use App\Models\Room;
 use App\Models\RoomAssignment;
 use App\Models\TenantProfile;
 use App\Models\User;
-use App\Models\VAPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,15 +17,25 @@ class StaffDashboardTest extends TestCase
     use RefreshDatabase;
 
     private User $staffUser;
+
     private Location $locationA;
+
     private Location $locationB;
+
     private Room $roomA1;
+
     private Room $roomB1;
+
     private User $tenantUserA;
+
     private User $tenantUserB;
+
     private TenantProfile $tenantProfileA;
+
     private TenantProfile $tenantProfileB;
+
     private RoomAssignment $assignmentA;
+
     private RoomAssignment $assignmentB;
 
     protected function setUp(): void
@@ -35,87 +44,87 @@ class StaffDashboardTest extends TestCase
 
         // Create active staff user
         $this->staffUser = User::factory()->create([
-            'name'     => 'Budi Santoso',
+            'name' => 'Budi Santoso',
             'username' => 'budistaff',
-            'email'    => 'budi@smartkos.com',
-            'phone'    => '081234567890',
-            'role'     => 'staff',
-            'status'   => 'active',
+            'email' => 'budi@smartkos.com',
+            'phone' => '081234567890',
+            'role' => 'staff',
+            'status' => 'active',
         ]);
 
         // Create locations
         $this->locationA = Location::create([
-            'name'        => 'Kos Melati Residence',
-            'address'     => 'Jl. Melati No. 10',
+            'name' => 'Kos Melati Residence',
+            'address' => 'Jl. Melati No. 10',
             'floor_count' => 2,
-            'status'      => 'active',
+            'status' => 'active',
         ]);
 
         $this->locationB = Location::create([
-            'name'        => 'Kos Mawar Residence',
-            'address'     => 'Jl. Mawar No. 20',
+            'name' => 'Kos Mawar Residence',
+            'address' => 'Jl. Mawar No. 20',
             'floor_count' => 2,
-            'status'      => 'active',
+            'status' => 'active',
         ]);
 
         // Create rooms
         $this->roomA1 = Room::create([
             'location_id' => $this->locationA->id,
-            'floor_name'  => 1,
+            'floor_name' => 1,
             'room_number' => 101,
             'rent_amount' => 1750000,
-            'status'      => 'active',
+            'status' => 'active',
         ]);
 
         $this->roomB1 = Room::create([
             'location_id' => $this->locationB->id,
-            'floor_name'  => 2,
+            'floor_name' => 2,
             'room_number' => 201,
             'rent_amount' => 2200000,
-            'status'      => 'active',
+            'status' => 'active',
         ]);
 
         // Create tenants and profiles
         $this->tenantUserA = User::factory()->create([
-            'name'     => 'Siti Rahma',
+            'name' => 'Siti Rahma',
             'username' => 'sitirahma',
-            'email'    => 'siti@example.com',
-            'phone'    => '081211112222',
-            'role'     => 'penyewa',
-            'status'   => 'active',
+            'email' => 'siti@example.com',
+            'phone' => '081211112222',
+            'role' => 'penyewa',
+            'status' => 'active',
         ]);
         $this->tenantProfileA = TenantProfile::create([
             'user_id' => $this->tenantUserA->id,
-            'phone'   => '081211112222',
+            'phone' => '081211112222',
         ]);
 
         $this->tenantUserB = User::factory()->create([
-            'name'     => 'Ahmad Fauzi',
+            'name' => 'Ahmad Fauzi',
             'username' => 'ahmadfauzi',
-            'email'    => 'ahmad@example.com',
-            'phone'    => '081233334444',
-            'role'     => 'penyewa',
-            'status'   => 'active',
+            'email' => 'ahmad@example.com',
+            'phone' => '081233334444',
+            'role' => 'penyewa',
+            'status' => 'active',
         ]);
         $this->tenantProfileB = TenantProfile::create([
             'user_id' => $this->tenantUserB->id,
-            'phone'   => '081233334444',
+            'phone' => '081233334444',
         ]);
 
         // Assignments
         $this->assignmentA = RoomAssignment::create([
-            'room_id'              => $this->roomA1->id,
-            'tenant_id'            => $this->tenantProfileA->id,
-            'start_date'           => now()->subMonths(1)->toDateString(),
-            'status'               => 'active',
+            'room_id' => $this->roomA1->id,
+            'tenant_id' => $this->tenantProfileA->id,
+            'start_date' => now()->subMonths(1)->toDateString(),
+            'status' => 'active',
             'rent_amount_snapshot' => 1750000,
         ]);
 
         $this->assignmentB = RoomAssignment::create([
-            'room_id'              => $this->roomB1->id,
-            'tenant_id'            => $this->tenantProfileB->id,
-            'start_date'           => now()->subMonths(2)->toDateString(),
-            'status'               => 'active',
+            'room_id' => $this->roomB1->id,
+            'tenant_id' => $this->tenantProfileB->id,
+            'start_date' => now()->subMonths(2)->toDateString(),
+            'status' => 'active',
             'rent_amount_snapshot' => 2200000,
         ]);
     }
@@ -186,26 +195,26 @@ class StaffDashboardTest extends TestCase
     public function test_staff_can_view_announcements(): void
     {
         $postGlobal = Post::create([
-            'author_id'    => $this->staffUser->id,
-            'title'        => 'Pemberitahuan Libur Nasional',
-            'content'      => 'Kantor operasional tutup pada tanggal merah.',
-            'status'       => 'published',
+            'author_id' => $this->staffUser->id,
+            'title' => 'Pemberitahuan Libur Nasional',
+            'content' => 'Kantor operasional tutup pada tanggal merah.',
+            'status' => 'published',
             'published_at' => now(),
         ]);
         PostTarget::create([
-            'post_id'     => $postGlobal->id,
+            'post_id' => $postGlobal->id,
             'target_type' => 'all',
         ]);
 
         $postLocB = Post::create([
-            'author_id'    => $this->staffUser->id,
-            'title'        => 'Pemeliharaan Wi-Fi Kos Mawar',
-            'content'      => 'Router lantai 2 akan direstart.',
-            'status'       => 'published',
+            'author_id' => $this->staffUser->id,
+            'title' => 'Pemeliharaan Wi-Fi Kos Mawar',
+            'content' => 'Router lantai 2 akan direstart.',
+            'status' => 'published',
             'published_at' => now(),
         ]);
         PostTarget::create([
-            'post_id'     => $postLocB->id,
+            'post_id' => $postLocB->id,
             'target_type' => 'location',
             'location_id' => $this->locationB->id,
         ]);
@@ -227,8 +236,8 @@ class StaffDashboardTest extends TestCase
     public function test_staff_can_create_announcement_targeting_all_locations(): void
     {
         $response = $this->actingAs($this->staffUser)->post(route('staff.posts.store'), [
-            'title'       => 'Pembersihan Tandon Air Serentak',
-            'content'     => 'Harap menampung air bersih sebelum pukul 09:00 WIB.',
+            'title' => 'Pembersihan Tandon Air Serentak',
+            'content' => 'Harap menampung air bersih sebelum pukul 09:00 WIB.',
             'target_type' => 'all',
         ]);
 
@@ -237,25 +246,25 @@ class StaffDashboardTest extends TestCase
 
         $this->assertDatabaseHas('posts', [
             'author_id' => $this->staffUser->id,
-            'title'     => 'Pembersihan Tandon Air Serentak',
-            'status'    => 'published',
+            'title' => 'Pembersihan Tandon Air Serentak',
+            'status' => 'published',
         ]);
 
         $post = Post::where('title', 'Pembersihan Tandon Air Serentak')->first();
         $this->assertNotNull($post);
         $this->assertDatabaseHas('post_targets', [
-            'post_id'     => $post->id,
+            'post_id' => $post->id,
             'target_type' => 'all',
             'location_id' => null,
-            'room_id'     => null,
+            'room_id' => null,
         ]);
     }
 
     public function test_staff_can_create_announcement_targeting_specific_location(): void
     {
         $response = $this->actingAs($this->staffUser)->post(route('staff.posts.store'), [
-            'title'       => 'Pengecatan Pagar Kos Melati',
-            'content'     => 'Pagar depan akan dicat besok pagi.',
+            'title' => 'Pengecatan Pagar Kos Melati',
+            'content' => 'Pagar depan akan dicat besok pagi.',
             'target_type' => 'location',
             'location_id' => $this->locationA->id,
         ]);
@@ -266,21 +275,21 @@ class StaffDashboardTest extends TestCase
         $post = Post::where('title', 'Pengecatan Pagar Kos Melati')->first();
         $this->assertNotNull($post);
         $this->assertDatabaseHas('post_targets', [
-            'post_id'     => $post->id,
+            'post_id' => $post->id,
             'target_type' => 'location',
             'location_id' => $this->locationA->id,
-            'room_id'     => null,
+            'room_id' => null,
         ]);
     }
 
     public function test_staff_can_create_announcement_targeting_specific_room(): void
     {
         $response = $this->actingAs($this->staffUser)->post(route('staff.posts.store'), [
-            'title'       => 'Pemeriksaan Stopkontak Kamar 101',
-            'content'     => 'Teknisi listrik akan berkunjung jam 14:00.',
+            'title' => 'Pemeriksaan Stopkontak Kamar 101',
+            'content' => 'Teknisi listrik akan berkunjung jam 14:00.',
             'target_type' => 'room',
             'location_id' => $this->locationA->id,
-            'room_id'     => $this->roomA1->id,
+            'room_id' => $this->roomA1->id,
         ]);
 
         $response->assertRedirect(route('staff.dashboard'));
@@ -289,10 +298,10 @@ class StaffDashboardTest extends TestCase
         $post = Post::where('title', 'Pemeriksaan Stopkontak Kamar 101')->first();
         $this->assertNotNull($post);
         $this->assertDatabaseHas('post_targets', [
-            'post_id'     => $post->id,
+            'post_id' => $post->id,
             'target_type' => 'room',
             'location_id' => $this->locationA->id,
-            'room_id'     => $this->roomA1->id,
+            'room_id' => $this->roomA1->id,
         ]);
     }
 
@@ -300,11 +309,11 @@ class StaffDashboardTest extends TestCase
     {
         // Try submitting room from Location B with location_id set to Location A
         $response = $this->actingAs($this->staffUser)->post(route('staff.posts.store'), [
-            'title'       => 'Pengumuman Salah Kamar',
-            'content'     => 'Isi konten.',
+            'title' => 'Pengumuman Salah Kamar',
+            'content' => 'Isi konten.',
             'target_type' => 'room',
             'location_id' => $this->locationA->id,
-            'room_id'     => $this->roomB1->id, // belongs to location B!
+            'room_id' => $this->roomB1->id, // belongs to location B!
         ]);
 
         $response->assertSessionHasErrors('room_id');
@@ -316,16 +325,16 @@ class StaffDashboardTest extends TestCase
         // Guest
         $this->get(route('staff.dashboard'))->assertRedirect(route('login'));
         $this->post(route('staff.posts.store'), [
-            'title'       => 'Test Post',
-            'content'     => 'Content',
+            'title' => 'Test Post',
+            'content' => 'Content',
             'target_type' => 'all',
         ])->assertRedirect(route('login'));
 
         // Penyewa
         $this->actingAs($this->tenantUserA)->get(route('staff.dashboard'))->assertStatus(403);
         $this->actingAs($this->tenantUserA)->post(route('staff.posts.store'), [
-            'title'       => 'Test Post',
-            'content'     => 'Content',
+            'title' => 'Test Post',
+            'content' => 'Content',
             'target_type' => 'all',
         ])->assertStatus(403);
     }

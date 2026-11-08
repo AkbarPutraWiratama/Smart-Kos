@@ -79,7 +79,7 @@ class StaffPostCreationTest extends TestCase
         // Index
         $responseIndex = $this->actingAs($this->staffUser)->get(route('staff.posts.index'));
         $responseIndex->assertStatus(200);
-        $responseIndex->assertSee('Daftar Pengumuman Diterbitkan');
+        $responseIndex->assertSee('Riwayat Pengumuman');
 
         // Create page
         $responseCreate = $this->actingAs($this->staffUser)->get(route('staff.posts.create'));
@@ -171,7 +171,7 @@ class StaffPostCreationTest extends TestCase
             'title'       => 'Jadwal Pengurasan Toren Air',
             'content'     => 'Air akan dimatikan sementara dari jam 09:00 - 12:00.',
             'target_type' => 'all',
-            'image'       => $file,
+            'images'      => [$file],
         ]);
 
         $response->assertRedirect(route('staff.dashboard'));
@@ -179,9 +179,8 @@ class StaffPostCreationTest extends TestCase
 
         $post = Post::where('title', 'Jadwal Pengurasan Toren Air')->first();
         $this->assertNotNull($post);
-        $this->assertNotNull($post->image_path);
-
-        Storage::disk('public')->assertExists($post->image_path);
+        // Image stored in post_images table
+        $this->assertDatabaseHas('post_images', ['post_id' => $post->id]);
     }
 
     public function test_post_creation_requires_valid_target_type_and_content(): void
@@ -268,14 +267,19 @@ class StaffPostCreationTest extends TestCase
 
         Storage::disk('public')->assertExists($imagePath);
 
+        // Step 1: soft-delete via dashboard destroy — image kept, post soft-deleted
         $response = $this->actingAs($this->staffUser)->delete(route('staff.posts.destroy', $post));
 
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseMissing('posts', ['id' => $post->id]);
-        $this->assertDatabaseMissing('post_targets', ['post_id' => $post->id]);
+        $this->assertSoftDeleted('posts', ['id' => $post->id]);
+        Storage::disk('public')->assertExists($imagePath); // image kept until force-delete
+
+        // Step 2: force-delete from trash — image now removed
+        $this->actingAs($this->staffUser)->delete(route('staff.posts.force-destroy', $post->id));
         Storage::disk('public')->assertMissing($imagePath);
+        $this->assertDatabaseMissing('posts', ['id' => $post->id]);
     }
 
     public function test_staff_cannot_delete_post_created_by_another_staff(): void
