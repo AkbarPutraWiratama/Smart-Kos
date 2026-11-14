@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\MidtransVAAccount;
 use App\Models\Room;
 use App\Models\RoomAssignment;
+use App\Models\User;
 use App\Models\VAPayment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -61,13 +62,45 @@ class MidtransService
             throw new RuntimeException('Penugasan kamar tidak memiliki data kamar yang valid.');
         }
 
+        $amount = (float) ($assignment->rent_amount_snapshot ?? $room->rent_amount);
+        $customer = $assignment->tenantProfile?->user;
+
+        $result = $this->createVirtualAccountForRoom($room, $bankCode, $amount, $customer);
+        $vaAccount = $result['va_account'];
+        $body = $result['response_body'];
+        $orderId = $result['order_id'];
+
+        // Also record pending VA payment for this assignment
+        VAPayment::updateOrCreate(
+            ['order_id' => $orderId],
+            [
+                'va_account_id'      => $vaAccount->id,
+                'room_assignment_id' => $assignment->id,
+                'transaction_id'     => $body['transaction_id'] ?? null,
+                'amount'             => $amount,
+                'transaction_status' => $this->normalizeStatus($body['transaction_status'] ?? 'pending'),
+                'transaction_time'   => isset($body['transaction_time']) ? Carbon::parse($body['transaction_time']) : now(),
+                'paid_at'            => null,
+            ]
+        );
+
+        return $vaAccount;
+    }
+
+    /**
+     * Create or regenerate a Virtual Account directly for a room.
+     *
+     * @return array{va_account: MidtransVAAccount, response_body: array, order_id: string}
+     */
+    public function createVirtualAccountForRoom(Room $room, string $bankCode, ?float $amount = null, ?User $customer = null): array
+    {
         $bankCode = strtolower(trim($bankCode));
         $validBanks = ['bca', 'bni', 'bri', 'mandiri', 'permata'];
         if (! in_array($bankCode, $validBanks, true)) {
             throw new RuntimeException("Bank {$bankCode} tidak didukung. Pilih salah satu: " . implode(', ', $validBanks));
         }
 
-        $amount = (float) ($assignment->rent_amount_snapshot ?? $room->rent_amount);
+        $amount = (float) ($amount ?? $room->rent_amount);
         $orderId = 'SMARTKOS-VA-' . $room->id . '-' . time();
 
         $payload = [
@@ -76,9 +109,9 @@ class MidtransService
                 'gross_amount' => (int) round($amount),
             ],
             'customer_details' => [
-                'first_name' => $assignment->tenantProfile?->user?->name ?? 'Penyewa',
-                'email'      => $assignment->tenantProfile?->user?->email ?? null,
-                'phone'      => $assignment->tenantProfile?->phone ?? $assignment->tenantProfile?->user?->phone,
+                'first_name' => $customer?->name ?? "Penghuni Kamar {$room->room_number}",
+                'email'      => $customer?->email ?? null,
+                'phone'      => $customer?->phone ?? null,
             ],
             'item_details' => [
                 [
@@ -136,21 +169,11 @@ class MidtransService
             ]
         );
 
-        // Also record pending VA payment if not existing
-        VAPayment::updateOrCreate(
-            ['order_id' => $orderId],
-            [
-                'va_account_id'      => $vaAccount->id,
-                'room_assignment_id' => $assignment->id,
-                'transaction_id'     => $body['transaction_id'] ?? null,
-                'amount'             => $amount,
-                'transaction_status' => $this->normalizeStatus($body['transaction_status'] ?? 'pending'),
-                'transaction_time'   => isset($body['transaction_time']) ? Carbon::parse($body['transaction_time']) : now(),
-                'paid_at'            => null,
-            ]
-        );
-
-        return $vaAccount;
+        return [
+            'va_account'    => $vaAccount,
+            'response_body' => $body,
+            'order_id'      => $orderId,
+        ];
     }
 
     /**

@@ -933,7 +933,7 @@ Use the TailAdmin chart/card components by copying/adapting existing examples.
 
 ---
 
-# 28. Phase 22 — Payment Architecture
+# 28. Phase 22 — Payment Architecture (Completed)
 
 Payment is divided into two independent mechanisms:
 
@@ -953,7 +953,7 @@ Do not merge them into one operational payment table.
 
 ---
 
-# 29. Phase 23 — Midtrans VA Account
+# 29. Phase 23 — Midtrans VA Account (Completed)
 
 Create:
 

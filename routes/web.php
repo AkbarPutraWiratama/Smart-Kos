@@ -137,6 +137,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/locations/{location}/rooms/{room}/edit', [RoomController::class, 'edit'])->name('locations.rooms.edit');
     Route::put('/locations/{location}/rooms/{room}', [RoomController::class, 'update'])->name('locations.rooms.update');
     Route::delete('/locations/{location}/rooms/{room}', [RoomController::class, 'destroy'])->name('locations.rooms.destroy');
+    Route::post('/locations/{location}/rooms/{room}/sync-va', [RoomController::class, 'syncVa'])->name('locations.rooms.sync-va');
 
     // Tenant Account Management (Phase 12)
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

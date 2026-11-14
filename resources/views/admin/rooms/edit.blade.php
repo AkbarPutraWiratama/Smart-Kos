@@ -64,6 +64,71 @@
 		</form>
 	</x-common.component-card>
 
+	<!-- Midtrans Virtual Account Configuration (Phase 23) -->
+	<div class="mt-6">
+		<x-common.component-card title="Konfigurasi Midtrans Virtual Account" desc="Pengaturan nomor Virtual Account otomatis yang terhubung ke kamar ini.">
+			@if ($room->midtransVaAccount)
+				@php $va = $room->midtransVaAccount; @endphp
+				<div class="rounded-xl border border-gray-200 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-white/[0.02]">
+					<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+						<div>
+							<div class="flex items-center gap-2">
+								<span class="inline-flex rounded-md bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+									Bank {{ $va->formattedBank() }}
+								</span>
+								<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold {{ $va->isActive() ? 'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' }}">
+									{{ ucfirst($va->status) }}
+								</span>
+							</div>
+							<p class="mt-2 font-mono text-lg font-bold text-gray-800 dark:text-white">
+								{{ $va->va_number }}
+							</p>
+							<p class="text-xs text-gray-400">
+								Nominal: {{ $va->formattedAmount() }} &bull; Order ID: {{ $va->external_id }}
+							</p>
+						</div>
+
+						<!-- Re-sync VA Button -->
+						<form action="{{ route('admin.locations.rooms.sync-va', [$location, $room]) }}" method="POST">
+							@csrf
+							<div class="flex items-center gap-2">
+								<select name="bank_code" class="h-10 rounded-lg border border-gray-300 bg-white px-3 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+									<option value="bca" @selected($va->bank_code === 'bca')>BCA</option>
+									<option value="bni" @selected($va->bank_code === 'bni')>BNI</option>
+									<option value="bri" @selected($va->bank_code === 'bri')>BRI</option>
+									<option value="mandiri" @selected($va->bank_code === 'mandiri')>Mandiri</option>
+									<option value="permata" @selected($va->bank_code === 'permata')>Permata</option>
+								</select>
+								<button type="submit" class="h-10 rounded-lg border border-brand-300 bg-brand-50 px-3.5 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition dark:border-brand-500/30 dark:bg-brand-500/20 dark:text-brand-300">
+									Sinkronkan VA
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			@else
+				<div class="rounded-xl border border-dashed border-gray-200 p-6 text-center dark:border-gray-800">
+					<p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+						Kamar ini belum memiliki Virtual Account Midtrans. Virtual Account akan terbuat otomatis saat penyewa memilih bank atau Anda dapat membuatnya sekarang.
+					</p>
+					<form action="{{ route('admin.locations.rooms.sync-va', [$location, $room]) }}" method="POST" class="inline-flex items-center gap-2">
+						@csrf
+						<select name="bank_code" class="h-10 rounded-lg border border-gray-300 bg-white px-3 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+							<option value="bca">BCA</option>
+							<option value="bni">BNI</option>
+							<option value="bri">BRI</option>
+							<option value="mandiri">Mandiri</option>
+							<option value="permata">Permata</option>
+						</select>
+						<button type="submit" class="h-10 rounded-lg bg-brand-500 px-4 text-xs font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">
+							Buat Virtual Account Kamar
+						</button>
+					</form>
+				</div>
+			@endif
+		</x-common.component-card>
+	</div>
+
 	<!-- Modal Konfirmasi Simpan Perubahan Kamar -->
 	<div x-show="isConfirmSaveOpen" x-cloak @keydown.escape.window="isConfirmSaveOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
 		<div @click="isConfirmSaveOpen = false" class="fixed inset-0 bg-gray-900/60"></div>

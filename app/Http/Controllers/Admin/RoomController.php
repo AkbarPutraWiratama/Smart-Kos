@@ -57,8 +57,34 @@ class RoomController extends Controller
 
         $room->update($data);
 
+        // Synchronize Midtrans VA account amount if already configured for this room
+        if ($room->midtransVaAccount) {
+            $room->midtransVaAccount->update([
+                'amount' => $room->rent_amount,
+            ]);
+        }
+
         return redirect()->route('admin.locations.show', $location)
             ->with('success', 'Informasi kamar berhasil diperbarui.');
+    }
+
+    /**
+     * Generate or synchronize a Midtrans Virtual Account for the room.
+     */
+    public function syncVa(Location $location, Room $room, \Illuminate\Http\Request $request, \App\Services\MidtransService $midtransService): RedirectResponse
+    {
+        $request->validate([
+            'bank_code' => ['required', 'string', 'in:bca,bni,bri,mandiri,permata'],
+        ]);
+
+        try {
+            $result = $midtransService->createVirtualAccountForRoom($room, $request->input('bank_code'));
+            $va = $result['va_account'];
+
+            return back()->with('success', "Virtual Account Midtrans ({$va->formattedBank()}: {$va->va_number}) berhasil disinkronkan untuk Kamar {$room->room_number}.");
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal menyinkronkan Virtual Account: ' . $e->getMessage());
+        }
     }
 
     public function destroy(SensitiveActionConfirmRequest $request, Location $location, Room $room): RedirectResponse
