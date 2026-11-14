@@ -113,6 +113,7 @@ use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\TenantAssignmentController;
 use App\Http\Controllers\Tenant\DashboardController as TenantDashboardController;
 use App\Http\Controllers\Tenant\AccountController as TenantAccountController;
+use App\Http\Controllers\Tenant\PaymentController as TenantPaymentController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\PostController as StaffPostController;
 
@@ -187,7 +188,9 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
 
 Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')->group(function () {
     Route::get('/dashboard', [TenantDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/payments', fn () => view('penyewa.payments.index'))->name('payments.index');
+    Route::get('/payments', [TenantPaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/va', [TenantPaymentController::class, 'createVa'])->name('payments.va.create');
+    Route::post('/payments/manual', [TenantPaymentController::class, 'storeManual'])->name('payments.manual.store');
     Route::get('/complaints', fn () => view('penyewa.complaints.index'))->name('complaints.index');
     Route::get('/account', [TenantAccountController::class, 'index'])->name('account');
     Route::put('/account/profile', [TenantAccountController::class, 'updateProfile'])->name('account.profile');
