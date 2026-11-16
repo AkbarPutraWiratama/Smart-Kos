@@ -30,5 +30,9 @@
         "swiper": "^14.2.0",
         "temporal-polyfill": "^1.0.4"
     },
-    "version": "1.1.2"
+    "version": "1.1.2",
+    "allowScripts": {
+        "esbuild@0.28.2": true,
+        "@tailwindcss/oxide@4.1.12": true
+    }
 }
