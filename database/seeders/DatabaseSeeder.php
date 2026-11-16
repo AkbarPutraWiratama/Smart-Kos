@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Location;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Room;
 use App\Models\RoomAssignment;
 use App\Models\TenantProfile;
@@ -17,148 +16,127 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Admin Account
-        $admin = User::firstOrCreate(
+        // 1. Admin Account (Hanya 1 buah, nama: admin)
+        User::updateOrCreate(
             ['username' => 'admin'],
             [
-                'name' => 'Owner Smart Kos',
-                'email' => 'owner@smartkos.test',
+                'name'     => 'admin',
+                'email'    => 'admin@smartkos.test',
                 'password' => bcrypt('password123'),
-                'role' => 'admin',
-                'status' => 'active',
+                'role'     => 'admin',
+                'status'   => 'active',
             ]
         );
 
-        // 2. Staff Account
-        $staff = User::firstOrCreate(
-            ['username' => 'staff'],
-            [
-                'name' => 'Budi Santoso (Staff)',
-                'email' => 'staff@smartkos.test',
-                'password' => bcrypt('password123'),
-                'role' => 'staff',
-                'status' => 'active',
-            ]
-        );
-
-        // 3. Penyewa Account & Profile
-        $penyewa = User::firstOrCreate(
-            ['username' => 'penyewa'],
-            [
-                'name' => 'Ahmad Fauzi (Penyewa)',
-                'email' => 'penyewa@smartkos.test',
-                'password' => bcrypt('password123'),
-                'role' => 'penyewa',
-                'status' => 'active',
-            ]
-        );
-
-        $tenantProfile = TenantProfile::firstOrCreate(
-            ['user_id' => $penyewa->id],
-            [
-                'phone' => '081234567890',
-                'address' => 'Jl. Asal No. 12',
-                'registered_at' => now()->subMonths(2),
-            ]
-        );
-
-        // 4. Demo Locations & Rooms
-        $location = Location::firstOrCreate(
-            ['name' => 'Kos Mawar Residence'],
-            [
-                'address' => 'Jl. Mawar Raya No. 45, Jakarta Selatan',
-                'google_maps_url' => 'https://maps.google.com',
-                'description' => 'Kos eksklusif dekat stasiun dan pusat perbelanjaan, fasilitas lengkap & WiFi cepat.',
-                'floor_count' => 2,
-                'status' => 'active',
-            ]
-        );
-
-        // Lantai 1 Rooms
-        for ($i = 101; $i <= 104; $i++) {
-            $room = Room::firstOrCreate(
+        // 2. Staff Accounts (5 akun: staff_1 s/d staff_5)
+        for ($i = 1; $i <= 5; $i++) {
+            User::updateOrCreate(
+                ['username' => "staff_{$i}"],
                 [
-                    'location_id' => $location->id,
-                    'floor_name' => 1,
-                    'room_number' => $i,
-                ],
+                    'name'     => "staff_{$i}",
+                    'email'    => "staff_{$i}@smartkos.test",
+                    'password' => bcrypt('password123'),
+                    'role'     => 'staff',
+                    'status'   => 'active',
+                ]
+            );
+        }
+
+        // 3. Penyewa Accounts (5 akun: penyewa_1 s/d penyewa_5) & Tenant Profiles
+        $penyewaProfiles = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $penyewaUser = User::updateOrCreate(
+                ['username' => "penyewa_{$i}"],
                 [
-                    'rent_amount' => 1500000,
-                    'status' => 'active',
+                    'name'     => "penyewa_{$i}",
+                    'email'    => "penyewa_{$i}@smartkos.test",
+                    'password' => bcrypt('password123'),
+                    'role'     => 'penyewa',
+                    'status'   => 'active',
                 ]
             );
 
-            // Assign room 101 to Ahmad Fauzi as occupied
-            if ($i === 101) {
-                RoomAssignment::firstOrCreate(
+            $profile = TenantProfile::updateOrCreate(
+                ['user_id' => $penyewaUser->id],
+                [
+                    'phone'         => "08123456789{$i}",
+                    'address'       => "Alamat Penyewa {$i}",
+                    'registered_at' => now()->subMonths(2),
+                ]
+            );
+
+            $penyewaProfiles[$i] = $profile;
+        }
+
+        // 4. 5 Lokasi Kos Dummy (Kos 1 s/d Kos 5)
+        // - Tiap lokasi memiliki 2 lantai
+        // - 5 kamar di bawah (Lantai 1): Kamar 1 s/d 5
+        // - 5 kamar di atas (Lantai 2): Kamar 6 s/d 10
+        // - Setiap kamar di-set harga sewa Rp 1.000.000 per bulan
+        // - Setiap penyewa_x di-assign di kamar 1 lantai 1 (bawah) pada kos x
+        for ($x = 1; $x <= 5; $x++) {
+            $location = Location::updateOrCreate(
+                ['name' => "Kos {$x}"],
+                [
+                    'address'         => "Jl. Kos Dummy No. {$x}",
+                    'google_maps_url' => 'https://maps.google.com',
+                    'description'     => "Kos {$x} memiliki 2 lantai dengan fasilitas lengkap, bersih, dan nyaman.",
+                    'floor_count'     => 2,
+                    'status'          => 'active',
+                ]
+            );
+
+            $room1Lantai1 = null;
+
+            // Lantai 1 (Kamar 5 di bawah: kamar 1 s/d 5)
+            for ($r = 1; $r <= 5; $r++) {
+                $room = Room::updateOrCreate(
                     [
-                        'room_id' => $room->id,
-                        'tenant_id' => $tenantProfile->id,
+                        'location_id' => $location->id,
+                        'floor_name'  => 1,
+                        'room_number' => $r,
                     ],
                     [
-                        'start_date' => now()->subMonths(1)->startOfMonth(),
-                        'status' => 'active',
-                        'rent_amount_snapshot' => 1500000,
+                        'rent_amount' => 1000000,
+                        'status'      => 'active',
+                    ]
+                );
+
+                if ($r === 1) {
+                    $room1Lantai1 = $room;
+                }
+            }
+
+            // Lantai 2 (Kamar 5 di atas: kamar 6 s/d 10)
+            for ($r = 6; $r <= 10; $r++) {
+                Room::updateOrCreate(
+                    [
+                        'location_id' => $location->id,
+                        'floor_name'  => 2,
+                        'room_number' => $r,
+                    ],
+                    [
+                        'rent_amount' => 1000000,
+                        'status'      => 'active',
                     ]
                 );
             }
-        }
 
-        // Lantai 2 Rooms
-        for ($i = 201; $i <= 204; $i++) {
-            Room::firstOrCreate(
-                [
-                    'location_id' => $location->id,
-                    'floor_name' => 2,
-                    'room_number' => $i,
-                ],
-                [
-                    'rent_amount' => 1600000,
-                    'status' => 'active',
-                ]
-            );
-        }
-
-        // 5. Second Demo Location: Kos Melati Indah
-        $location2 = Location::firstOrCreate(
-            ['name' => 'Kos Melati Indah'],
-            [
-                'address' => 'Jl. Melati Putih No. 18, Sleman, Yogyakarta',
-                'google_maps_url' => 'https://maps.google.com',
-                'description' => 'Kos nyaman dan tenang untuk mahasiswa dan karyawan, dekat kampus ternama.',
-                'floor_count' => 2,
-                'status' => 'active',
-            ]
-        );
-
-        // Location 2 - Lantai 1 Rooms
-        for ($i = 101; $i <= 103; $i++) {
-            Room::firstOrCreate(
-                [
-                    'location_id' => $location2->id,
-                    'floor_name' => 1,
-                    'room_number' => $i,
-                ],
-                [
-                    'rent_amount' => 1200000,
-                    'status' => 'active',
-                ]
-            );
-        }
-
-        // Location 2 - Lantai 2 Rooms
-        for ($i = 201; $i <= 203; $i++) {
-            Room::firstOrCreate(
-                [
-                    'location_id' => $location2->id,
-                    'floor_name' => 2,
-                    'room_number' => $i,
-                ],
-                [
-                    'rent_amount' => 1300000,
-                    'status' => 'active',
-                ]
-            );
+            // Assign penyewa_x ke kamar 1 di lantai 1 (bawah) pada kos x
+            if ($room1Lantai1 && isset($penyewaProfiles[$x])) {
+                RoomAssignment::updateOrCreate(
+                    [
+                        'room_id'   => $room1Lantai1->id,
+                        'tenant_id' => $penyewaProfiles[$x]->id,
+                    ],
+                    [
+                        'start_date'           => now()->subMonths(1)->startOfMonth()->toDateString(),
+                        'end_date'             => now()->addMonths(5)->endOfMonth()->toDateString(),
+                        'status'               => 'active',
+                        'rent_amount_snapshot' => 1000000,
+                    ]
+                );
+            }
         }
     }
 }
