@@ -177,10 +177,10 @@
         </div>
 
         {{-- Pending Verifications --}}
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+        <a href="{{ route('admin.payments.index') }}" class="group block rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:border-brand-500/50 hover:shadow-theme-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Verifikasi Pending</span>
-                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400">
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 group-hover:text-brand-500 transition">Verifikasi Pending</span>
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400 group-hover:bg-brand-500 group-hover:text-white transition">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -190,9 +190,12 @@
                 <h3 class="text-2xl font-bold {{ $pendingVerificationsCount > 0 ? 'text-blue-light-600 dark:text-blue-light-400' : 'text-gray-800 dark:text-white/90' }}">
                     {{ $pendingVerificationsCount }}
                 </h3>
-                <p class="mt-1 text-xs text-gray-400">Bukti transfer manual</p>
+                <p class="mt-1 text-xs text-gray-400 flex items-center justify-between">
+                    <span>Bukti transfer manual</span>
+                    <span class="text-[11px] text-brand-600 dark:text-brand-400 font-medium group-hover:underline">Buka &rarr;</span>
+                </p>
             </div>
-        </div>
+        </a>
     </div>
 
     {{-- ── 3. Financial Summary Cards ── --}}

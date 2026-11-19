@@ -47,7 +47,10 @@ class TenantAssignmentController extends Controller
         if ($selectedLocation) {
             $rooms = $selectedLocation->rooms()
                 ->where('status', 'active')
-                ->with(['activeAssignment.tenantProfile.user'])
+                ->with([
+                    'activeAssignment.tenantProfile.user',
+                    'activeAssignment.manualPayments' => fn ($q) => $q->where('status', 'pending'),
+                ])
                 ->orderBy('floor_name')
                 ->orderBy('room_number')
                 ->get();
@@ -59,6 +62,7 @@ class TenantAssignmentController extends Controller
         $assignedQuery = RoomAssignment::with([
             'room.location',
             'tenantProfile.user',
+            'manualPayments' => fn ($q) => $q->where('status', 'pending'),
         ])->where('status', 'active');
 
         if ($selectedLocationId) {

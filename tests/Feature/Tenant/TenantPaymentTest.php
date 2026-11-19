@@ -272,4 +272,99 @@ class TenantPaymentTest extends TestCase
         // Staff
         $this->actingAs($this->staff)->get(route('penyewa.payments.index'))->assertStatus(403);
     }
+
+    public function test_manual_payment_allows_submission_after_10_minute_cooldown(): void
+    {
+        // Previous submission 12 minutes ago
+        ManualPayment::create([
+            'room_assignment_id' => $this->assignment->id,
+            'submitted_by' => $this->tenantUser->id,
+            'amount' => 1500000,
+            'bank_name' => 'BCA',
+            'bank_account_number' => '12345',
+            'proof_path' => 'payment-proofs/first.jpg',
+            'status' => 'pending',
+            'submitted_at' => now()->subMinutes(12),
+        ]);
+
+        $file = UploadedFile::fake()->create('struk-new.jpg', 200, 'image/jpeg');
+
+        $response = $this->actingAs($this->tenantUser)->post(route('penyewa.payments.manual.store'), [
+            'bank_name' => 'Mandiri',
+            'bank_account_number' => '987654321',
+            'amount' => 1500000,
+            'proof' => $file,
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $this->assertEquals(2, ManualPayment::count());
+    }
+
+    public function test_manual_payment_validation_fails_on_invalid_file_type_or_negative_amount(): void
+    {
+        $invalidFile = UploadedFile::fake()->create('malicious.exe', 100, 'application/x-msdownload');
+
+        $response = $this->actingAs($this->tenantUser)->post(route('penyewa.payments.manual.store'), [
+            'bank_name' => 'BCA',
+            'bank_account_number' => '12345',
+            'amount' => -100,
+            'proof' => $invalidFile,
+        ]);
+
+        $response->assertSessionHasErrors(['amount', 'proof']);
+    }
+
+    public function test_manual_payment_model_helpers_and_scopes(): void
+    {
+        $pending = ManualPayment::create([
+            'room_assignment_id' => $this->assignment->id,
+            'submitted_by' => $this->tenantUser->id,
+            'amount' => 1500000,
+            'bank_name' => 'BCA',
+            'bank_account_number' => '12345',
+            'proof_path' => 'payment-proofs/test1.jpg',
+            'status' => ManualPayment::STATUS_PENDING,
+            'submitted_at' => now(),
+        ]);
+
+        $approved = ManualPayment::create([
+            'room_assignment_id' => $this->assignment->id,
+            'submitted_by' => $this->tenantUser->id,
+            'amount' => 1500000,
+            'bank_name' => 'Mandiri',
+            'bank_account_number' => '54321',
+            'proof_path' => 'payment-proofs/test2.jpg',
+            'status' => ManualPayment::STATUS_APPROVED,
+            'submitted_at' => now()->subDay(),
+            'verified_at' => now(),
+        ]);
+
+        $rejected = ManualPayment::create([
+            'room_assignment_id' => $this->assignment->id,
+            'submitted_by' => $this->tenantUser->id,
+            'amount' => 1500000,
+            'bank_name' => 'BRI',
+            'bank_account_number' => '99999',
+            'proof_path' => 'payment-proofs/test3.jpg',
+            'status' => ManualPayment::STATUS_REJECTED,
+            'rejection_reason' => 'Bukti buram',
+            'submitted_at' => now()->subDays(2),
+        ]);
+
+        $this->assertTrue($pending->isPending());
+        $this->assertSame('Menunggu Verifikasi', $pending->statusLabel());
+        $this->assertSame('Rp 1.500.000', $pending->formattedAmount());
+        $this->assertNotNull($pending->proofUrl());
+
+        $this->assertTrue($approved->isApproved());
+        $this->assertSame('Disetujui', $approved->statusLabel());
+
+        $this->assertTrue($rejected->isRejected());
+        $this->assertSame('Ditolak', $rejected->statusLabel());
+
+        $this->assertSame(1, ManualPayment::pending()->count());
+        $this->assertSame(1, ManualPayment::approved()->count());
+        $this->assertSame(1, ManualPayment::rejected()->count());
+    }
 }

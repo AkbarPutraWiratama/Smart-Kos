@@ -190,7 +190,7 @@ These documents must remain consistent.
 
 ---
 
-# 7. Phase 1 — Project Foundation
+# 7. Phase 1 — Project Foundation (Completed)
 
 ## Goal
 
@@ -214,7 +214,7 @@ Do not add external dependencies during this phase.
 
 ---
 
-# 8. Phase 2 — Database Foundation
+# 8. Phase 2 — Database Foundation (Completed)
 
 Implement the database according to `ERD.md`.
 
@@ -257,7 +257,7 @@ are not part of the initial architecture.
 
 ---
 
-# 9. Phase 3 — Eloquent Models
+# 9. Phase 3 — Eloquent Models (Completed)
 
 Create models corresponding to the ERD.
 
@@ -317,7 +317,7 @@ Do not put unnecessary business logic into models.
 
 ---
 
-# 10. Phase 4 — Authentication Foundation
+# 10. Phase 4 — Authentication Foundation (Completed)
 
 ## Goal
 
@@ -350,7 +350,7 @@ Do not create separate login systems for each role.
 
 ---
 
-# 11. Phase 5 — Authentication UI
+# 11. Phase 5 — Authentication UI (Completed)
 
 Use the existing TailAdmin authentication/fullscreen design.
 
@@ -388,7 +388,7 @@ link unless explicitly requested later.
 
 ---
 
-# 12. Phase 6 — Role Authorization
+# 12. Phase 6 — Role Authorization (Completed)
 
 Implement role middleware.
 
@@ -431,7 +431,7 @@ must be rejected.
 
 ---
 
-# 13. Phase 7 — Hardcoded Role Navigation
+# 13. Phase 7 — Hardcoded Role Navigation (Completed)
 
 Create:
 
@@ -495,7 +495,7 @@ Do not replace the entire sidebar.
 
 ---
 
-# 14. Phase 8 — Guest Landing Page
+# 14. Phase 8 — Guest Landing Page (Completed)
 
 ## Goal
 
@@ -525,7 +525,7 @@ Do not display tenant names.
 
 ---
 
-# 15. Phase 9 — Guest Location and Room View
+# 15. Phase 9 — Guest Location and Room View (Completed)
 
 Create:
 
@@ -569,7 +569,7 @@ complaints
 
 ---
 
-# 16. Phase 10 — Location and Room Management
+# 16. Phase 10 — Location and Room Management (Completed)
 
 Admin functionality:
 
@@ -626,7 +626,7 @@ Room assignment is performed separately.
 
 ---
 
-# 17. Phase 11 — Sensitive Location/Room Actions
+# 17. Phase 11 — Sensitive Location/Room Actions (Completed)
 
 These operations require additional password confirmation:
 
@@ -984,7 +984,7 @@ Never hardcode them.
 
 ---
 
-# 30. Phase 24 — Midtrans VA Payment
+# 30. Phase 24 — Midtrans VA Payment (Completed)
 
 Create:
 
@@ -1021,7 +1021,7 @@ Midtrans-specific provider statuses must not be mixed with manual payment status
 
 ---
 
-# 31. Phase 25 — Manual Transfer
+# 31. Phase 25 — Manual Transfer (Completed)
 
 Create:
 
@@ -1056,7 +1056,7 @@ The server must enforce the rate limit.
 
 ---
 
-# 32. Phase 26 — Manual Payment Verification
+# 32. Phase 26 — Manual Payment Verification (Completed)
 
 Admin sees:
 

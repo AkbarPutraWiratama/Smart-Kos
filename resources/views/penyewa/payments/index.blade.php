@@ -472,7 +472,8 @@
                                         <th class="px-3 py-2.5 font-medium">Order ID</th>
                                         <th class="px-3 py-2.5 font-medium">Nominal</th>
                                         <th class="px-3 py-2.5 font-medium">Status</th>
-                                        <th class="px-3 py-2.5 font-medium">Tanggal</th>
+                                        <th class="px-3 py-2.5 font-medium">Waktu</th>
+                                        <th class="px-3 py-2.5 font-medium text-end">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -482,25 +483,42 @@
                                                 {{ $vp->order_id }}
                                             </td>
                                             <td class="px-3 py-2.5 font-semibold text-gray-800 dark:text-white">
-                                                Rp {{ number_format($vp->amount, 0, ',', '.') }}
+                                                {{ $vp->formattedAmount() }}
                                             </td>
                                             <td class="px-3 py-2.5">
-                                                @if (in_array($vp->transaction_status, ['settlement', 'paid', 'capture', 'success']))
-                                                    <span class="inline-flex rounded-full bg-success-50 px-2 py-0.5 text-[10px] font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">
-                                                        Lunas
-                                                    </span>
-                                                @elseif ($vp->transaction_status === 'pending')
-                                                    <span class="inline-flex rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-semibold text-warning-700 dark:bg-warning-500/15 dark:text-warning-400">
-                                                        Pending
-                                                    </span>
-                                                @else
-                                                    <span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                                                        {{ ucfirst($vp->transaction_status) }}
-                                                    </span>
-                                                @endif
+                                                <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $vp->statusBadgeClass() }}">
+                                                    {{ $vp->statusLabel() }}
+                                                </span>
                                             </td>
                                             <td class="px-3 py-2.5 text-gray-500 dark:text-gray-400">
                                                 {{ $vp->paid_at ? $vp->paid_at->format('d/m/Y H:i') : ($vp->transaction_time ? $vp->transaction_time->format('d/m/Y H:i') : '-') }}
+                                            </td>
+                                            <td class="px-3 py-2.5 text-end">
+                                                @if ($vp->isPending())
+                                                    <form method="POST" action="{{ route('penyewa.payments.va.check-status') }}" class="inline">
+                                                        @csrf
+                                                        <input type="hidden" name="order_id" value="{{ $vp->order_id }}">
+                                                        <button
+                                                            type="submit"
+                                                            title="Periksa status transaksi ke Midtrans"
+                                                            class="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                                                        >
+                                                            <svg class="h-3 w-3 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                            </svg>
+                                                            <span>Cek</span>
+                                                        </button>
+                                                    </form>
+                                                @elseif ($vp->isPaid())
+                                                    <span class="inline-flex items-center gap-1 text-[11px] font-medium text-success-600 dark:text-success-400">
+                                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                        <span>Selesai</span>
+                                                    </span>
+                                                @else
+                                                    <span class="text-[11px] text-gray-400">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -538,33 +556,23 @@
                                                     {{ $mp->bank_name }}
                                                 </div>
                                                 <div class="text-[11px] text-gray-500 dark:text-gray-400">
-                                                    Rp {{ number_format($mp->amount, 0, ',', '.') }}
+                                                    {{ $mp->formattedAmount() }}
                                                 </div>
                                             </td>
                                             <td class="px-3 py-2.5">
-                                                @if ($mp->status === 'approved')
-                                                    <span class="inline-flex rounded-full bg-success-50 px-2 py-0.5 text-[10px] font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">
-                                                        Disetujui
-                                                    </span>
-                                                @elseif ($mp->status === 'rejected')
-                                                    <span class="inline-flex rounded-full bg-error-50 px-2 py-0.5 text-[10px] font-semibold text-error-700 dark:bg-error-500/15 dark:text-error-400" title="{{ $mp->rejection_reason }}">
-                                                        Ditolak
-                                                    </span>
-                                                    @if ($mp->rejection_reason)
-                                                        <p class="mt-0.5 text-[10px] text-error-600 dark:text-error-400 italic">
-                                                            {{ Str::limit($mp->rejection_reason, 25) }}
-                                                        </p>
-                                                    @endif
-                                                @else
-                                                    <span class="inline-flex rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-semibold text-warning-700 dark:bg-warning-500/15 dark:text-warning-400">
-                                                        Menunggu
-                                                    </span>
+                                                <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $mp->statusBadgeClass() }}" @if($mp->isRejected() && $mp->rejection_reason) title="{{ $mp->rejection_reason }}" @endif>
+                                                    {{ $mp->statusLabel() }}
+                                                </span>
+                                                @if ($mp->isRejected() && $mp->rejection_reason)
+                                                    <p class="mt-0.5 text-[10px] text-error-600 dark:text-error-400 italic">
+                                                        {{ Str::limit($mp->rejection_reason, 25) }}
+                                                    </p>
                                                 @endif
                                             </td>
                                             <td class="px-3 py-2.5">
-                                                @if ($mp->proof_path)
+                                                @if ($mp->proofUrl())
                                                     <a
-                                                        href="{{ asset('storage/' . $mp->proof_path) }}"
+                                                        href="{{ $mp->proofUrl() }}"
                                                         target="_blank"
                                                         class="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400"
                                                     >

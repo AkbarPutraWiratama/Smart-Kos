@@ -22,7 +22,7 @@
     <x-common.page-breadcrumb pageTitle="Status Penyewa" />
 
     <!-- Header Lokasi Kos -->
-    <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">
                 Pilih Lokasi Kos
@@ -30,6 +30,17 @@
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Pilih atau geser kartu lokasi kos untuk memantau status hunian, tingkat okupansi, dan denah kamar.
             </p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a
+                href="{{ route('admin.payments.index') }}"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-theme-xs hover:border-brand-500/50 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300 dark:hover:bg-white/[0.08] transition"
+            >
+                <svg class="h-4 w-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Verifikasi Pembayaran Manual</span>
+            </a>
         </div>
     </div>
 
@@ -546,6 +557,33 @@
                             <span class="font-mono" x-text="currentAssignment.tenant_profile?.phone || '-'"></span>
                         </div>
                     </div>
+
+                    {{-- Pending Payment Alert Banner --}}
+                    <template x-if="currentAssignment && currentAssignment.has_pending_payment">
+                        <div class="mt-4 rounded-xl border border-warning-200 bg-warning-50 p-3.5 dark:border-warning-500/30 dark:bg-warning-500/10">
+                            <div class="flex items-start gap-3">
+                                <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-warning-500 shadow-theme-xs">
+                                    <svg class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-semibold text-warning-800 dark:text-warning-300">
+                                        Ada Bukti Transfer Menunggu Verifikasi
+                                    </p>
+                                    <p class="mt-0.5 text-[11px] text-warning-700 dark:text-warning-400">
+                                        Penyewa ini telah mengunggah bukti transfer pembayaran yang belum diverifikasi.
+                                    </p>
+                                    <a
+                                        href="{{ route('admin.payments.index', ['status' => 'pending']) }}"
+                                        class="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-warning-700 hover:text-warning-900 dark:text-warning-300 dark:hover:text-warning-100 underline underline-offset-2 transition"
+                                    >
+                                        Verifikasi Sekarang &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
 
                     <p class="mt-4 mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                         Pilih Tindakan Pengelolaan Hunian

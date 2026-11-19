@@ -51,12 +51,10 @@ class PaymentController extends Controller
                 ->latest('submitted_at')
                 ->first();
 
-            if ($lastManual && $lastManual->submitted_at) {
-                $diffInSeconds = (int) now()->diffInSeconds($lastManual->submitted_at);
-                if ($diffInSeconds < 600) {
-                    $rateLimited = true;
-                    $remainingMinutes = (int) ceil((600 - $diffInSeconds) / 60);
-                }
+            if ($lastManual && $lastManual->submitted_at && $lastManual->submitted_at->isAfter(now()->subMinutes(10))) {
+                $rateLimited = true;
+                $elapsedSeconds = abs((int) now()->diffInSeconds($lastManual->submitted_at));
+                $remainingMinutes = (int) ceil((600 - $elapsedSeconds) / 60);
             }
         }
 
@@ -99,6 +97,70 @@ class PaymentController extends Controller
     }
 
     /**
+     * Check transaction status directly with Midtrans for a VA payment.
+     */
+    public function checkVaStatus(Request $request, MidtransService $midtransService): RedirectResponse
+    {
+        $request->validate([
+            'order_id' => ['required', 'string'],
+        ]);
+
+        $user = $request->user();
+        $assignment = $user->tenantProfile?->roomAssignments()
+            ->where('status', 'active')
+            ->first();
+
+        if (! $assignment) {
+            return back()->with('error', 'Anda belum memiliki kamar aktif.');
+        }
+
+        $vaPayment = $assignment->vaPayments()
+            ->where('order_id', $request->input('order_id'))
+            ->first();
+
+        if (! $vaPayment) {
+            return back()->with('error', 'Data transaksi pembayaran tidak ditemukan.');
+        }
+
+        try {
+            $statusData = $midtransService->checkTransactionStatus($vaPayment->order_id);
+            $transactionStatus = $statusData['transaction_status'] ?? $vaPayment->transaction_status;
+            $fraudStatus = $statusData['fraud_status'] ?? null;
+            $normalizedStatus = $midtransService->normalizeStatus($transactionStatus, $fraudStatus);
+
+            $vaPayment->transaction_status = $normalizedStatus;
+
+            if (! empty($statusData['transaction_id'])) {
+                $vaPayment->transaction_id = (string) $statusData['transaction_id'];
+            }
+
+            if (! empty($statusData['transaction_time'])) {
+                $vaPayment->transaction_time = \Carbon\Carbon::parse($statusData['transaction_time']);
+            }
+
+            if ($normalizedStatus === 'settlement') {
+                $vaPayment->paid_at = ! empty($statusData['settlement_time'])
+                    ? \Carbon\Carbon::parse($statusData['settlement_time'])
+                    : now();
+            } elseif (in_array($normalizedStatus, ['expired', 'cancelled'], true)) {
+                $vaPayment->paid_at = null;
+            }
+
+            $vaPayment->save();
+
+            if ($vaPayment->isPaid()) {
+                return back()->with('success', 'Pembayaran berhasil terverifikasi! Status sewa kamar telah lunas.');
+            } elseif ($vaPayment->isPending()) {
+                return back()->with('info', 'Status transaksi saat ini: Menunggu Pembayaran. Silakan selesaikan pembayaran ke nomor VA.');
+            } else {
+                return back()->with('warning', "Status transaksi saat ini: {$vaPayment->statusLabel()}.");
+            }
+        } catch (Throwable $e) {
+            return back()->with('error', 'Gagal memeriksa status ke Midtrans: '.$e->getMessage());
+        }
+    }
+
+    /**
      * Submit manual bank transfer payment proof.
      */
     public function storeManual(Request $request): RedirectResponse
@@ -117,13 +179,11 @@ class PaymentController extends Controller
             ->latest('submitted_at')
             ->first();
 
-        if ($lastManual && $lastManual->submitted_at) {
-            $diffInSeconds = (int) now()->diffInSeconds($lastManual->submitted_at);
-            if ($diffInSeconds < 600) {
-                $remainingMinutes = (int) ceil((600 - $diffInSeconds) / 60);
+        if ($lastManual && $lastManual->submitted_at && $lastManual->submitted_at->isAfter(now()->subMinutes(10))) {
+            $elapsedSeconds = abs((int) now()->diffInSeconds($lastManual->submitted_at));
+            $remainingMinutes = (int) ceil((600 - $elapsedSeconds) / 60);
 
-                return back()->with('error', "Pengiriman bukti pembayaran dibatasi 1 kali setiap 10 menit. Silakan tunggu {$remainingMinutes} menit lagi sebelum mengirim kembali.");
-            }
+            return back()->with('error', "Pengiriman bukti pembayaran dibatasi 1 kali setiap 10 menit. Silakan tunggu {$remainingMinutes} menit lagi sebelum mengirim kembali.");
         }
 
         $validated = $request->validate([

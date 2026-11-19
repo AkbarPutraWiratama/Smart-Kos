@@ -212,7 +212,7 @@ class MidtransService
      */
     public function normalizeStatus(string $transactionStatus, ?string $fraudStatus = null): string
     {
-        $status = strtolower($transactionStatus);
+        $status = strtolower(trim($transactionStatus));
 
         if ($status === 'capture') {
             return ($fraudStatus === 'challenge') ? 'pending' : 'settlement';
@@ -226,11 +226,11 @@ class MidtransService
             return 'pending';
         }
 
-        if (in_array($status, ['deny', 'cancel'], true)) {
+        if (in_array($status, ['deny', 'cancel', 'cancelled', 'denied'], true)) {
             return 'cancelled';
         }
 
-        if ($status === 'expire') {
+        if (in_array($status, ['expire', 'expired'], true)) {
             return 'expired';
         }
 

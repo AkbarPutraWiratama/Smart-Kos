@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 
 use App\Http\Controllers\Guest\LandingController;
 use App\Http\Controllers\Guest\RoomViewController;
+use App\Http\Controllers\Payment\MidtransWebhookController;
 
 // Public Smart Kos Guest Routes
 Route::get('/', [LandingController::class, 'index'])->name('home');
@@ -105,6 +106,7 @@ Route::get('/videos', function () {
 
 // Protected Smart Kos Role Routes
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\RoomController;
@@ -167,11 +169,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('/assignments/{assignment}/change-room', [TenantAssignmentController::class, 'changeRoom'])->name('assignments.change-room');
     Route::post('/assignments/{assignment}/end', [TenantAssignmentController::class, 'endAssignment'])->name('assignments.end');
 
+    // Manual Payment Verification (Phase 26)
+    Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/{payment}/approve', [AdminPaymentController::class, 'approve'])->name('payments.approve');
+    Route::post('/payments/{payment}/reject', [AdminPaymentController::class, 'reject'])->name('payments.reject');
+
     // Dummy placeholder pages (sidebar links)
     Route::get('/complaints', fn () => view('admin.complaints.index'))->name('complaints.index');
     Route::get('/finance', fn () => view('admin.finance.index'))->name('finance.index');
     Route::get('/account', fn () => view('admin.account'))->name('account');
 });
+
+// Midtrans Webhook Notification Callback (CSRF exempt)
+Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle'])->name('midtrans.callback');
+Route::post('/api/midtrans/callback', [MidtransWebhookController::class, 'handle'])->name('midtrans.callback.api');
+
 
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
@@ -191,12 +203,18 @@ Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')
     Route::get('/dashboard', [TenantDashboardController::class, 'index'])->name('dashboard');
     Route::get('/payments', [TenantPaymentController::class, 'index'])->name('payments.index');
     Route::post('/payments/va', [TenantPaymentController::class, 'createVa'])->name('payments.va.create');
+    Route::post('/payments/va/check-status', [TenantPaymentController::class, 'checkVaStatus'])->name('payments.va.check-status');
     Route::post('/payments/manual', [TenantPaymentController::class, 'storeManual'])->name('payments.manual.store');
     Route::get('/complaints', fn () => view('penyewa.complaints.index'))->name('complaints.index');
     Route::get('/account', [TenantAccountController::class, 'index'])->name('account');
     Route::put('/account/profile', [TenantAccountController::class, 'updateProfile'])->name('account.profile');
     Route::put('/account/password', [TenantAccountController::class, 'updatePassword'])->name('account.password');
 });
+
+// Midtrans Webhook Notification Callback (CSRF exempt)
+Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle'])->name('midtrans.callback');
+Route::post('/api/midtrans/callback', [MidtransWebhookController::class, 'handle'])->name('midtrans.callback.api');
+
 
 
 

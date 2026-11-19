@@ -21,6 +21,8 @@ class RoomAssignment extends Model
         'deactivated_at',
     ];
 
+    protected $appends = ['has_pending_payment'];
+
     protected function casts(): array
     {
         return [
@@ -109,6 +111,19 @@ class RoomAssignment extends Model
             ->where('status', 'approved')
             ->where('submitted_at', '>=', now()->subDays(30))
             ->exists();
+    }
+
+    /**
+     * Accessor: whether this assignment has any pending manual payment.
+     * Avoids extra queries when the manualPayments relation is already eager-loaded.
+     */
+    public function getHasPendingPaymentAttribute(): bool
+    {
+        if ($this->relationLoaded('manualPayments')) {
+            return $this->manualPayments->isNotEmpty();
+        }
+
+        return $this->hasPendingPayment();
     }
 
     /**

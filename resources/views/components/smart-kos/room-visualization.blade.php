@@ -26,6 +26,16 @@
                 <span class="h-3.5 w-3.5 rounded bg-error-500 shadow-sm"></span>
                 <span class="text-gray-700 dark:text-gray-300">Terisi</span>
             </div>
+            @if ($role === 'admin')
+                <div class="flex items-center gap-2">
+                    <span class="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-warning-500 shadow-sm">
+                        <svg class="h-2.5 w-2.5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <span class="text-gray-700 dark:text-gray-300">Menunggu Verifikasi</span>
+                </div>
+            @endif
         </div>
 
         <!-- Tombol Tugaskan Kamar (Di sebelah kanan keterangan warna) -->
@@ -70,6 +80,12 @@
                             $assignment = $room->activeAssignment;
                             $isOccupied = (bool) $assignment;
                         @endphp
+                        @php
+                            $hasPendingPayment = $isOccupied
+                                && $role === 'admin'
+                                && $assignment->relationLoaded('manualPayments')
+                                && $assignment->manualPayments->isNotEmpty();
+                        @endphp
                         <div
                             @if ($role === 'admin')
                                 @if ($isOccupied)
@@ -78,8 +94,22 @@
                                     @click="isAssignModalOpen = true; isRoomLocked = true; lockedRoomId = '{{ $room->id }}'; selectedTenantId = null; $nextTick(() => { const el = document.getElementById('assign_room_id'); if (el) el.value = '{{ $room->id }}'; })"
                                 @endif
                             @endif
-                            class="group rounded-xl border p-3.5 transition-all hover:-translate-y-0.5 hover:shadow-theme-sm active:scale-95 text-start {{ $role === 'admin' ? 'cursor-pointer' : '' }} {{ $isOccupied ? 'border-error-200 bg-error-50/40 hover:border-error-500 dark:border-error-500/20 dark:bg-error-500/5' : 'border-success-200 bg-success-50/40 hover:border-success-500 dark:border-success-500/20 dark:bg-success-500/5' }}"
+                            class="relative group rounded-xl border p-3.5 transition-all hover:-translate-y-0.5 hover:shadow-theme-sm active:scale-95 text-start {{ $role === 'admin' ? 'cursor-pointer' : '' }} {{ $isOccupied ? 'border-error-200 bg-error-50/40 hover:border-error-500 dark:border-error-500/20 dark:bg-error-500/5' : 'border-success-200 bg-success-50/40 hover:border-success-500 dark:border-success-500/20 dark:bg-success-500/5' }}"
                         >
+                            {{-- Pending Payment Badge (Admin only) --}}
+                            @if ($hasPendingPayment)
+                                <a
+                                    href="{{ route('admin.payments.index', ['status' => 'pending']) }}"
+                                    @click.stop
+                                    title="Ada bukti transfer yang menunggu verifikasi"
+                                    class="absolute -top-2 -end-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-warning-500 shadow-theme-xs ring-2 ring-white hover:bg-warning-600 dark:ring-gray-900 transition-colors"
+                                >
+                                    {{-- Document + Clock icon --}}
+                                    <svg class="h-3.5 w-3.5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            @endif
                             <div class="flex items-start justify-between gap-1.5">
                                 <span class="font-bold text-base {{ $isOccupied ? 'text-error-700 dark:text-error-400' : 'text-success-700 dark:text-success-400' }}">
                                     {{ $room->room_number }}
