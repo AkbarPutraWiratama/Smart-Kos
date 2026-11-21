@@ -442,8 +442,10 @@
                 </form>
             </div>
         </div>
+    @endif
 
-        <!-- 3. Payment History Section -->
+    <!-- 3. Payment History Section (Preserved for Active and Past Assignments) -->
+    @if ($assignment || $vaPayments->isNotEmpty() || $manualPayments->isNotEmpty())
         <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03] space-y-6">
             <div>
                 <h3 class="text-base font-bold text-gray-800 dark:text-white/90">
@@ -480,7 +482,12 @@
                                     @foreach ($vaPayments as $vp)
                                         <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01]">
                                             <td class="px-3 py-2.5 font-mono text-[11px] text-gray-700 dark:text-gray-300">
-                                                {{ $vp->order_id }}
+                                                <div>{{ $vp->order_id }}</div>
+                                                @if ($vp->roomAssignment?->room)
+                                                    <div class="text-[10px] text-gray-400 font-sans">
+                                                        Kamar {{ $vp->roomAssignment->room->room_number }} &bull; {{ $vp->roomAssignment->room->location?->name }}
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="px-3 py-2.5 font-semibold text-gray-800 dark:text-white">
                                                 {{ $vp->formattedAmount() }}
@@ -558,6 +565,11 @@
                                                 <div class="text-[11px] text-gray-500 dark:text-gray-400">
                                                     {{ $mp->formattedAmount() }}
                                                 </div>
+                                                @if ($mp->roomAssignment?->room)
+                                                    <div class="text-[10px] text-gray-400">
+                                                        Kamar {{ $mp->roomAssignment->room->room_number }} &bull; {{ $mp->roomAssignment->room->location?->name }}
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="px-3 py-2.5">
                                                 <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $mp->statusBadgeClass() }}" @if($mp->isRejected() && $mp->rejection_reason) title="{{ $mp->rejection_reason }}" @endif>

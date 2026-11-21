@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinancialRecord;
 use App\Models\ManualPayment;
+use App\Models\VAPayment;
 use App\Services\MidtransService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,22 +32,34 @@ class PaymentController extends Controller
             fn ($bank) => ! empty($bank['account_number'])
         ));
 
-        $vaPayments = collect();
-        $manualPayments = collect();
+        // All room assignments belonging to this tenant profile (active & historical)
+        $allAssignmentIds = $tenant ? $tenant->roomAssignments()->pluck('id') : collect();
+
+        // Historical VA payments across all assignments
+        $vaPayments = VAPayment::whereIn('room_assignment_id', $allAssignmentIds)
+            ->with(['roomAssignment.room.location'])
+            ->latest('created_at')
+            ->take(30)
+            ->get();
+
+        // Historical Manual payments across all assignments or submitted by this user
+        $manualPayments = ManualPayment::where(function ($q) use ($allAssignmentIds, $user) {
+                if ($allAssignmentIds->isNotEmpty()) {
+                    $q->whereIn('room_assignment_id', $allAssignmentIds)
+                        ->orWhere('submitted_by', $user->id);
+                } else {
+                    $q->where('submitted_by', $user->id);
+                }
+            })
+            ->with(['roomAssignment.room.location'])
+            ->latest('submitted_at')
+            ->take(30)
+            ->get();
+
         $rateLimited = false;
         $remainingMinutes = 0;
 
         if ($assignment) {
-            $vaPayments = $assignment->vaPayments()
-                ->latest()
-                ->take(15)
-                ->get();
-
-            $manualPayments = $assignment->manualPayments()
-                ->latest('submitted_at')
-                ->take(15)
-                ->get();
-
             // Check 10-minute submission limit
             $lastManual = ManualPayment::where('submitted_by', $user->id)
                 ->latest('submitted_at')
@@ -149,6 +163,7 @@ class PaymentController extends Controller
             $vaPayment->save();
 
             if ($vaPayment->isPaid()) {
+                FinancialRecord::recordFromVAPayment($vaPayment);
                 return back()->with('success', 'Pembayaran berhasil terverifikasi! Status sewa kamar telah lunas.');
             } elseif ($vaPayment->isPending()) {
                 return back()->with('info', 'Status transaksi saat ini: Menunggu Pembayaran. Silakan selesaikan pembayaran ke nomor VA.');

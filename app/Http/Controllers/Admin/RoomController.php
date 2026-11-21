@@ -94,6 +94,11 @@ class RoomController extends Controller
             return back()->withErrors(['password' => 'Kamar tidak dapat dihapus karena masih ada penyewa aktif.']);
         }
 
+        // Invariant: Cannot delete room if it has historical payments that must be preserved
+        if ($room->hasPaymentHistory()) {
+            return back()->withErrors(['password' => 'Kamar tidak dapat dihapus karena memiliki riwayat pembayaran yang harus dilestarikan.']);
+        }
+
         $roomName = $room->room_number;
         $room->delete();
 

@@ -7,7 +7,20 @@
 > - **Command Security Policy**: Commands are **DEFAULT-DENY**. Only execute explicitly allowlisted commands listed in `SMARTKOSAGENTS.md`. Never run destructive database commands (`migrate:fresh`, `db:wipe`), unauthorized package installs, or shell code execution.
 > - **Architectural Invariants**: Central `users` table, isolated `/admin-recovery` via Google OAuth, strict separation between Midtrans VA and Manual Payment flows, rate limits (10m), and permanent preservation of financial history.
 
-## Repo Map
+## 1. What is Smart Kos? (Conceptual Overview & Core Purpose)
+
+**Smart Kos** is an internal, private property management platform developed for an individual boarding house (*kos*) owner in Indonesia who manages multiple physical properties and residential rooms.
+
+It is **NOT** a public rental marketplace or aggregator (like Mamikos or Airbnb); it is an internal operational and financial management platform designed to:
+- **Centralize Multi-Location Management**: Monitor rooms, floors, rental prices, facility photos, and room model samples across multiple boarding house locations.
+- **Track Dynamic Occupancy**: Derive room occupancy status directly from active lease records (`room_assignments`), ensuring zero data synchronization conflicts between rooms and tenant states.
+- **Manage Tenant Account Lifecycles**: Enforce automated 7-day deactivation for overdue rent, permit permanent account deletion after 7 days of inactivity, and strictly preserve all financial history permanently.
+- **Dual Payment Processing**: Support automated Midtrans Virtual Account payments while preserving an isolated workflow for manual bank transfers with proof upload and administrator approval.
+- **Provide Actionable Financial Reporting (`financial_records`)**: Generate unified general ledger reports for cash flow, profit & loss (P&L), location performance, full-room revenue recaps, and individual tenant payment track records.
+- **Handle Maintenance & Operations**: Log routine expenses, track staff payroll and cash advances, and provide a tenant complaint ticketing system with image attachments.
+- **Secure Administrator Recovery**: Segregate emergency Google OAuth recovery to `/admin-recovery`, keeping primary authentication purely username + password.
+
+## 2. Repo Map
 
 ```
 app/

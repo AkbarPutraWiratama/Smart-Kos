@@ -95,6 +95,17 @@ class LocationController extends Controller
             return back()->withErrors(['password' => 'Lokasi tidak dapat dihapus karena masih ada kamar yang sedang ditempati penyewa aktif.']);
         }
 
+        // Invariant: Cannot delete location if its rooms have historical payments that must be preserved
+        $hasPaymentHistory = $location->rooms()
+            ->whereHas('roomAssignments', function ($q) {
+                $q->has('vaPayments')->orWhereHas('manualPayments');
+            })
+            ->exists();
+
+        if ($hasPaymentHistory) {
+            return back()->withErrors(['password' => 'Lokasi tidak dapat dihapus karena memiliki riwayat pembayaran yang harus dilestarikan.']);
+        }
+
         $locationName = $location->name;
         $location->load('photos');
         Storage::disk('public')->delete($location->photos->pluck('path')->all());

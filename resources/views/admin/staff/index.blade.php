@@ -4,7 +4,7 @@
 <div class="space-y-6">
     <x-common.page-breadcrumb pageTitle="Pelanggan & Staff" />
 
-    <!-- Navigation Tabs between Penyewa & Staff -->
+    <!-- Navigation Tabs between Penyewa, Staff & Payroll -->
     <div class="border-b border-gray-200 dark:border-gray-800">
         <nav class="-mb-px flex gap-6" aria-label="Tabs">
             <a
@@ -19,6 +19,12 @@
                 aria-current="page"
             >
                 Akun Staff Kos
+            </a>
+            <a
+                href="{{ route('admin.payroll.index') }}"
+                class="border-b-2 border-transparent py-3 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition"
+            >
+                Penggajian &amp; Kasbon Staff
             </a>
         </nav>
     </div>

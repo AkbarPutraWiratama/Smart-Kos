@@ -8,23 +8,21 @@
 
 ---
 
-## 1. Project Identity
+## 1. Project Identity & Conceptual Overview
 
-Smart Kos is a private/internal web application for one kos owner who manages multiple kos locations.
+**Smart Kos** is a specialized, private internal property management platform engineered for a single boarding house (*kos*) owner who owns and operates multiple physical properties across Indonesia.
 
-The application is not a public marketplace.
+Smart Kos is **NOT** a public rental listing marketplace or booking broker (such as Mamikos or Airbnb). It functions as the owner's private enterprise operating system to manage daily operations, lease lifecycles, and financial intelligence across all owned boarding house properties.
 
-Primary goals:
-
-- manage multiple kos locations and rooms;
-- monitor room occupancy;
-- assign tenants to rooms;
-- monitor payment deadlines and payment status;
-- receive and handle tenant complaints;
-- manage operational and incidental expenses;
-- manage tenant and staff accounts;
-- maintain financial history;
-- simplify maintenance and day-to-day kos management.
+### Primary Goals and Conceptual Purpose:
+- **Multi-Location Property & Room Management**: Administer multiple physical kos buildings, floors, rooms, and facilities, while distinguishing between general location photos and room model sample photos.
+- **Dynamic Occupancy Derivation**: Monitor room occupancy computed directly from active lease records (`room_assignments`), preventing contradictory states between room status and active residency.
+- **Tenant Lifecycle Enforcement**: Manage tenant profiles, room assignments, automated 7-day overdue account deactivation, and 7-day post-deactivation permanent deletion rules—while permanently safeguarding all payment records and transaction history.
+- **Dual Payment Channel Architecture**: Maintain a strict separation between automated Midtrans Virtual Account payments (real-time settlement callbacks) and manual bank transfers (proof image upload, rate limiting, and administrator verification).
+- **Normalized Financial Reporting (`financial_records`)**: Centralize all revenue streams and expenses into a normalized general ledger reporting layer to track Profit & Loss (P&L), 12-month cash flow dynamics, location contribution, full-room revenue recaps, and individual tenant payment track records.
+- **Operational Expense, Payroll & Advances**: Track recurring utility expenses, maintenance repairs, staff payroll calculations (gross salary minus cash advance deductions), and staff cash advances.
+- **Tenant Complaints & Maintenance Workflow**: Allow tenants to submit complaints with a 10-minute submission rate limit, enabling staff and administrators to log corrective actions and resolve issues with complete auditability.
+- **Secure Administrator Emergency Recovery**: Keep standard login strictly username + password, while providing an isolated Google OAuth emergency account recovery route at `/admin-recovery`.
 
 ---
 
@@ -1281,42 +1279,44 @@ Guest navigation remains public.
 
 # 30. Role Menu Definition
 
-## Guest
+The hardcoded role-specific sidebar navigation structure matches the Indonesian application UI with English conceptual mappings:
+
+## Guest (Public Visitor)
 
 ```text
-Landing Page
-Lokasi & Kamar
-Login
+Landing Page (Public Showcase & Facilities)
+Lokasi & Kamar (Locations & Available Rooms)
+Login (Authentication Portal)
 ```
 
-## Penyewa
+## Penyewa (Tenant / Resident)
 
 ```text
-Dashboard
-Pembayaran
-Aduan
-Akun
+Dashboard (Tenant Announcements & Room Status)
+Pembayaran (Payment Portal & Payment History)
+Aduan (Complaint Submission & History)
+Akun (Account Settings & Profile)
 ```
 
-## Staff
+## Staff (Operational Staff / Caretaker)
 
 ```text
-Dashboard
-Status Pembayaran Penyewa
-Tindakan Aduan
-Akun
+Dashboard (Daily Tasks & Property Summary)
+Status Pembayaran Penyewa (Tenant Due Dates & Payment Status)
+Tindakan Aduan (Complaint Actions & Maintenance Log)
+Akun (Account Settings)
 ```
 
-## Admin
+## Admin (Owner / Property Manager)
 
 ```text
-Dashboard
-Status Penyewa
-Tindakan Aduan
-Keuangan
-Lokasi & Kamar
-Pelanggan & Staff
-Akun
+Dashboard (Executive Multi-Location Overview)
+Status Penyewa (Tenant Management & Room Occupancy)
+Tindakan Aduan (Complaints & High-Priority Alerts)
+Keuangan (Financial Center, Cash Flow & Recaps)
+Lokasi & Kamar (Locations, Floors & Rooms Setup)
+Pelanggan & Staff (Tenant & Staff Account Administration)
+Akun (Account Settings)
 ```
 
 Do not add extra navigation items without a corresponding approved feature.

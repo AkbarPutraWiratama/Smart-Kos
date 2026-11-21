@@ -181,6 +181,13 @@ class User extends Authenticatable
         return $this->hasMany(CashAdvance::class, 'staff_id');
     }
 
+    public function totalOutstandingCashAdvance(): float
+    {
+        return (float) $this->cashAdvancesReceived()
+            ->whereIn('status', [CashAdvance::STATUS_OUTSTANDING, CashAdvance::STATUS_PARTIALLY_REPAID])
+            ->sum('amount');
+    }
+
     public function cashAdvancesRecorded(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(CashAdvance::class, 'recorded_by');

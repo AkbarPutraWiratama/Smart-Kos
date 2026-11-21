@@ -58,4 +58,16 @@ class Room extends Model
     {
         return $this->activeAssignment()->exists();
     }
+
+    /**
+     * Check if this room has any historical payments attached to past or current assignments.
+     */
+    public function hasPaymentHistory(): bool
+    {
+        return $this->roomAssignments()
+            ->where(function ($q) {
+                $q->has('vaPayments')->orWhereHas('manualPayments');
+            })
+            ->exists();
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,5 +45,41 @@ class PayrollRecord extends Model
     public function financialRecord(): HasOne
     {
         return $this->hasOne(FinancialRecord::class, 'reference_id')->where('reference_type', 'payroll');
+    }
+
+    /**
+     * Scope query to specific staff.
+     */
+    public function scopeStaff(Builder $query, int $staffId): Builder
+    {
+        return $query->where('staff_id', $staffId);
+    }
+
+    /**
+     * Scope query to a date range.
+     */
+    public function scopePeriod(Builder $query, string $startDate, string $endDate): Builder
+    {
+        return $query->whereBetween('payment_date', [$startDate, $endDate]);
+    }
+
+    public function formattedGrossAmount(): string
+    {
+        return 'Rp ' . number_format((float) $this->gross_amount, 0, ',', '.');
+    }
+
+    public function formattedDeduction(): string
+    {
+        return 'Rp ' . number_format((float) $this->cash_advance_deduction, 0, ',', '.');
+    }
+
+    public function formattedNetAmount(): string
+    {
+        return 'Rp ' . number_format((float) $this->net_amount, 0, ',', '.');
+    }
+
+    public function formattedPaymentDate(): string
+    {
+        return $this->payment_date ? $this->payment_date->translatedFormat('d F Y') : '-';
     }
 }

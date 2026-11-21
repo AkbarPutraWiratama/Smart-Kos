@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinancialRecord;
 use App\Models\MidtransVAAccount;
 use App\Models\RoomAssignment;
 use App\Models\VAPayment;
@@ -103,6 +104,10 @@ class MidtransWebhookController extends Controller
         }
 
         $vaPayment->save();
+
+        if ($vaPayment->isPaid()) {
+            FinancialRecord::recordFromVAPayment($vaPayment);
+        }
 
         Log::info('Midtrans payment updated via webhook', [
             'order_id'           => $orderId,

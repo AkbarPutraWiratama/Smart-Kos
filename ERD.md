@@ -1,20 +1,21 @@
 # Smart Kos — Entity Relationship Diagram
 
-## 1. Purpose
+## 1. Purpose & Conceptual Architecture
 
-This document defines the database structure for Smart Kos.
+This document defines the complete database architecture and relationship design for **Smart Kos**.
 
-Smart Kos is a private/internal web application for one kos owner who manages multiple kos locations, rooms, tenants, staff, payments, complaints, and financial records.
+### What is Smart Kos?
+**Smart Kos** is an internal, private property management platform engineered for a single boarding house (*kos*) owner who owns and operates multiple physical properties across Indonesia. It is not an open marketplace or public booking aggregator. It serves as an internal enterprise operating system to automate, track, and secure property operations, tenant leases, and financial records.
 
-The database design follows the project rules defined in `AGENTS.md`:
-
-* One central `users` table is used for all authenticated accounts.
-* Roles are hardcoded in application logic.
-* Guest users do not require database accounts.
-* TailAdmin structure is unrelated to the database design and must not be reorganized to fit the ERD.
-* Financial history must be preserved even when an account is deactivated or removed.
-* Midtrans Virtual Account and Manual Transfer are separate payment mechanisms.
-* Authorization is handled by Laravel middleware/policies, not by dynamically generated menu records.
+The database design strictly enforces the foundational project rules:
+* **Centralized Identity**: One central `users` table handles all authenticated accounts (`admin`, `staff`, `penyewa`), while role-specific operational profile data (`tenant_profiles`) is decoupled from credentials.
+* **Separation of Authentication & Profile Data**: Credentials and authentication state live in `users`; tenant phone, address, and registration dates live in `tenant_profiles`.
+* **Dynamic, Historical Room Assignments**: Room occupancy is never stored as an error-prone static boolean; it is derived dynamically from `room_assignments`. Each assignment preserves a `rent_amount_snapshot` so historical lease pricing is immune to future room rent changes.
+* **Strict Dual Payment Isolation**: Midtrans Virtual Account infrastructure (`midtrans_va_accounts`, `va_payments`) is strictly separated from manual transfer records (`manual_payments`).
+* **Normalized Financial Reporting Layer**: The `financial_records` table acts as a unified general ledger reporting journal with polymorphic references (`reference_type`, `reference_id`), powering Profit & Loss (P&L), 12-month cash flows, location metrics, room performance recaps, and tenant payment histories.
+* **Permanent Preservation of Financial History**: Deactivating or permanently deleting tenant or staff accounts must never cascade-delete or corrupt financial transaction records.
+* **Isolated Emergency Admin Recovery**: The `admin_google_accounts` table links verified Google OAuth identities exclusively for administrative recovery via `/admin-recovery`. Standard login remains username + password.
+* **Hardcoded Role Authorization**: Roles and permissions are enforced via Laravel middleware and application logic, avoiding unnecessary dynamic permissions tables.
 
 ---
 

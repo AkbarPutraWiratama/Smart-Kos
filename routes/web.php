@@ -107,6 +107,9 @@ Route::get('/videos', function () {
 // Protected Smart Kos Role Routes
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Admin\ExpenseController as AdminExpenseController;
+use App\Http\Controllers\Admin\FinanceController as AdminFinanceController;
+use App\Http\Controllers\Admin\PayrollController as AdminPayrollController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\RoomController;
@@ -118,6 +121,7 @@ use App\Http\Controllers\Tenant\AccountController as TenantAccountController;
 use App\Http\Controllers\Tenant\PaymentController as TenantPaymentController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\PostController as StaffPostController;
+use App\Http\Controllers\Staff\PaymentController as StaffPaymentController;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -174,9 +178,26 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/payments/{payment}/approve', [AdminPaymentController::class, 'approve'])->name('payments.approve');
     Route::post('/payments/{payment}/reject', [AdminPaymentController::class, 'reject'])->name('payments.reject');
 
-    // Dummy placeholder pages (sidebar links)
+    // Financial Reporting Layer (Phase 28)
+    Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
+
+    // Expense Management (Phase 29)
+    Route::get('/expenses', [AdminExpenseController::class, 'index'])->name('expenses.index');
+    Route::post('/expenses', [AdminExpenseController::class, 'store'])->name('expenses.store');
+    Route::put('/expenses/{expense}', [AdminExpenseController::class, 'update'])->name('expenses.update');
+    Route::delete('/expenses/{expense}', [AdminExpenseController::class, 'destroy'])->name('expenses.destroy');
+
+    // Payroll & Cash Advance Management (Phase 30)
+    Route::get('/payroll', [AdminPayrollController::class, 'index'])->name('payroll.index');
+    Route::post('/payroll', [AdminPayrollController::class, 'storePayroll'])->name('payroll.store');
+    Route::put('/payroll/{payroll}', [AdminPayrollController::class, 'updatePayroll'])->name('payroll.update');
+    Route::delete('/payroll/{payroll}', [AdminPayrollController::class, 'destroyPayroll'])->name('payroll.destroy');
+    Route::post('/cash-advances', [AdminPayrollController::class, 'storeAdvance'])->name('cash-advances.store');
+    Route::put('/cash-advances/{cashAdvance}', [AdminPayrollController::class, 'updateAdvance'])->name('cash-advances.update');
+    Route::patch('/cash-advances/{cashAdvance}/status', [AdminPayrollController::class, 'updateAdvanceStatus'])->name('cash-advances.status');
+    Route::delete('/cash-advances/{cashAdvance}', [AdminPayrollController::class, 'destroyAdvance'])->name('cash-advances.destroy');
+
     Route::get('/complaints', fn () => view('admin.complaints.index'))->name('complaints.index');
-    Route::get('/finance', fn () => view('admin.finance.index'))->name('finance.index');
     Route::get('/account', fn () => view('admin.account'))->name('account');
 });
 
@@ -194,7 +215,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::delete('/posts/{post}', [StaffPostController::class, 'destroy'])->name('posts.destroy');
     Route::delete('/posts-trash/{id}/force', [StaffPostController::class, 'forceDestroy'])->name('posts.force-destroy');
     Route::delete('/posts-trash/destroy-all', [StaffPostController::class, 'destroyAll'])->name('posts.destroy-all');
-    Route::get('/payments', fn () => view('staff.payments.index'))->name('payments.index');
+    Route::get('/payments', [StaffPaymentController::class, 'index'])->name('payments.index');
     Route::get('/complaints', fn () => view('staff.complaints.index'))->name('complaints.index');
     Route::get('/account', fn () => view('staff.account'))->name('account');
 });

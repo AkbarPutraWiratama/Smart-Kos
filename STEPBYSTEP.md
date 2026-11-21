@@ -1,19 +1,29 @@
 # Smart Kos — Step by Step Implementation Guide
 
-## 1. Purpose
+## 1. Purpose & Core Conceptual Vision
 
-This document defines the implementation order for Smart Kos.
+This document defines the strict sequential implementation order for **Smart Kos**.
 
-The project must be developed incrementally from the existing TailAdmin Laravel template.
+### What is Smart Kos?
+**Smart Kos** is an internal, private property management platform tailored specifically for a single boarding house (*kos*) owner who owns and operates multiple physical locations across Indonesia. Unlike public aggregators or marketplace rental platforms (e.g., Mamikos, Airbnb), Smart Kos is an internal operational and financial management system designed to:
+- **Manage Multiple Physical Locations & Rooms**: Organize properties by location, floor, room number, standard rental rates, and facility/model room photographs.
+- **Dynamic Occupancy Tracking**: Monitor occupancy state derived strictly from active lease contracts rather than static flags.
+- **Tenant Lifecycle Enforcement**: Manage tenant profiles, active assignments, and automated status rules (such as automatic account deactivation after payment is overdue for more than 7 days, and permanent account deletion eligibility after remaining inactive for 7 days—while permanently safeguarding all financial records).
+- **Dual Payment Architecture**: Strictly separate automated Midtrans Virtual Account payments from manual bank transfers requiring proof upload and admin verification.
+- **Comprehensive Financial Intelligence (`financial_records`)**: Provide normalized general ledger reporting for profit & loss (P&L), 12-month cash flow, location contribution, full room financial recaps, and individual tenant payment recaps.
+- **Operational Expense & Payroll Management**: Record routine and incidental maintenance expenses, staff salaries, and cash advances.
+- **Tenant Complaints & Maintenance Ticketing**: Enable residents to submit issues with rate limiting, and allow staff/admin to resolve them with audit trails.
+- **Emergency Account Recovery**: Secure isolated Google OAuth recovery for the administrator, completely segregated from standard username + password authentication.
 
 The agent must follow this document together with:
 
 ```text
 AGENTS.md
 ERD.md
+SMARTKOSAGENTS.md
 ```
 
-The implementation order is important because later features depend on earlier database, authentication, authorization, and business logic.
+The implementation order is crucial because later features depend directly on earlier database schemas, authentication, authorization, and business domain invariants.
 
 ---
 
@@ -449,44 +459,44 @@ permissions table
 dynamic menu builder
 ```
 
-Recommended menu structure:
+Recommended menu structure (UI labels with English conceptual meanings):
 
 ### Guest
 
 ```text
-Landing Page
-Lokasi & Kamar
-Login
+Landing Page (Public Home)
+Lokasi & Kamar (Locations & Available Rooms)
+Login (Authentication Portal)
 ```
 
-### Penyewa
+### Penyewa (Tenant)
 
 ```text
-Dashboard
-Pembayaran
-Aduan
-Akun
+Dashboard (Tenant Overview & Announcements)
+Pembayaran (Payment Portal & History)
+Aduan (Complaint Submission & Tickets)
+Akun (Account Settings & Profile)
 ```
 
-### Staff
+### Staff (Operational Staff / Caretaker)
 
 ```text
-Dashboard
-Status Pembayaran Penyewa
-Tindakan Aduan
-Akun
+Dashboard (Daily Tasks & Property Summary)
+Status Pembayaran Penyewa (Tenant Payment & Due Date Status)
+Tindakan Aduan (Complaint Resolution & Actions)
+Akun (Account Settings)
 ```
 
-### Admin
+### Admin (Owner / Property Manager)
 
 ```text
-Dashboard
-Status Penyewa
-Tindakan Aduan
-Keuangan
-Lokasi & Kamar
-Pelanggan & Staff
-Akun
+Dashboard (Executive Multi-Location Overview)
+Status Penyewa (Tenant Occupancy & Status)
+Tindakan Aduan (Complaints & High-Priority Actions)
+Keuangan (Financial Center, Cash Flow & Recaps)
+Lokasi & Kamar (Location & Room Configuration)
+Pelanggan & Staff (Tenants & Staff Account Management)
+Akun (Account Settings)
 ```
 
 Connect the menu to the existing TailAdmin sidebar with the smallest possible modification.
@@ -1098,7 +1108,7 @@ Approved    Rejection Reason
 
 ---
 
-# 33. Phase 27 — Payment History
+# 33. Phase 27 — Payment History (Completed)
 
 Both payment mechanisms must preserve history.
 
@@ -1121,15 +1131,15 @@ Historical records must remain reportable.
 
 ---
 
-# 34. Phase 28 — Financial Reporting Layer
+# 34. Phase 28 — Financial Reporting Layer (Completed)
 
-Create:
+Create & implement:
 
 ```text
 financial_records
 ```
 
-This is the reporting layer for:
+This is the comprehensive reporting layer for:
 
 ```text
 income
@@ -1138,6 +1148,8 @@ cash flow
 profit/loss
 monthly reporting
 location reporting
+room reporting (full room financial recap)
+tenant reporting (individual tenant financial recap)
 ```
 
 Do not duplicate every operational field from payment/expense tables into this table.
@@ -1149,9 +1161,31 @@ reference_type
 reference_id
 ```
 
+### Comprehensive Multi-Tab Financial Reporting Requirements:
+1. **Cash Flow & Location Summary (Overview)**:
+   - 12-Month cash flow breakdown (monthly income, expense, net cash flow, surplus/deficit status)
+   - Location performance breakdown (income, expense, net profit, contribution percentage)
+   - Profit & Loss (P&L) summary metric cards (Total Income, Total Expense, Net Profit/Loss, Total Transactions)
+2. **Room Financial Recap (Full Room Performance)**:
+   - Comprehensive breakdown of all rooms across all active locations
+   - Occupancy status (Occupied / Vacant) & active tenant details (name and contact number)
+   - Monthly rental rate snapshot / active rent amount
+   - Total income collected from each room (both Midtrans Virtual Account & verified Manual Transfer)
+   - Current period payment status (Paid / Pending Verification / Unpaid / Vacant)
+   - Receivables, arrears calculation, and payment due date tracking
+3. **Tenant Financial Recap (Individual Tenant Performance)**:
+   - Breakdown per tenant profile (User role: tenant / penyewa)
+   - Contact details, assigned room number, and kos location
+   - Total verified rental payments across active and historical assignments
+   - Total verified transactions count & frequency
+   - Current payment status (Paid / Pending Verification / Unpaid / No Active Lease) & days until due / overdue tracking
+4. **Financial Transaction Records (General Ledger / Journal)**:
+   - Searchable and paginated ledger of all financial transactions with source reference links (`reference_type`, `reference_id`)
+   - Filterable by location, year, month, and transaction type (income / expense)
+
 ---
 
-# 35. Phase 29 — Expense Management
+# 35. Phase 29 — Expense Management (Completed)
 
 Admin can record:
 
@@ -1195,60 +1229,73 @@ recorded_by
 
 ---
 
-# 36. Phase 30 — Payroll and Cash Advance
+# 36. Phase 30 — Payroll and Cash Advance (Completed)
 
-Implement:
+Staff payroll and cash advance management has been implemented with general ledger synchronization and historical preservation:
 
-```text
-payroll_records
-cash_advances
-```
+### 1. Database & Domain Models
 
-Payroll supports:
+- **`payroll_records`**:
+  - `staff_id`: References `users` (staff role)
+  - `recorded_by`: Administrator who processed the payroll
+  - `gross_amount`: Total gross salary before deductions
+  - `cash_advance_deduction`: Cash advance repayment deducted from salary
+  - `net_amount`: Net salary disbursed to staff (`net = gross - deduction`)
+  - `payment_date`: Date when payment was disbursed
+  - `notes`: Additional notes or salary breakdown details
+  - Automatically synchronizes to `financial_records` (`type: expense`, `reference_type: 'payroll'`) with immediate cleanup on deletion
 
-```text
-gross salary
-cash advance deduction
-net salary
-payment date
-```
+- **`cash_advances`**:
+  - `staff_id`: References `users` (staff role)
+  - `recorded_by`: Administrator who approved/recorded the advance
+  - `amount`: Disbursed advance amount
+  - `advance_date`: Date when advance was given
+  - `status`: Lifecycle state (`outstanding`, `partially_repaid`, `repaid`, `cancelled`)
+  - `notes`: Purpose or emergency notes
 
-Cash advance supports:
+### 2. Architectural Invariants & Business Logic
 
-```text
-amount
-advance date
-status
-notes
-```
+- **Mathematical Consistency**: Net amount is calculated as `gross_amount - cash_advance_deduction` with database validation.
+- **Automated Advance Settlement**: Option to automatically apply salary deduction towards oldest outstanding cash advances (`status: repaid` or `partially_repaid`).
+- **Financial Ledger Sync**: Payroll records are posted as operational expenses in `financial_records`, automatically feeding into the Cash Flow and Profit & Loss (P&L) reporting layer.
+- **Account Lifecycle Invariant**: Historical payroll records and cash advance histories survive staff account deactivation. Staff members with historical financial transactions cannot be deleted.
 
-Historical records must survive staff deactivation.
+### 3. User Interface & Administration
+
+- Accessible via `/admin/payroll` and seamlessly linked from the Staff Management tabs (`Akun Penyewa`, `Akun Staff Kos`, `Penggajian & Kasbon Staff`) and the Finance Dashboard (`/admin/finance`).
+- Interactive TailAdmin Alpine.js modals for creating and editing payroll records with live net salary calculation and reactive outstanding advance alerts.
+- Dedicated tabbed view for Cash Advances with quick status updates and filterable records.
 
 ---
 
-# 37. Phase 31 — Cash Flow
+# 37. Phase 31 — Cash Flow (Completed)
 
-Build monthly visualization:
+Monthly cash flow visualization comparing Income vs Expense has been implemented using TailAdmin ApexCharts and real database records:
 
-```text
-Income vs Expense
-```
+### 1. Visualization & User Interface Architecture
 
-Example:
+- **TailAdmin Dual-Series Column/Bar Chart (`#cashFlowMonthlyChart`)**:
+  - **Pemasukan (Income)**: Rendered in green theme token (`#10B981`)
+  - **Pengeluaran (Expense)**: Rendered in red theme token (`#F43F5E`)
+  - **12 Months Timeline**: Spanning all 12 calendar months (`Jan`–`Des`) for the active filter year
+  - **Currency Tooltips**: Interactive tooltips displaying exact values formatted as Indonesian Rupiah (`Rp ...`)
+  - **Adaptive Dark Mode & Theme Sync**: Responsive to light/dark class switching and `'theme-changed'` window events
 
-```text
-Monthly Cash Flow
+- **Cash Flow Ratio & Proportion Panel (Visual Progress Bar Display)**:
+  - Interactive proportion progress bars reflecting the exact income vs expense percentage ratio:
+    ```text
+    Monthly Cash Flow Proportion
+    Income    ████████████████████ (75%)
+    Expense   ██████████           (25%)
+    Net Flow  Surplus Operasional  Rp 20.000.000
+    ```
+  - Displays monthly average income, monthly average expense, and identifies peak income/expense months.
 
-Income
-████████████████████
+### 2. Data Layer & Filtering
 
-Expense
-██████████
-```
-
-Use the existing TailAdmin chart example as the starting UI.
-
-The chart must use actual database data.
+- Sourced strictly from normalized `financial_records` without hardcoded mockup numbers.
+- Fully filterable by Kos Location (`location_id`), Year (`year`), and Month (`month`).
+- Coexists alongside the detailed 12-month general ledger journal and location performance breakdown.
 
 ---
 

@@ -1,3 +1,48 @@
+# Smart Kos — Multi-Location Boarding House Management System
+
+> **Smart Kos** is an internal, private property management platform developed with **Laravel 12**, **Tailwind CSS v4**, **Alpine.js v3**, and the **TailAdmin Laravel** template foundation. It is built specifically for a single boarding house (*kos*) owner managing multiple properties across Indonesia.
+
+---
+
+## 🏢 What is Smart Kos? (Conceptual Overview & Core Vision)
+
+A **"Kos"** (or *kos-kosan*) is an Indonesian residential boarding house offering rental rooms for students and workers on monthly or yearly lease terms.
+
+Unlike public marketplace or aggregator platforms (e.g. Mamikos, Airbnb) designed for discovery and public booking, **Smart Kos** is a private, multi-location operational and financial platform designed for the owner and their staff to:
+- **Centralize Multi-Location Management**: Monitor rooms, floors, standard rental rates, and property media (exterior location photos vs. interior room sample models) across multiple distinct kos properties.
+- **Dynamic Occupancy Derivation**: Calculate room occupancy automatically from active `room_assignments` rather than mutable flags, guaranteeing real-time state integrity.
+- **Enforce Tenant Account Lifecycles**:
+  - Automatically deactivate tenant accounts when rent payments are overdue for more than 7 days.
+  - Allow permanent deletion of inactive accounts only after 7 days of inactivity.
+  - Permanently preserve all historical payment, verification, and financial records even after tenant accounts are removed.
+- **Dual Payment Processing Architecture**:
+  - **Midtrans Virtual Account (Automated Flow)**: Automated VA generation, webhook listener, and real-time settlement sync.
+  - **Manual Bank Transfer (Verification Flow)**: Bank transfer details submission, payment proof receipt upload, 10-minute rate limiting, and administrative review (Approval / Rejection).
+- **Comprehensive Financial Intelligence (`financial_records`)**:
+  - Unified general ledger normalizing income and expenses with source reference tracking (`reference_type`, `reference_id`).
+  - Executive Profit & Loss (P&L) metric cards (Total Income, Total Expense, Net Profit, Total Transactions).
+  - 12-Month cash flow breakdown with surplus/deficit status.
+  - Property location contribution and performance breakdown.
+  - **Full Room Financial Recap**: Complete occupancy status, active tenant details, rent rate, all-time and period revenue, and receivables/arrears calculation for every room.
+  - **Individual Tenant Financial Recap**: Historical payment tracking, total verified amounts, payment frequency, and due date/overdue monitoring per resident.
+- **Incident & Maintenance Ticketing**: Tenant complaint portal with a 10-minute submission cooldown, image uploads, and staff maintenance action tracking.
+- **Operational Expense & Payroll Tracking**: Routine utility tracking, maintenance logging, staff salary calculation with cash advance deductions, and cash advance tracking.
+- **Isolated Administrator Emergency Recovery**: Segregated Google OAuth identity verification via `/admin-recovery`, keeping primary login strictly username + password.
+
+---
+
+## 🛠 Technology Stack
+
+- **Backend**: Laravel 12 (PHP >= 8.2)
+- **Frontend / UI**: Blade Templates, Tailwind CSS v4 (`@theme`), Alpine.js v3
+- **Asset Bundling**: Vite 7 via `laravel-vite-plugin`
+- **Template Foundation**: Upstream TailAdmin Laravel (Modular Blade components, dark mode, RTL layout architecture)
+- **Database**: MySQL (SQLite for testing environment)
+- **Payment Gateway**: Midtrans Virtual Account & Manual Bank Transfer
+- **Testing Framework**: Pest PHP & PHPUnit Feature Tests
+
+---
+
 # TailAdmin Laravel - Tailwind CSS Free Laravel Dashboard
 
 **TailAdmin Laravel** is a modern, production-ready admin dashboard template powered by **Laravel 12**, **Tailwind CSS v4**, **Alpine.js**, and a clean, modular architecture. TailAdmin is one of the most popular Tailwind CSS dashboard now also available for Larvael. It’s designed for building fast, scalable admin panels, CRM dashboards, SaaS backends, and any data-driven application where clarity and performance matter.
