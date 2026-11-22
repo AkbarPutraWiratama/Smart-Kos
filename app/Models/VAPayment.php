@@ -12,6 +12,8 @@ class VAPayment extends Model
 {
     use HasFactory;
 
+    protected $appends = ['status_label'];
+
     public const STATUS_PENDING = 'pending';
     public const STATUS_SETTLEMENT = 'settlement';
     public const STATUS_EXPIRED = 'expired';
@@ -109,6 +111,11 @@ class VAPayment extends Model
             self::STATUS_REFUND => 'Dikembalikan',
             default => ucfirst((string) $this->transaction_status),
         };
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->statusLabel();
     }
 
     /**

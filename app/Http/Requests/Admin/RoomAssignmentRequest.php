@@ -20,6 +20,7 @@ class RoomAssignmentRequest extends FormRequest
             'room_id'    => ['required', 'exists:rooms,id'],
             'start_date' => ['required', 'date'],
             'end_date'   => ['required', 'date'],
+            'payment_cycle' => ['required', 'in:monthly,yearly'],
         ];
     }
 
@@ -51,16 +52,25 @@ class RoomAssignmentRequest extends FormRequest
                 }
             }
 
-            // Validate end_date is at least 1 month after start_date
+            // Validate the locked end date against the selected payment cycle.
             $startDate = $this->input('start_date');
             $endDate   = $this->input('end_date');
 
             if ($startDate && $endDate) {
                 $start = \Carbon\Carbon::parse($startDate);
                 $end   = \Carbon\Carbon::parse($endDate);
+                $cycle = $this->input('payment_cycle', 'monthly');
 
-                if ($end->lt($start->copy()->addMonth())) {
-                    $v->errors()->add('end_date', 'Tanggal berakhir sewa minimal 1 bulan dari tanggal mulai sewa.');
+                $expectedEnd = $cycle === 'yearly'
+                    ? $start->copy()->addYearsNoOverflow(1)
+                    : $start->copy()->addMonthsNoOverflow(1);
+
+                if (! $end->equalTo($expectedEnd)) {
+                    $message = $cycle === 'yearly'
+                        ? 'Tanggal berakhir sewa harus tepat 1 tahun dari tanggal mulai.'
+                        : 'Tanggal berakhir sewa harus tepat 1 bulan dari tanggal mulai.';
+
+                    $v->errors()->add('end_date', $message);
                 }
             }
 

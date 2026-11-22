@@ -157,6 +157,9 @@ erDiagram
         date end_date
         enum status
         decimal rent_amount_snapshot
+        enum payment_cycle
+        tinyint billing_due_day
+        date next_due_date
         timestamp deactivated_at
         timestamp created_at
         timestamp updated_at
@@ -604,6 +607,9 @@ start_date
 end_date
 status
 rent_amount_snapshot
+payment_cycle
+billing_due_day
+next_due_date
 deactivated_at
 created_at
 updated_at
@@ -1488,6 +1494,18 @@ while occupancy is derived from assignment.
 # 32. Payment Deadline Logic
 
 Payment deadline should be associated with the active room assignment and its payment schedule.
+
+Room assignments support two billing cycles:
+
+```text
+monthly
+yearly
+```
+
+`billing_due_day` stores the day selected by the assignment start date.
+Monthly due dates use that day in every month and clamp to the final day of shorter months.
+Yearly due dates keep the same month and day as the assignment start date and clamp February 29 to February 28 in non-leap years.
+`next_due_date` provides a stored reportable due-date reference for the active payment cycle.
 
 The application can calculate:
 

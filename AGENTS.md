@@ -4,6 +4,8 @@
 >
 > - **Primary Rule**: Preserve the upstream TailAdmin Laravel template and extend it minimally.
 > - **Mandatory Copy-First**: Never build UI from scratch if TailAdmin provides an example. Search, COPY, place in Smart Kos path (`resources/views/pages/{role}/*` or `resources/views/components/smart-kos/*`), and adapt.
+- **Mandatory Modular Views**: Never create or maintain a monolithic Blade feature page. Split large screens into feature-named Blade files under `resources/views/{role}/{feature}/` or directly under `resources/views/{role}/` when the project convention already uses that structure. The main view must act as an orchestrator.
+- **Feature-Named Files**: Do not name primary feature views `index.blade.php`. Use names that describe the feature, for example `tenant-status.blade.php`, `manual-verification.blade.php`, `location-management.blade.php`, or `announcement-history.blade.php`.
 > - **Command Security Policy**: Commands are **DEFAULT-DENY**. Only execute explicitly allowlisted commands listed in `SMARTKOSAGENTS.md`. Never run destructive database commands (`migrate:fresh`, `db:wipe`), unauthorized package installs, or shell code execution.
 > - **Architectural Invariants**: Central `users` table, isolated `/admin-recovery` via Google OAuth, strict separation between Midtrans VA and Manual Payment flows, rate limits (10m), and permanent preservation of financial history.
 
@@ -58,6 +60,9 @@ routes/
 - **New Page**:
   - Add route in `routes/web.php`.
   - Create Blade view in `resources/views/pages/<category>/<page-name>.blade.php`.
+  - For role/admin feature screens, prefer `resources/views/<role>/<feature-name>.blade.php` over generic `index.blade.php`.
+  - Split tables, cards, modals, tabs, filters, and confirmation dialogs into feature-named Blade partials or components when they exceed a small, readable responsibility.
+  - The primary Blade file should compose modular sections and must not grow into a monolithic 500+ line feature implementation.
   - Extend the appropriate layout: `@extends('layouts.app')` for dashboard pages or `@extends('layouts.fullscreen-layout')` for auth/error/utility pages.
 - **New Reusable Component**:
   - Domain-specific component: `resources/views/components/<feature>/<component-name>.blade.php`.

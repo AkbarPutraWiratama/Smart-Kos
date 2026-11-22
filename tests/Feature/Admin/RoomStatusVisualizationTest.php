@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Location;
+use App\Models\ManualPayment;
 use App\Models\Room;
 use App\Models\RoomAssignment;
 use App\Models\TenantProfile;
@@ -97,7 +98,7 @@ class RoomStatusVisualizationTest extends TestCase
         $response->assertSee('101');
         $response->assertSee('Kosong');
         $response->assertSee('Rp 1.200.000');
-        $response->assertSee('+ Tugaskan');
+        $response->assertSee('Isi Kamar');
     }
 
     public function test_visualization_handles_2_floors_by_5_rooms_layout(): void
@@ -132,7 +133,7 @@ class RoomStatusVisualizationTest extends TestCase
         $response->assertSee('Lantai 2');
         $response->assertSee('Lantai 1');
         $response->assertSee('grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5', false);
-        $response->assertSee('Terkunci dari Visualisasi');
+        $response->assertSee('Kamar dikunci dari Visualisasi');
         $response->assertSee('isRoomLocked = true', false);
 
         // Check Floor 2 rooms
@@ -144,6 +145,57 @@ class RoomStatusVisualizationTest extends TestCase
         foreach (['001', '002', '003', '004', '005'] as $num) {
             $response->assertSee($num);
         }
+    }
+
+    public function test_pending_manual_payment_automatically_makes_room_card_yellow(): void
+    {
+        $room = Room::create([
+            'location_id' => $this->location->id,
+            'floor_name'  => 1,
+            'room_number' => 101,
+            'rent_amount' => 1200000,
+            'status'      => 'active',
+        ]);
+
+        $tenantUser = User::factory()->create([
+            'name'     => 'Penyewa Verifikasi',
+            'role'     => 'penyewa',
+            'status'   => 'active',
+        ]);
+
+        $profile = TenantProfile::create([
+            'user_id' => $tenantUser->id,
+            'phone'   => '081234567890',
+        ]);
+
+        $assignment = RoomAssignment::create([
+            'room_id'              => $room->id,
+            'tenant_id'            => $profile->id,
+            'start_date'           => now()->subMonth()->toDateString(),
+            'status'               => 'active',
+            'rent_amount_snapshot' => 1200000,
+        ]);
+
+        ManualPayment::create([
+            'room_assignment_id'  => $assignment->id,
+            'submitted_by'        => $tenantUser->id,
+            'amount'              => 1200000,
+            'bank_name'           => 'BCA',
+            'bank_account_number' => '123456789',
+            'proof_path'          => 'payment-proofs/pending.jpg',
+            'status'              => 'pending',
+            'submitted_at'        => now(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.tenants.index', [
+            'location_id' => $this->location->id,
+            'tab'         => 'visualization',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee('border-warning-300 bg-warning-100', false);
+        $response->assertSee('bg-warning-200 text-warning-700', false);
+        $response->assertDontSee('border-error-300 bg-error-100', false);
     }
 
     public function test_staff_detail_level_hides_financial_figures(): void
@@ -175,7 +227,7 @@ class RoomStatusVisualizationTest extends TestCase
         );
 
         $this->assertStringContainsString('Rp 1.750.000', $adminHtml);
-        $this->assertStringContainsString('+ Tugaskan', $adminHtml);
+        $this->assertStringContainsString('Isi Kamar', $adminHtml);
     }
 }
 

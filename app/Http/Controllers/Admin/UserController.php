@@ -47,7 +47,7 @@ class UserController extends Controller
             'inactive' => User::where('role', 'penyewa')->where('status', 'inactive')->count(),
         ];
 
-        return view('admin.users.index', compact('tenants', 'metrics'));
+        return view('admin.users.tenant-management', compact('tenants', 'metrics'));
     }
 
     /**

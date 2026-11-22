@@ -18,10 +18,19 @@ class RoomAssignment extends Model
         'end_date',
         'status',
         'rent_amount_snapshot',
+        'payment_cycle',
+        'billing_due_day',
+        'next_due_date',
         'deactivated_at',
     ];
 
-    protected $appends = ['has_pending_payment'];
+    protected $appends = [
+        'has_pending_payment',
+        'payment_status',
+        'deadline_label',
+        'deadline_color',
+        'deadline_badge_class',
+    ];
 
     protected function casts(): array
     {
@@ -29,6 +38,8 @@ class RoomAssignment extends Model
             'start_date' => 'date',
             'end_date' => 'date',
             'rent_amount_snapshot' => 'decimal:2',
+            'billing_due_day' => 'integer',
+            'next_due_date' => 'date',
             'deactivated_at' => 'datetime',
         ];
     }
@@ -63,20 +74,41 @@ class RoomAssignment extends Model
      */
     public function getPaymentDueDate(): \Carbon\Carbon
     {
-        if ($this->end_date) {
-            return $this->end_date->copy()->startOfDay();
-        }
-
         $today = now()->startOfDay();
         $start = $this->start_date ? $this->start_date->copy()->startOfDay() : $today;
-        $dayOfMonth = $start->day;
+        $dueDay = (int) ($this->billing_due_day ?: $start->day);
 
-        $cycleDue = $today->copy()->day(min($dayOfMonth, $today->daysInMonth));
+        if ($this->payment_cycle === 'yearly') {
+            $dueMonth = $start->month;
+            $dueYear = $today->year;
+            $daysInDueMonth = \Carbon\Carbon::create($dueYear, $dueMonth, 1)->daysInMonth;
+            $cycleDue = $today->copy()
+                ->month($dueMonth)
+                ->day(min($dueDay, $daysInDueMonth));
 
-        // If today is past the cycle due date and already paid, next cycle is next month
+            if ($this->isPaidForCurrentPeriod() && $cycleDue->lte($today)) {
+                $nextYear = $today->copy()->addYear();
+                $daysInNextMonth = \Carbon\Carbon::create($nextYear->year, $dueMonth, 1)->daysInMonth;
+
+                return $nextYear
+                    ->month($dueMonth)
+                    ->day(min($dueDay, $daysInNextMonth))
+                    ->startOfDay();
+            }
+
+            return $cycleDue;
+        }
+
+        $daysInCurrentMonth = $today->daysInMonth;
+        $cycleDue = $today->copy()->day(min($dueDay, $daysInCurrentMonth));
+
         if ($this->isPaidForCurrentPeriod() && $cycleDue->lte($today)) {
             $nextMonth = $today->copy()->addMonth();
-            return $nextMonth->day(min($dayOfMonth, $nextMonth->daysInMonth));
+            $daysInNextMonth = $nextMonth->daysInMonth;
+
+            return $nextMonth
+                ->day(min($dueDay, $daysInNextMonth))
+                ->startOfDay();
         }
 
         return $cycleDue;
@@ -120,10 +152,32 @@ class RoomAssignment extends Model
     public function getHasPendingPaymentAttribute(): bool
     {
         if ($this->relationLoaded('manualPayments')) {
-            return $this->manualPayments->isNotEmpty();
+            return $this->manualPayments->contains(
+                fn (ManualPayment $payment): bool => $payment->isPending()
+            );
         }
 
         return $this->hasPendingPayment();
+    }
+
+    public function getPaymentStatusAttribute(): string
+    {
+        return $this->getPaymentStatus();
+    }
+
+    public function getDeadlineLabelAttribute(): string
+    {
+        return $this->getDeadlineLabel();
+    }
+
+    public function getDeadlineColorAttribute(): string
+    {
+        return $this->getDeadlineColor();
+    }
+
+    public function getDeadlineBadgeClassAttribute(): string
+    {
+        return $this->getDeadlineBadgeClass();
     }
 
     /**

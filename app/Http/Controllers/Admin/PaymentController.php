@@ -58,7 +58,7 @@ class PaymentController extends Controller
         $rejectedCount = ManualPayment::rejected()->count();
         $totalApprovedAmount = ManualPayment::approved()->sum('amount');
 
-        return view('admin.payments.index', compact(
+        return view('admin.payments.manual-verification', compact(
             'payments',
             'statusFilter',
             'search',

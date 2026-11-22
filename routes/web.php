@@ -166,6 +166,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Tenant Room Assignment (Phase 15)
     Route::get('/tenants', [TenantAssignmentController::class, 'index'])->name('tenants.index');
     Route::post('/assignments', [TenantAssignmentController::class, 'store'])->name('assignments.store');
+    Route::patch('/assignments/{assignment}/price', [TenantAssignmentController::class, 'updatePrice'])->name('assignments.update-price');
     Route::patch('/assignments/{assignment}/change-room', [TenantAssignmentController::class, 'changeRoom'])->name('assignments.change-room');
     Route::post('/assignments/{assignment}/end', [TenantAssignmentController::class, 'endAssignment'])->name('assignments.end');
 
@@ -175,8 +176,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/payments/{payment}/reject', [AdminPaymentController::class, 'reject'])->name('payments.reject');
 
     // Dummy placeholder pages (sidebar links)
-    Route::get('/complaints', fn () => view('admin.complaints.index'))->name('complaints.index');
-    Route::get('/finance', fn () => view('admin.finance.index'))->name('finance.index');
+    Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
+    Route::get('/finance', fn () => view('admin.finance.finance-overview'))->name('finance.index');
     Route::get('/account', fn () => view('admin.account'))->name('account');
 });
 

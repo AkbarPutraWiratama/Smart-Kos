@@ -42,7 +42,7 @@ class StaffController extends Controller
             'inactive' => User::where('role', 'staff')->where('status', 'inactive')->count(),
         ];
 
-        return view('admin.staff.index', compact('staffMembers', 'metrics'));
+        return view('admin.staff.staff-management', compact('staffMembers', 'metrics'));
     }
 
     /**

@@ -13,6 +13,8 @@ class ManualPayment extends Model
 {
     use HasFactory;
 
+    protected $appends = ['status_label', 'proof_url'];
+
     public const STATUS_PENDING = 'pending';
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REJECTED = 'rejected';
@@ -96,6 +98,11 @@ class ManualPayment extends Model
         };
     }
 
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->statusLabel();
+    }
+
     /**
      * Tailwind CSS badge styling classes for status.
      */
@@ -126,6 +133,11 @@ class ManualPayment extends Model
         }
 
         return Storage::disk('public')->url($this->proof_path);
+    }
+
+    public function getProofUrlAttribute(): ?string
+    {
+        return $this->proofUrl();
     }
 
     /**

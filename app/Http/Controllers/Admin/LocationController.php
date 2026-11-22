@@ -20,7 +20,7 @@ class LocationController extends Controller
             $q->where('status', 'active');
         }])->latest()->get();
 
-        return view('admin.locations.index', compact('locations'));
+        return view('admin.locations.location-management', compact('locations'));
     }
 
     public function create(): View

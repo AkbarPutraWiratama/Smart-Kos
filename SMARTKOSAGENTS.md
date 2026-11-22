@@ -1341,6 +1341,56 @@ Auth/fullscreen/utility pages should use the appropriate existing fullscreen lay
 
 Do not create a second global dashboard layout.
 
+## 31.1 Mandatory Modular Blade Structure
+
+Monolithic Blade files are prohibited for Smart Kos feature screens.
+
+The primary Blade file must act as a page orchestrator:
+
+```text
+1. Set page state required by the page.
+2. Include small feature-named view sections.
+3. Compose TailAdmin layout and reusable components.
+4. Keep business logic outside Blade.
+```
+
+Feature-named files are mandatory. Do not use generic names such as `index.blade.php` for a primary Smart Kos feature view.
+
+Examples:
+
+```text
+resources/views/admin/tenants/tenant-status.blade.php
+resources/views/admin/tenants/status-modals.blade.php
+resources/views/admin/tenants/assigned-tenants.blade.php
+resources/views/admin/tenants/unassigned-tenants.blade.php
+resources/views/admin/payments/manual-verification.blade.php
+resources/views/admin/locations/location-management.blade.php
+resources/views/admin/posts/announcement-history.blade.php
+```
+
+Recommended modular boundaries:
+
+```text
+Feature overview and metrics
+Feature list/table
+Feature cards or visualization
+Feature-specific modals
+Feature-specific confirmation dialogs
+Reusable form sections
+Reusable payment/tenant/location panels
+```
+
+Rules:
+
+- Keep Blade files focused on a single responsibility.
+- Split long modal blocks, large tables, tab panels, filters, and repeated cards into separate feature-named files.
+- Prefer `@include` or Blade components for reusable page sections.
+- A page that becomes difficult to navigate, review, or modify must be split before additional feature code is added.
+- Avoid 500+ line feature monoliths unless there is no practical modular boundary.
+- Do not place complex business logic, database queries, or financial calculations in Blade.
+- All role-specific feature files must use feature names that describe their purpose.
+- Generic files may remain for shared TailAdmin primitives and layouts, but not as primary Smart Kos feature pages.
+
 ---
 
 # 32. Existing TailAdmin Component Reuse

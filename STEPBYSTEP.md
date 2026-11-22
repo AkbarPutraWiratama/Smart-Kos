@@ -745,6 +745,8 @@ Select location
 View unassigned tenants
 View assigned tenants
 Assign tenant to room
+Select monthly or yearly payment cycle
+Select complete start and end dates
 Change tenant room
 See assigned room
 ```
@@ -2078,6 +2080,36 @@ Test
     ↓
 Inspect diff
 ```
+
+UI implementation must also follow the modular Blade rule:
+
+```text
+Read feature requirements
+    ↓
+Identify independent page responsibilities
+    ↓
+Create feature-named Blade files
+    ↓
+Do not use index.blade.php for primary Smart Kos feature views
+    ↓
+Compose the feature from focused sections and components
+    ↓
+Test the route and rendered Blade
+```
+
+Do not create or extend a monolithic Blade feature page.
+
+Every primary Smart Kos feature view must have a purpose-specific filename:
+
+```text
+tenant-status.blade.php
+manual-verification.blade.php
+location-management.blade.php
+announcement-history.blade.php
+staff-management.blade.php
+```
+
+Large tables, modals, confirmation dialogs, filters, tabs, and visualization panels must be separated into focused Blade files or components.
 
 Never:
 

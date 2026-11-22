@@ -25,7 +25,7 @@ class PostController extends Controller
             ->orderByDesc('deleted_at')
             ->paginate(20);
 
-        return view('admin.posts.index', [
+        return view('admin.posts.announcement-history', [
             'trashedPosts' => $trashedPosts,
         ]);
     }
