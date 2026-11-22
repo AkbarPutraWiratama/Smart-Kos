@@ -145,47 +145,62 @@ class TenantDashboardTest extends TestCase
 
     public function test_payment_deadline_color_gray_when_more_than_7_days(): void
     {
-        // Set end_date 15 days from now
+        // Pin "today" to Jan 10 2025; due day = 25 → 15 days away → gray
+        Carbon::setTestNow(Carbon::create(2025, 1, 10, 0, 0, 0));
+
         $this->assignment->update([
-            'end_date' => now()->addDays(15)->toDateString(),
+            'billing_due_day' => 25,
+            'start_date'      => Carbon::create(2024, 12, 10)->toDateString(),
         ]);
 
-        $this->assertEquals('gray', $this->assignment->getDeadlineColor());
+        $this->assertEquals('gray', $this->assignment->fresh()->getDeadlineColor());
 
         $response = $this->actingAs($this->tenantUser)->get(route('penyewa.dashboard'));
 
         $response->assertStatus(200);
         $response->assertSee('> 7 hari (Aman)');
+
+        Carbon::setTestNow(null);
     }
 
     public function test_payment_deadline_color_yellow_when_less_than_7_days(): void
     {
-        // Set end_date 4 days from now
+        // Pin "today" to Jan 10 2025; due day = 14 → 4 days away → yellow
+        Carbon::setTestNow(Carbon::create(2025, 1, 10, 0, 0, 0));
+
         $this->assignment->update([
-            'end_date' => now()->addDays(4)->toDateString(),
+            'billing_due_day' => 14,
+            'start_date'      => Carbon::create(2024, 12, 10)->toDateString(),
         ]);
 
-        $this->assertEquals('yellow', $this->assignment->getDeadlineColor());
+        $this->assertEquals('yellow', $this->assignment->fresh()->getDeadlineColor());
 
         $response = $this->actingAs($this->tenantUser)->get(route('penyewa.dashboard'));
 
         $response->assertStatus(200);
         $response->assertSee('< 7 hari');
+
+        Carbon::setTestNow(null);
     }
 
     public function test_payment_deadline_color_red_when_today(): void
     {
-        // Set end_date today
+        // Pin "today" to Jan 10 2025; due day = 10 → 0 days → red
+        Carbon::setTestNow(Carbon::create(2025, 1, 10, 0, 0, 0));
+
         $this->assignment->update([
-            'end_date' => now()->toDateString(),
+            'billing_due_day' => 10,
+            'start_date'      => Carbon::create(2024, 12, 10)->toDateString(),
         ]);
 
-        $this->assertEquals('red', $this->assignment->getDeadlineColor());
+        $this->assertEquals('red', $this->assignment->fresh()->getDeadlineColor());
 
         $response = $this->actingAs($this->tenantUser)->get(route('penyewa.dashboard'));
 
         $response->assertStatus(200);
         $response->assertSee('Jatuh Tempo Hari Ini');
+
+        Carbon::setTestNow(null);
     }
 
     public function test_payment_status_reflects_paid_status(): void
