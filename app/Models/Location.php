@@ -52,4 +52,37 @@ class Location extends Model
     {
         return $this->hasMany(PostTarget::class);
     }
+
+    /**
+     * Generate an embeddable Google Maps iframe URL from google_maps_url or address.
+     */
+    public function getMapEmbedUrlAttribute(): string
+    {
+        $url = $this->google_maps_url;
+        $fallbackAddress = $this->address ?? $this->name;
+
+        // If it's already an embed URL, use as-is
+        if ($url && str_contains($url, 'maps/embed')) {
+            return $url;
+        }
+
+        if ($url && (str_contains($url, 'maps.google') || str_contains($url, 'google.com/maps') || str_contains($url, 'goo.gl/maps'))) {
+            $parsed = parse_url($url);
+            parse_str($parsed['query'] ?? '', $qs);
+
+            if (! empty($qs['q'])) {
+                $query = $qs['q'];
+            } elseif (preg_match('~/@(-?\d+\.\d+),(-?\d+\.\d+)~', $url, $m)) {
+                $query = $m[1] . ',' . $m[2];
+            } elseif (preg_match('~/place/([^/@?]+)~', $url, $m)) {
+                $query = urldecode(str_replace('+', ' ', $m[1]));
+            } else {
+                $query = $fallbackAddress;
+            }
+
+            return 'https://maps.google.com/maps?q=' . urlencode($query) . '&output=embed&hl=id';
+        }
+
+        return 'https://maps.google.com/maps?q=' . urlencode($fallbackAddress) . '&output=embed&hl=id';
+    }
 }

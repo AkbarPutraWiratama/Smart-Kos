@@ -30,7 +30,8 @@
             </div>
             <div>
                 <label for="google_maps_url" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Link Google Maps</label>
-                <input id="google_maps_url" name="google_maps_url" type="url" value="{{ old('google_maps_url') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
+                <input id="google_maps_url" name="google_maps_url" type="url" placeholder="https://maps.google.com/..." value="{{ old('google_maps_url') }}" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Opsional. Link ini otomatis di-embed menjadi peta interaktif di halaman tamu/kamar kos. Jika kosong, peta otomatis menggunakan alamat kos di atas.</p>
                 @error('google_maps_url')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
             </div>
             <div>

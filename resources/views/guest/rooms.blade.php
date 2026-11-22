@@ -47,12 +47,16 @@
                 Daftar Lokasi & Ketersediaan Kamar
             </h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-                Pilih lokasi kos untuk melihat ketersediaan kamar secara transparan (hanya status ketersediaan tanpa informasi pribadi).
+                @if ($locations->count() === 1)
+                    Lihat ketersediaan kamar secara transparan (hanya status ketersediaan, tanpa informasi pribadi).
+                @else
+                    Pilih lokasi kos untuk melihat ketersediaan kamar secara transparan (hanya status ketersediaan tanpa informasi pribadi).
+                @endif
             </p>
         </div>
 
-        <!-- Location Filter Tabs -->
-        @if ($locations->isNotEmpty())
+        <!-- Location Filter Tabs: only shown when there are multiple locations -->
+        @if ($locations->count() > 1)
             <div class="flex flex-wrap gap-3 mb-8">
                 @foreach ($locations as $loc)
                     <a href="{{ route('guest.rooms', ['location_id' => $loc->id]) }}"
@@ -90,10 +94,11 @@
                     }
                 @endphp
 
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center">
-                    <div x-data="{ currentPhoto: 0, photos: @js($guestPhotos->values()) }" class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-900">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-stretch">
+                    {{-- Foto Kos (Besar) --}}
+                    <div x-data="{ currentPhoto: 0, photos: @js($guestPhotos->values()) }" class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-900 shadow-theme-xs h-72 sm:h-96 lg:h-full lg:min-h-[440px]">
                         @if ($guestPhotos->isNotEmpty())
-                            <img :src="photos[currentPhoto].url" alt="Foto {{ $selectedLocation->name }}" class="h-56 w-full object-cover sm:h-72" />
+                            <img :src="photos[currentPhoto].url" alt="Foto {{ $selectedLocation->name }}" class="h-full w-full object-cover min-h-[280px]" />
                             <!-- Photo Tag Badge -->
                             <div class="absolute top-3 start-3 z-10 pointer-events-none">
                                 <span class="rounded-lg px-2.5 py-1 text-xs font-semibold shadow-md backdrop-blur-md"
@@ -107,22 +112,70 @@
                                 <span class="absolute bottom-3 start-1/2 -translate-x-1/2 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white" x-text="`${currentPhoto + 1} / ${photos.length}`"></span>
                             @endif
                         @else
-                            <div class="flex h-56 items-center justify-center px-6 text-center text-sm text-gray-500 dark:h-72 dark:text-gray-400">Belum ada foto lokasi.</div>
+                            <div class="flex h-full min-h-[280px] items-center justify-center px-6 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada foto lokasi.</div>
                         @endif
                     </div>
 
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $selectedLocation->name }}</h2>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $selectedLocation->address }}</p>
-                        @if ($selectedLocation->description)
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">{{ $selectedLocation->description }}</p>
-                        @endif
-                        @if ($selectedLocation->google_maps_url)
-                            <a href="{{ $selectedLocation->google_maps_url }}" target="_blank" rel="noopener noreferrer"
-                                class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400">
-                                <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Buka di Google Maps
-                            </a>
+                    {{-- Informasi Kos + Embed Map Kotak Sejajar Pojok Bawah --}}
+                    <div class="flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300 border border-brand-200/80 dark:border-brand-500/20">
+                                    {{ $selectedLocation->floor_count }} Lantai
+                                </span>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-300 border border-success-200/80 dark:border-success-500/20">
+                                    {{ max(0, $selectedLocation->total_rooms - $selectedLocation->occupied_rooms) }} Kamar Kosong
+                                </span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1.5">{{ $selectedLocation->name }}</h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                                <span>{{ $selectedLocation->address }}</span>
+                            </p>
+                            @if ($selectedLocation->description)
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-2.5 leading-relaxed">{{ $selectedLocation->description }}</p>
+                            @endif
+                        </div>
+
+                        {{-- Embed Google Maps Kotak (Square: 1:1) sejajar pojok bawah foto kos --}}
+                        @php
+                            $embedUrl = $mapEmbedUrl ?? $selectedLocation->map_embed_url;
+                        @endphp
+                        @if ($embedUrl)
+                            <div class="mt-4 pt-2 flex flex-col items-start">
+                                <div class="mb-1.5 flex items-center justify-between w-48 sm:w-56 text-xs">
+                                    <span class="font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                                        <svg class="h-3.5 w-3.5 text-brand-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                                        Peta Lokasi
+                                    </span>
+                                    @if ($selectedLocation->google_maps_url)
+                                        <a href="{{ $selectedLocation->google_maps_url }}" target="_blank" rel="noopener noreferrer"
+                                            class="inline-flex items-center gap-1 text-[11px] font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400 transition">
+                                            <span>Buka Maps</span>
+                                            <svg class="w-3 h-3 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
+                                {{-- Kotak (Square: 1x1) Interaktif --}}
+                                <div class="w-48 h-48 sm:w-56 sm:h-56 aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 shadow-theme-xs">
+                                    <iframe
+                                        src="{{ $embedUrl }}"
+                                        class="w-full h-full border-0 pointer-events-auto"
+                                        allowfullscreen=""
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade"
+                                        title="Peta Lokasi {{ $selectedLocation->name }}"
+                                    ></iframe>
+                                </div>
+                            </div>
+                        @elseif ($selectedLocation->google_maps_url)
+                            <div class="mt-4 pt-2">
+                                <a href="{{ $selectedLocation->google_maps_url }}" target="_blank" rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-2 text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400">
+                                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                                    Buka di Google Maps
+                                </a>
+                            </div>
                         @endif
                     </div>
                 </div>

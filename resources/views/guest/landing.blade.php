@@ -12,7 +12,7 @@
                 <span class="text-xl font-bold text-gray-900 dark:text-white">Smart Kos</span>
             </div>
             <div class="flex items-center gap-4">
-                <a href="{{ route('guest.rooms') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">
+                <a href="{{ $singleLocationId ? route('guest.rooms', ['location_id' => $singleLocationId]) : route('guest.rooms') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">
                     Lokasi & Kamar
                 </a>
                 @auth
@@ -54,7 +54,7 @@
                 Smart Kos memberikan kemudahan pengelolaan kamar, pemantauan status okupansi, pembayaran fleksibel, serta penanganan aduan yang cepat dan transparan.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="{{ route('guest.rooms') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-6 py-3.5 text-base font-medium text-white shadow-theme-sm hover:bg-brand-600 transition">
+                <a href="{{ $singleLocationId ? route('guest.rooms', ['location_id' => $singleLocationId]) : route('guest.rooms') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-6 py-3.5 text-base font-medium text-white shadow-theme-sm hover:bg-brand-600 transition">
                     Lihat Lokasi & Kamar
                     <svg class="w-5 h-5 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
                 </a>

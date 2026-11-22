@@ -11,14 +11,18 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-
 class LocationController extends Controller
 {
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
         $locations = Location::with('photos')->withCount(['rooms', 'rooms as active_rooms_count' => function ($q) {
             $q->where('status', 'active');
         }])->latest()->get();
+
+        // Single-location shortcut: bypass the index list and go straight to the detail page.
+        if ($locations->count() === 1) {
+            return redirect()->route('admin.locations.show', $locations->first());
+        }
 
         return view('admin.locations.location-management', compact('locations'));
     }

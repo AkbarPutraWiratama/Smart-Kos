@@ -102,4 +102,23 @@ class GuestPagesTest extends TestCase
         $response->assertSee('legacy.jpg', false);
         $response->assertSee('extra1.jpg', false);
     }
+
+    public function test_guest_can_see_embedded_google_map_on_rooms_page(): void
+    {
+        $location = Location::create([
+            'name'            => 'Kos Peta Nyaman',
+            'address'         => 'Jl. Peta No. 99, Yogyakarta',
+            'google_maps_url' => 'https://maps.google.com/?q=-7.7828,110.3670',
+            'floor_count'     => 1,
+            'status'          => 'active',
+        ]);
+
+        $response = $this->get('/rooms?location_id='.$location->id);
+
+        $response->assertStatus(200);
+        $response->assertSee('Peta Lokasi');
+        $response->assertSee('maps.google.com/maps?q=', false);
+        $response->assertSee('-7.7828%2C110.3670', false);
+        $response->assertSee('output=embed', false);
+    }
 }
