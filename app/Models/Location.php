@@ -53,6 +53,11 @@ class Location extends Model
         return $this->hasMany(PostTarget::class);
     }
 
+    public function hasOccupiedRooms(): bool
+    {
+        return $this->rooms()->whereHas('activeAssignment')->exists();
+    }
+
     /**
      * Generate an embeddable Google Maps iframe URL from google_maps_url or address.
      */
@@ -66,12 +71,14 @@ class Location extends Model
             return $url;
         }
 
-        if ($url && (str_contains($url, 'maps.google') || str_contains($url, 'google.com/maps') || str_contains($url, 'goo.gl/maps'))) {
+        if ($url && (str_contains($url, 'maps.google') || str_contains($url, 'google.com/maps') || str_contains($url, 'goo.gl'))) {
             $parsed = parse_url($url);
             parse_str($parsed['query'] ?? '', $qs);
 
             if (! empty($qs['q'])) {
                 $query = $qs['q'];
+            } elseif (! empty($qs['query'])) {
+                $query = $qs['query'];
             } elseif (preg_match('~/@(-?\d+\.\d+),(-?\d+\.\d+)~', $url, $m)) {
                 $query = $m[1] . ',' . $m[2];
             } elseif (preg_match('~/place/([^/@?]+)~', $url, $m)) {

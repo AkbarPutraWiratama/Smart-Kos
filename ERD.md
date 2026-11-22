@@ -110,7 +110,7 @@ erDiagram
         bigint id PK
         varchar name
         text address
-        varchar google_maps_url
+        text google_maps_url
         text description
         varchar photo_path
         int floor_count

@@ -35,7 +35,7 @@ class GuestPagesTest extends TestCase
 
         $emptyRoom = Room::create([
             'location_id' => $location->id,
-            'floor_name' => 'Lantai 1',
+            'floor_name' => 1,
             'room_number' => '101',
             'rent_amount' => 1200000,
             'status' => 'active',
@@ -43,7 +43,7 @@ class GuestPagesTest extends TestCase
 
         $occupiedRoom = Room::create([
             'location_id' => $location->id,
-            'floor_name' => 'Lantai 1',
+            'floor_name' => 1,
             'room_number' => '102',
             'rent_amount' => 1200000,
             'status' => 'active',
@@ -72,9 +72,10 @@ class GuestPagesTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Kos Melati');
-        $response->assertSee('101');
+        $response->assertSee('Lantai 1');
+        $response->assertSee('Kamar 101');
         $response->assertSee('Tersedia');
-        $response->assertSee('102');
+        $response->assertSee('Kamar 102');
         $response->assertSee('Terisi');
 
         // Critical Privacy Invariant: Tenant personal names must NEVER be exposed

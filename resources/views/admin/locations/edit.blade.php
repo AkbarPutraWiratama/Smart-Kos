@@ -32,9 +32,9 @@
 				@error('address')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
 			</div>
 			<div>
-				<label for="google_maps_url" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Link Google Maps</label>
-				<input id="google_maps_url" name="google_maps_url" type="url" placeholder="https://maps.google.com/..." value="{{ old('google_maps_url', $location->google_maps_url) }}" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
-				<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Opsional. Link ini otomatis di-embed menjadi peta interaktif di halaman tamu/kamar kos. Jika kosong, peta otomatis menggunakan alamat kos di atas.</p>
+				<label for="google_maps_url" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Link Google Maps / Salin HTML</label>
+				<input id="google_maps_url" name="google_maps_url" type="text" placeholder="https://maps.google.com/... atau tempel Salin HTML" value="{{ old('google_maps_url', $location->google_maps_url) }}" oninput="const m = this.value.match(/src=[\'\']([^\'\']+)[\'\']/); if (m) this.value = m[1];" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
+				<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Bisa tempel link Google Maps, koordinat, atau kode Salin HTML (&lt;iframe...&gt;). Jika kosong, peta otomatis memakai alamat di atas.</p>
 				@error('google_maps_url')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
 			</div>
 			<div>
@@ -71,10 +71,19 @@
 
 			<div>
 				<label for="status" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-				<select id="status" name="status" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90">
-					<option value="active" @selected(old('status', $location->status) === 'active')>Aktif</option>
-					<option value="inactive" @selected(old('status', $location->status) === 'inactive')>Nonaktif</option>
-				</select>
+				@if ($hasActiveTenants)
+					<select id="status" name="status" disabled class="h-11 w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-100 px-4 text-sm text-gray-500 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+						<option value="active" selected>Aktif (Sedang Ditempati Penyewa)</option>
+					</select>
+					<input type="hidden" name="status" value="active" />
+					<p class="mt-1 text-xs text-warning-600 dark:text-warning-400">Status lokasi tidak dapat diubah ke nonaktif karena masih ada kamar yang sedang terisi oleh penyewa aktif.</p>
+				@else
+					<select id="status" name="status" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90">
+						<option value="active" @selected(old('status', $location->status) === 'active')>Aktif</option>
+						<option value="inactive" @selected(old('status', $location->status) === 'inactive')>Nonaktif</option>
+					</select>
+				@endif
+				@error('status')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
 			</div>
 
 			<!-- Bottom Action Buttons: Hapus Lokasi (level yang sama dengan Batal & Simpan Perubahan) -->

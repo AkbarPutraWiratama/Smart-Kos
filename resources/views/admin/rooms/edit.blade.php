@@ -33,7 +33,7 @@
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<div>
 					<label for="rent_amount" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Harga sewa per bulan</label>
-					<input id="rent_amount" name="rent_amount" type="number" min="0" step="0.01" value="{{ old('rent_amount', $room->rent_amount) }}" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
+					<input id="rent_amount" name="rent_amount" type="number" min="0" step="1" value="{{ old('rent_amount') !== null ? (int) old('rent_amount') : (int) $room->rent_amount }}" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:text-white/90" />
 					@error('rent_amount')<p class="mt-1 text-sm text-error-500">{{ $message }}</p>@enderror
 				</div>
 				<div>

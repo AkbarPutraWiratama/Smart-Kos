@@ -182,50 +182,48 @@
             </div>
 
             <!-- Legend -->
-            <div class="flex items-center gap-6 mb-6 text-sm font-medium">
+            <div class="flex items-center gap-4 sm:gap-6 mb-6 text-sm font-medium">
                 <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 rounded-md bg-success-500"></span>
-                    <span class="text-gray-700 dark:text-gray-300">Tersedia (Kosong)</span>
+                    <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">Tersedia</span>
+                    <span class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Siap Dihuni</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 rounded-md bg-error-500"></span>
-                    <span class="text-gray-700 dark:text-gray-300">Terisi</span>
+                    <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">Terisi</span>
+                    <span class="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Sedang Ditempati</span>
                 </div>
             </div>
 
             <!-- Rooms by Floor Layout -->
-            <div class="space-y-8">
+            <div class="space-y-6">
                 @forelse ($roomsByFloor as $floorName => $rooms)
-                    <div>
-                        <h3 class="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">
-                            {{ $floorName }}
-                        </h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <x-common.component-card
+                        :title="str_starts_with((string)$floorName, 'Lantai') ? $floorName : 'Lantai ' . $floorName"
+                        :desc="count($rooms) . ' kamar terdaftar (' . collect($rooms)->where('is_occupied', false)->count() . ' kamar kosong).'"
+                    >
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
                             @foreach ($rooms as $room)
-                                <div class="rounded-xl border p-4 text-center transition flex flex-col justify-between {{ $room['is_occupied'] ? 'border-error-200 bg-error-50/50 dark:border-error-500/20 dark:bg-error-500/5' : 'border-success-200 bg-success-50/50 dark:border-success-500/20 dark:bg-success-500/5' }}">
-                                    <div>
-                                        <p class="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                                            {{ $room['room_number'] }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                            Rp {{ number_format($room['rent_amount'], 0, ',', '.') }}/bln
-                                        </p>
+                                <div class="rounded-xl border border-gray-200 p-4 transition dark:border-gray-800 bg-white dark:bg-gray-800/80 shadow-theme-xs {{ $room['is_occupied'] ? 'bg-error-50/20 dark:bg-error-500/5' : 'hover:border-brand-500' }}">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800 dark:text-white/90">Kamar {{ $room['room_number'] }}</h4>
+                                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Rp {{ number_format($room['rent_amount'], 0, ',', '.') }} / bulan</p>
+                                        </div>
+                                        <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium {{ $room['is_occupied'] ? 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500' : 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500' }}">
+                                            {{ $room['is_occupied'] ? 'Terisi' : 'Tersedia' }}
+                                        </span>
                                     </div>
-                                    <div>
+                                    <div class="mt-3 flex items-center gap-1.5 text-xs {{ $room['is_occupied'] ? 'text-gray-400 dark:text-gray-500' : 'text-success-600 dark:text-success-400 font-medium' }}">
                                         @if ($room['is_occupied'])
-                                            <span class="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-error-500 text-white">
-                                                Terisi
-                                            </span>
+                                            <span>Kamar sedang dihuni</span>
                                         @else
-                                            <span class="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-success-500 text-white">
-                                                Tersedia
-                                            </span>
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                            <span>Siap ditempati</span>
                                         @endif
                                     </div>
                                 </div>
                             @endforeach
                         </div>
-                    </div>
+                    </x-common.component-card>
                 @empty
                     <div class="text-center py-12 text-gray-500 dark:text-gray-400">
                         Belum ada kamar yang terdaftar di lokasi ini.

@@ -105,13 +105,17 @@ class RoomViewController extends Controller
         }
 
         // Any Google Maps share / place / directions URL — convert to embed.
-        if ($url && (str_contains($url, 'maps.google') || str_contains($url, 'google.com/maps') || str_contains($url, 'goo.gl/maps'))) {
+        if ($url && (str_contains($url, 'maps.google') || str_contains($url, 'google.com/maps') || str_contains($url, 'goo.gl'))) {
             $parsed = parse_url($url);
             parse_str($parsed['query'] ?? '', $qs);
 
             // Prefer explicit q= param.
             if (! empty($qs['q'])) {
                 $query = $qs['q'];
+            }
+            // Support query= param as used in search API
+            elseif (! empty($qs['query'])) {
+                $query = $qs['query'];
             }
             // Extract lat,lng from place URL /@lat,lng,zoom syntax.
             elseif (preg_match('~/@(-?\d+\.\d+),(-?\d+\.\d+)~', $url, $m)) {

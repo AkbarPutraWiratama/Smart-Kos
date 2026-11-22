@@ -344,4 +344,120 @@ class LocationPhotosTest extends TestCase
         $responseGuest->assertSee('Foto Lokasi');
         $responseGuest->assertSee('Foto Kamar');
     }
+
+    public function test_occupied_location_status_cannot_be_changed_to_inactive(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $location = Location::create([
+            'name' => 'Kos Terisi Penuh',
+            'address' => 'Jl. Penuh No. 10',
+            'floor_count' => 2,
+            'status' => 'active',
+        ]);
+
+        $room = \App\Models\Room::create([
+            'location_id' => $location->id,
+            'floor_name' => 1,
+            'room_number' => 101,
+            'rent_amount' => 1200000,
+            'status' => 'active',
+        ]);
+
+        $tenantUser = User::factory()->create([
+            'role' => 'penyewa',
+            'status' => 'active',
+        ]);
+
+        $tenantProfile = \App\Models\TenantProfile::create([
+            'user_id' => $tenantUser->id,
+            'phone' => '081234567899',
+        ]);
+
+        $assignment = \App\Models\RoomAssignment::create([
+            'room_id' => $room->id,
+            'tenant_id' => $tenantProfile->id,
+            'start_date' => now()->toDateString(),
+            'status' => 'active',
+            'rent_amount_snapshot' => 1200000,
+        ]);
+
+        // Viewing edit page displays the warning and disabled state
+        $responseEdit = $this->actingAs($admin)->get(route('admin.locations.edit', $location));
+        $responseEdit->assertStatus(200);
+        $responseEdit->assertSee('Status lokasi tidak dapat diubah ke nonaktif karena masih ada kamar yang sedang terisi oleh penyewa aktif.');
+
+        // Viewing show page edit modal also displays the warning
+        $responseShow = $this->actingAs($admin)->get(route('admin.locations.show', $location));
+        $responseShow->assertStatus(200);
+        $responseShow->assertSee('Status lokasi tidak dapat diubah ke nonaktif karena masih ada kamar yang sedang terisi oleh penyewa aktif.');
+
+        // Attempting to update status to inactive should fail validation
+        $responseUpdate = $this->actingAs($admin)->put(route('admin.locations.update', $location), [
+            'name' => 'Kos Terisi Penuh',
+            'address' => 'Jl. Penuh No. 10',
+            'floor_count' => 2,
+            'status' => 'inactive',
+        ]);
+
+        $responseUpdate->assertSessionHasErrors(['status']);
+        $this->assertEquals('active', $location->fresh()->status);
+
+        // When assignment is ended (not active), status CAN be updated to inactive
+        $assignment->update(['status' => 'completed']);
+
+        $responseSuccess = $this->actingAs($admin)->put(route('admin.locations.update', $location), [
+            'name' => 'Kos Terisi Penuh',
+            'address' => 'Jl. Penuh No. 10',
+            'floor_count' => 2,
+            'status' => 'inactive',
+        ]);
+
+        $responseSuccess->assertRedirect(route('admin.locations.show', $location));
+        $this->assertEquals('inactive', $location->fresh()->status);
+    }
+
+    public function test_location_can_accept_iframe_html_or_raw_coordinates_for_maps(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $location = Location::create([
+            'name' => 'Kos Map Input Test',
+            'address' => 'Jl. Peta No. 1',
+            'floor_count' => 1,
+            'status' => 'active',
+        ]);
+
+        // 1. Submit raw Google Maps iframe tag (from "Salin HTML")
+        $iframeSnippet = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12345" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
+        $responseIframe = $this->actingAs($admin)->put(route('admin.locations.update', $location), [
+            'name' => 'Kos Map Input Test',
+            'address' => 'Jl. Peta No. 1',
+            'floor_count' => 1,
+            'status' => 'active',
+            'google_maps_url' => $iframeSnippet,
+        ]);
+
+        $responseIframe->assertRedirect(route('admin.locations.show', $location));
+        $this->assertEquals('https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12345', $location->fresh()->google_maps_url);
+
+        // 2. Submit raw coordinates (e.g. -7.782812, 110.367015)
+        $responseCoords = $this->actingAs($admin)->put(route('admin.locations.update', $location), [
+            'name' => 'Kos Map Input Test',
+            'address' => 'Jl. Peta No. 1',
+            'floor_count' => 1,
+            'status' => 'active',
+            'google_maps_url' => '-7.782812, 110.367015',
+        ]);
+
+        $responseCoords->assertRedirect(route('admin.locations.show', $location));
+        $this->assertStringContainsString('-7.782812', $location->fresh()->google_maps_url);
+        $this->assertStringContainsString('110.367015', $location->fresh()->google_maps_url);
+    }
 }

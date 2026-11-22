@@ -398,6 +398,7 @@
                                 id="amount"
                                 name="amount"
                                 type="number"
+                                step="1"
                                 value="{{ old('amount', (int)$rentAmount) }}"
                                 required
                                 min="1"
