@@ -1142,6 +1142,23 @@ monthly reporting
 location reporting
 ```
 
+The Finance report must let Admin select one reporting scope:
+
+```text
+All locations (overall)
+One location
+One room
+One person
+```
+
+The selected scope filters the financial records and their source records. A
+room scope belongs to its location. A person scope must support an individual
+tenant or staff member when the source transaction identifies that person;
+for example, rent payments are associated with the tenant and payroll is
+associated with the staff member. Keep the existing overall view as the
+default, and do not duplicate source transaction fields in `financial_records`
+just to implement these filters.
+
 Do not duplicate every operational field from payment/expense tables into this table.
 
 Instead maintain a source reference:

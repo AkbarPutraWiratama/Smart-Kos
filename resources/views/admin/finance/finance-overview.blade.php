@@ -1,25 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-	<x-common.page-breadcrumb pageTitle="Keuangan" />
-	<x-smart-kos.admin-dummy-page
-		title="Ringkasan Keuangan"
-		description="Ringkasan ini adalah data contoh untuk menyiapkan tampilan laporan keuangan Smart Kos."
-		:metrics="[
-			['label' => 'Pendapatan', 'value' => 'Rp 30 jt', 'note' => 'Bulan ini'],
-			['label' => 'Pengeluaran', 'value' => 'Rp 10 jt', 'note' => 'Bulan ini'],
-			['label' => 'Laba bersih', 'value' => 'Rp 20 jt', 'note' => 'Contoh'],
-			['label' => 'Tagihan tertunda', 'value' => 'Rp 4 jt', 'note' => 'Perlu ditinjau'],
-		]"
-		:columns="[
-			['label' => 'Jenis transaksi', 'key' => 'type'],
-			['label' => 'Lokasi', 'key' => 'location'],
-			['label' => 'Jumlah', 'key' => 'amount'],
-			['label' => 'Status', 'key' => 'status'],
-		]"
-		:rows="[
-			['type' => 'Pembayaran sewa', 'location' => 'Kos Melati', 'amount' => 'Rp 12.000.000', 'status' => 'Tercatat'],
-			['type' => 'Operasional', 'location' => 'Kos Anggrek', 'amount' => 'Rp 3.500.000', 'status' => 'Tercatat'],
-		]"
-	/>
+    <div class="space-y-6">
+        <x-common.page-breadcrumb pageTitle="Keuangan" />
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+            <h1 class="text-lg font-semibold text-gray-800 dark:text-white/90">Riwayat Pembayaran</h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Riwayat pembayaran Virtual Account dan transfer manual tetap tersimpan meskipun status penyewa atau kamar berubah.</p>
+        </div>
+
+        @include('admin.finance.payment-history')
+    </div>
 @endsection

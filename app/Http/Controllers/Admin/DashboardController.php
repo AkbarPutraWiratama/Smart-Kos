@@ -10,6 +10,7 @@ use App\Models\Post;
 use App\Models\Room;
 use App\Models\RoomAssignment;
 use App\Models\User;
+use App\Models\VAPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -47,6 +48,16 @@ class DashboardController extends Controller
 
         // ── Pending Manual Payment Verifications ──────────────────────────────
         $pendingVerificationsCount = ManualPayment::where('status', 'pending')->count();
+
+        $recentVaPayments = VAPayment::with(['roomAssignment.room.location', 'roomAssignment.tenantProfile.user'])
+            ->latest('id')
+            ->take(5)
+            ->get();
+
+        $recentManualPayments = ManualPayment::with(['roomAssignment.room.location', 'roomAssignment.tenantProfile.user', 'submittedBy'])
+            ->latest('id')
+            ->take(5)
+            ->get();
 
         // ── Payment Deadlines (all active assignments, admin sees rent amounts) ─
         $assignments = RoomAssignment::with([
@@ -117,6 +128,8 @@ class DashboardController extends Controller
             'emptyRooms'                => $emptyRooms,
             'totalActiveTenants'        => $totalActiveTenants,
             'pendingVerificationsCount' => $pendingVerificationsCount,
+            'recentVaPayments'          => $recentVaPayments,
+            'recentManualPayments'      => $recentManualPayments,
             'urgentPaymentsCount'       => $urgentPaymentsCount,
             'assignments'               => $assignments,
             'announcements'             => $announcements,

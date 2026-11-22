@@ -106,6 +106,7 @@ Route::get('/videos', function () {
 
 // Protected Smart Kos Role Routes
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\FinanceController as AdminFinanceController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
@@ -177,7 +178,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Dummy placeholder pages (sidebar links)
     Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
-    Route::get('/finance', fn () => view('admin.finance.finance-overview'))->name('finance.index');
+    Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
     Route::get('/account', fn () => view('admin.account'))->name('account');
 });
 

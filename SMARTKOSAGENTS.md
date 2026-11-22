@@ -767,6 +767,16 @@ php artisan migrate:fresh
 
 Allowed:
 
+```powershell
+Get-Content <path>
+Get-Content <path> -TotalCount <count>
+Get-Content <path> | Select-Object -Skip <count> -First <count>
+```
+
+The commands above are read-only and may be used to inspect project source and
+documentation. Do not use them to read protected secret files such as `.env`,
+`auth.json`, or key files.
+
 ```bash
 php -v
 composer -V

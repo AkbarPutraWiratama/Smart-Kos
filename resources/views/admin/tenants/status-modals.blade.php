@@ -98,10 +98,10 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <button type="button" @click="isEditAssignmentModalOpen = false; isChangeRoomModalOpen = true" class="rounded-xl border border-gray-200 px-3 py-2.5 text-xs font-medium text-gray-700 hover:border-brand-500 hover:bg-brand-50/30 dark:border-gray-700 dark:text-gray-300 dark:hover:border-brand-400 dark:hover:bg-brand-500/10">
+                    <button type="button" @click="isEditAssignmentModalOpen = false; isChangeRoomModalOpen = true" class="rounded-xl border border-warning-300 bg-warning-500 px-3 py-2.5 text-xs font-medium text-white shadow-theme-xs hover:border-warning-600 hover:bg-warning-600 active:scale-95 transition dark:border-warning-500/40">
                         Pindah Kamar
                     </button>
-                    <button type="button" @click="isEditAssignmentModalOpen = false; isEndAssignmentModalOpen = true" class="rounded-xl border border-gray-200 px-3 py-2.5 text-xs font-medium text-warning-700 hover:border-warning-500 hover:bg-warning-50/30 dark:border-gray-700 dark:text-warning-400 dark:hover:border-warning-400 dark:hover:bg-warning-500/10">
+                    <button type="button" @click="isEditAssignmentModalOpen = false; isEndAssignmentModalOpen = true" class="rounded-xl border border-error-300 bg-error-500 px-3 py-2.5 text-xs font-medium text-white shadow-theme-xs hover:border-error-600 hover:bg-error-600 active:scale-95 transition dark:border-error-500/40">
                         Akhiri Masa Sewa
                     </button>
                 </div>
