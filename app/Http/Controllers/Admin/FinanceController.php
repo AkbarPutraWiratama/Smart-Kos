@@ -37,6 +37,10 @@ class FinanceController extends Controller
             return redirect()->route('admin.profit-loss.index', $request->except('tab'));
         }
 
+        if ($request->query('tab') === 'arrears') {
+            return redirect()->route('admin.arrears.index', $request->except('tab'));
+        }
+
         // Ensure financial records are always accurately synchronized with approved payments and expenses
         FinancialRecordSyncService::syncIfNeeded();
 

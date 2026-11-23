@@ -49,7 +49,14 @@
             <span>Laba Rugi</span>
         </a>
 
-        {{-- Tab 6: Tunggakan (Upcoming Phase 33) --}}
+        {{-- Tab 6: Tunggakan (Phase 33) --}}
+        <a href="{{ route('admin.arrears.index') }}"
+           class="inline-flex items-center gap-2 border-b-2 py-3 px-1 text-sm font-medium whitespace-nowrap transition-colors {{ $active === 'arrears' ? 'border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400 font-semibold' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-700 dark:hover:text-gray-200' }}">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Tunggakan &amp; Piutang</span>
+        </a>
         <span class="inline-flex items-center gap-2 border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed whitespace-nowrap"
               title="Akan hadir di Phase 33 (Tenant Receivables / Arrears)">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

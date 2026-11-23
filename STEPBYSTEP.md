@@ -1376,7 +1376,7 @@ Calculate from the application/data layer.
 
 ---
 
-# 39. Phase 33 — Tenant Receivables / Arrears
+# 39. Phase 33 — Tenant Receivables / Arrears (Completed)
 
 Create an admin view for:
 
@@ -1403,6 +1403,26 @@ Allow filtering by:
 ```text
 location
 ```
+
+### Summary of Implementation:
+- **Routes & Controller**:
+  - `Admin\ArrearsController`: `index` under `/admin/arrears` (named `admin.arrears.index`).
+  - Redirect from `/admin/finance?tab=arrears` to `/admin/arrears`.
+- **Navigation & Tabs**:
+  - Keuangan tabs updated with Tab 6: **Tunggakan & Piutang** (`arrears`).
+  - Single sidebar menu `Keuangan` highlights properly when on `/admin/arrears*`.
+- **Backend Data Aggregation & Automated Sorting**:
+  - Automatically identifies overdue tenants where rent is unpaid for current period and no payment is pending verification (`getDaysUntilDue() < 0`).
+  - Automatic sorting strictly from **most overdue** ($\downarrow$) **least overdue** (`sortByDesc('days_overdue')`).
+  - Location filtering (`location_id`) and search query for tenant name/phone and room number.
+  - Computes total arrears amount, total overdue tenant count, maximum days overdue, and average overdue days at the application layer.
+- **Modular Views**:
+  - `arrears-hub.blade.php`: Orchestrator layout extending `layouts.app`.
+  - `arrears-metrics.blade.php`: KPI summary cards (Total Nominal Piutang, Penyewa Menunggak, Keterlambatan Terlama, Rata-rata Terlambat).
+  - `arrears-filters.blade.php`: Filter bar for kos location and search box.
+  - `arrears-table.blade.php`: Detailed tabular ledger showing Tenant, Location, Room, Payment Due Date, Days Overdue with urgency badge, Outstanding Amount, Total Arrears, and pre-filled WhatsApp billing reminder trigger.
+- **Testing**:
+  - `tests/Feature/Admin/TenantArrearsTest.php`: 8 feature tests covering guest/tenant/staff protection, identification of overdue tenants, accurate calculation of outstanding and total arrears, automatic sorting from most overdue to least overdue, location filtering, exclusion of paid and pending verification tenants, and tab redirection. All passed.
 
 ---
 

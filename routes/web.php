@@ -198,6 +198,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Profit and Loss Statement (Phase 32)
     Route::get('/profit-loss', [\App\Http\Controllers\Admin\ProfitLossController::class, 'index'])->name('profit-loss.index');
 
+    // Tenant Receivables and Arrears (Phase 33)
+    Route::get('/arrears', [\App\Http\Controllers\Admin\ArrearsController::class, 'index'])->name('arrears.index');
+
     // Dummy placeholder pages (sidebar links)
     Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
