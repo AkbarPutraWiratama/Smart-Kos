@@ -57,13 +57,15 @@
             </svg>
             <span>Tunggakan &amp; Piutang</span>
         </a>
-        <span class="inline-flex items-center gap-2 border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed whitespace-nowrap"
-              title="Akan hadir di Phase 33 (Tenant Receivables / Arrears)">
+
+        {{-- Tab 7: Rekapitulasi Keuangan (Phase 34) --}}
+        <a href="{{ route('admin.financial-recap.index') }}"
+           class="inline-flex items-center gap-2 border-b-2 py-3 px-1 text-sm font-medium whitespace-nowrap transition-colors {{ $active === 'recap' ? 'border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400 font-semibold' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-700 dark:hover:text-gray-200' }}">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            <span>Tunggakan</span>
-            <span class="rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[10px] font-semibold text-gray-400 dark:text-gray-500">Segera</span>
-        </span>
+            <span>Rekapitulasi</span>
+        </a>
+
     </nav>
 </div>

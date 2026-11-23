@@ -1426,7 +1426,7 @@ location
 
 ---
 
-# 40. Phase 34 — Financial Recap
+# 40. Phase 34 — Financial Recap (Completed)
 
 Admin can switch between:
 
@@ -1445,6 +1445,27 @@ net amount
 ```
 
 Use database queries/services rather than hardcoded UI values.
+
+## Summary of Implementation
+
+### Files Created
+- `app/Http/Controllers/Admin/FinancialRecapController.php` — Controller with `index()` supporting `view` (tenant|room), `location_id`, and `search` query params. All KPI metrics computed in the application layer from `FinancialRecord` and `RoomAssignment` models.
+- `resources/views/admin/financial-recap/financial-recap-hub.blade.php` — Main view orchestrator with view-mode toggle (Per Penyewa / Per Kamar).
+- `resources/views/admin/financial-recap/financial-recap-metrics.blade.php` — 4 KPI cards: Total Pembayaran Diterima, Total Piutang Tertunggak, Total Beban Operasional, Net Amount.
+- `resources/views/admin/financial-recap/financial-recap-filters.blade.php` — Filter bar with location dropdown and search input (preserves current view mode).
+- `resources/views/admin/financial-recap/financial-recap-tenant-table.blade.php` — Table showing per-tenant financial recap (payments, outstanding, net amount).
+- `resources/views/admin/financial-recap/financial-recap-room-table.blade.php` — Table showing per-room financial recap with proportional expense allocation.
+- `tests/Feature/Admin/FinancialRecapTest.php` — 16 feature tests covering access control, view modes, metric calculations, filtering, and finance tab redirect.
+
+### Files Modified
+- `routes/web.php` — Added `GET /admin/financial-recap` route with name `admin.financial-recap.index`.
+- `app/Http/Controllers/Admin/FinanceController.php` — Added `?tab=recap` redirect to financial recap page.
+- `resources/views/components/smart-kos/finance-tabs.blade.php` — Added Tab 7 (Rekapitulasi) and removed stale disabled "Tunggakan" placeholder.
+- `resources/views/layouts/sidebar.blade.php` — Highlighted Keuangan sidebar item for `/admin/financial-recap*` routes.
+
+### Test Results
+- Phase 34 specific: **16 tests, 61 assertions — all passing**
+- Full suite: **272 tests, 1172 assertions — all passing**
 
 ---
 

@@ -56,12 +56,14 @@
                        window.location.pathname.startsWith('/admin/cash-flow') ||
                        window.location.pathname.startsWith('/admin/profit-loss') ||
                        window.location.pathname.startsWith('/admin/arrears') ||
+                       window.location.pathname.startsWith('/admin/financial-recap') ||
                        current.startsWith('admin/finance') ||
                        current.startsWith('admin/expenses') ||
                        current.startsWith('admin/payroll') ||
                        current.startsWith('admin/cash-flow') ||
                        current.startsWith('admin/profit-loss') ||
-                       current.startsWith('admin/arrears');
+                       current.startsWith('admin/arrears') ||
+                       current.startsWith('admin/financial-recap');
             }
             return window.location.pathname === path || current === path.replace(/^\//, '');
         }

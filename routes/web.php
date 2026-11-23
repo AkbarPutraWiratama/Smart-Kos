@@ -201,6 +201,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Tenant Receivables and Arrears (Phase 33)
     Route::get('/arrears', [\App\Http\Controllers\Admin\ArrearsController::class, 'index'])->name('arrears.index');
 
+    // Financial Recap (Phase 34)
+    Route::get('/financial-recap', [\App\Http\Controllers\Admin\FinancialRecapController::class, 'index'])->name('financial-recap.index');
+
     // Dummy placeholder pages (sidebar links)
     Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
