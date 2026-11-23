@@ -1100,7 +1100,7 @@ Approved    Rejection Reason
 
 ---
 
-# 33. Phase 27 — Payment History
+# 33. Phase 27 — Payment History (Completed)
 
 Both payment mechanisms must preserve history.
 
@@ -1123,7 +1123,7 @@ Historical records must remain reportable.
 
 ---
 
-# 34. Phase 28 — Financial Reporting Layer
+# 34. Phase 28 — Financial Reporting Layer (Completed)
 
 Create:
 
@@ -1170,7 +1170,7 @@ reference_id
 
 ---
 
-# 35. Phase 29 — Expense Management
+# 35. Phase 29 — Expense Management ✅ COMPLETED
 
 Admin can record:
 

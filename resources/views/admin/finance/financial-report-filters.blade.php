@@ -52,17 +52,17 @@
     </form>
 
     {{-- Right: scope (all/location/room/person) + per-page as compact inline form --}}
-    <form method="GET" action="{{ route('admin.finance.index') }}" class="flex flex-wrap items-center gap-2">
+    <form method="GET" action="{{ route('admin.finance.index') }}" class="flex flex-wrap items-center gap-2" x-data="{ s: @js($scope) }">
         <input type="hidden" name="time_scope" value="{{ $timeScope }}">
         @if ($timeScope === 'month') <input type="hidden" name="month" value="{{ $month }}"> @endif
         @if ($timeScope === 'year') <input type="hidden" name="year" value="{{ $year }}"> @endif
 
         {{-- Scope selector --}}
-        <div class="flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-gray-800/60" x-data="{ s: @js($scope) }">
+        <div class="flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-gray-800/60">
             @foreach (['all' => 'Semua', 'location' => 'Lokasi', 'room' => 'Kamar', 'person' => 'Orang'] as $sv => $slabel)
                 <button
-                    type="{{ $sv === 'all' ? 'button' : 'button' }}"
-                    @click="s = '{{ $sv }}'"
+                    type="button"
+                    @click="s = '{{ $sv }}'; if ('{{ $sv }}' === 'all') { $nextTick(() => $el.closest('form').submit()); }"
                     class="rounded-md px-2.5 py-1 text-xs font-medium transition-all"
                     :class="s === '{{ $sv }}' ? 'bg-white text-gray-800 shadow-theme-xs dark:bg-gray-700 dark:text-white/90' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
                 >{{ $slabel }}</button>
@@ -71,7 +71,7 @@
         </div>
 
         {{-- Conditional sub-selectors --}}
-        <div x-data="{ s: @js($scope) }" class="flex items-center gap-2">
+        <div class="flex items-center gap-2">
             {{-- Location --}}
             <select
                 name="location_id"

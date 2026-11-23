@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinancialRecord;
 use App\Models\ManualPayment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -83,6 +84,23 @@ class PaymentController extends Controller
             'verified_by' => $request->user()->id,
             'verified_at' => now(),
         ]);
+
+        $payment->loadMissing(['roomAssignment.room', 'roomAssignment.tenantProfile.user']);
+
+        FinancialRecord::updateOrCreate(
+            [
+                'reference_type' => 'manual_payment',
+                'reference_id'   => $payment->id,
+            ],
+            [
+                'location_id'      => $payment->roomAssignment?->room?->location_id,
+                'recorded_by'      => $request->user()->id,
+                'type'             => 'income',
+                'description'      => 'Pembayaran Sewa Manual - Kamar ' . ($payment->roomAssignment?->room?->room_number ?? '—') . ' - ' . ($payment->roomAssignment?->tenantProfile?->user?->name ?? 'Penyewa'),
+                'amount'           => $payment->amount,
+                'transaction_date' => $payment->verified_at?->toDateString() ?? now()->toDateString(),
+            ]
+        );
 
         $tenantName = $payment->roomAssignment?->tenantProfile?->user?->name
             ?? $payment->submittedBy?->name

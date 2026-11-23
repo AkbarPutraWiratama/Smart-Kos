@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinancialRecord;
 use App\Models\MidtransVAAccount;
 use App\Models\RoomAssignment;
 use App\Models\VAPayment;
@@ -103,6 +104,32 @@ class MidtransWebhookController extends Controller
         }
 
         $vaPayment->save();
+
+        if ($normalizedStatus === 'settlement') {
+            $vaPayment->loadMissing(['roomAssignment.room', 'roomAssignment.tenantProfile.user', 'vaAccount.room']);
+
+            $locationId = $vaPayment->roomAssignment?->room?->location_id
+                ?? $vaPayment->vaAccount?->room?->location_id;
+            $roomNumber = $vaPayment->roomAssignment?->room?->room_number
+                ?? $vaPayment->vaAccount?->room?->room_number
+                ?? '—';
+            $tenantName = $vaPayment->roomAssignment?->tenantProfile?->user?->name ?? 'Penyewa';
+
+            FinancialRecord::updateOrCreate(
+                [
+                    'reference_type' => 'va_payment',
+                    'reference_id'   => $vaPayment->id,
+                ],
+                [
+                    'location_id'      => $locationId,
+                    'recorded_by'      => null,
+                    'type'             => 'income',
+                    'description'      => "Pembayaran Sewa VA Midtrans - Kamar {$roomNumber} - {$tenantName}",
+                    'amount'           => $vaPayment->amount,
+                    'transaction_date' => $vaPayment->paid_at?->toDateString() ?? now()->toDateString(),
+                ]
+            );
+        }
 
         Log::info('Midtrans payment updated via webhook', [
             'order_id'           => $orderId,
