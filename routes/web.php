@@ -204,8 +204,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Financial Recap (Phase 34)
     Route::get('/financial-recap', [\App\Http\Controllers\Admin\FinancialRecapController::class, 'index'])->name('financial-recap.index');
 
-    // Dummy placeholder pages (sidebar links)
-    Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
+    // Complaints Handling & Highlight (Phase 36 & 37)
+    Route::get('/complaints', [\App\Http\Controllers\Admin\ComplaintController::class, 'index'])->name('complaints.index');
+    Route::post('/complaints/{complaint}/actions', [\App\Http\Controllers\Admin\ComplaintController::class, 'storeAction'])->name('complaints.actions.store');
+    Route::patch('/complaints/{complaint}/highlight', [\App\Http\Controllers\Admin\ComplaintController::class, 'toggleHighlight'])->name('complaints.highlight');
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
     Route::get('/account', fn () => view('admin.account'))->name('account');
 });
@@ -225,7 +227,9 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::delete('/posts-trash/{id}/force', [StaffPostController::class, 'forceDestroy'])->name('posts.force-destroy');
     Route::delete('/posts-trash/destroy-all', [StaffPostController::class, 'destroyAll'])->name('posts.destroy-all');
     Route::get('/payments', fn () => view('staff.payments.index'))->name('payments.index');
-    Route::get('/complaints', fn () => view('staff.complaints.index'))->name('complaints.index');
+    // Complaints Handling (Phase 36)
+    Route::get('/complaints', [\App\Http\Controllers\Staff\ComplaintController::class, 'index'])->name('complaints.index');
+    Route::post('/complaints/{complaint}/actions', [\App\Http\Controllers\Staff\ComplaintController::class, 'storeAction'])->name('complaints.actions.store');
     Route::get('/account', fn () => view('staff.account'))->name('account');
 });
 

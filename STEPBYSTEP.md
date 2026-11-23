@@ -1513,7 +1513,7 @@ Server-side validation is mandatory.
 
 ---
 
-# 42. Phase 36 — Complaint Handling
+# 42. Phase 36 — Complaint Handling (Completed)
 
 Staff/Admin see complaint cards:
 
@@ -1544,6 +1544,39 @@ selesai
 ```
 
 requires confirmation.
+
+## Summary of Implementation
+
+### Files Created
+- `app/Http/Requests/ComplaintActionRequest.php` — FormRequest validating `action_description` (required), `status` (required, in:belum,dalam_perbaikan,selesai), `image` (nullable, max:4096), `cost` (nullable, min:0), and strict conditional validation requiring `confirm_selesai` (accepted) when status is `selesai`.
+- `app/Http/Controllers/Staff/ComplaintController.php` — Controller for staff handling complaints: listing complaints with status & location filters, search, metrics, and recording complaint actions with optional maintenance expense sync.
+- `app/Http/Controllers/Admin/ComplaintController.php` — Controller for admin handling complaints: listing complaints with filters, metrics, recording actions, and toggling highlight priority.
+- `resources/views/staff/complaints/complaint-handling.blade.php` — Staff main orchestrator view.
+- `resources/views/staff/complaints/complaint-metrics.blade.php` — Metrics summary for staff.
+- `resources/views/staff/complaints/complaint-filters.blade.php` — Filter bar for staff (status, location, search).
+- `resources/views/staff/complaints/complaint-cards.blade.php` — Responsive cards grid showing complaint information and detail/action trigger.
+- `resources/views/staff/complaints/complaint-action-modal.blade.php` — Alpine.js popup modal showing full complaint details, action history timeline, action form with optional repair expense, and mandatory confirmation when status is `selesai`.
+- `resources/views/admin/complaints/complaint-management.blade.php` — Admin main orchestrator view.
+- `resources/views/admin/complaints/complaint-metrics.blade.php` — Metrics summary for admin.
+- `resources/views/admin/complaints/complaint-filters.blade.php` — Filter bar for admin.
+- `resources/views/admin/complaints/complaint-cards.blade.php` — Cards grid with Admin Highlight toggle button.
+- `resources/views/admin/complaints/complaint-action-modal.blade.php` — Action popup modal for admin.
+- `tests/Feature/Staff/StaffComplaintHandlingTest.php` — 9 feature tests for staff complaint handling, filtering, confirmation on completion, and financial expense sync.
+- `tests/Feature/Admin/AdminComplaintHandlingTest.php` — 6 feature tests for admin complaint management, status updates, completion confirmation, and highlight toggling.
+
+### Files Modified
+- `routes/web.php` — Connected `/admin/complaints`, `/admin/complaints/{complaint}/actions`, `/admin/complaints/{complaint}/highlight`, and `/staff/complaints`, `/staff/complaints/{complaint}/actions`.
+- `resources/views/staff/complaints/index.blade.php` — Included `complaint-handling`.
+- `resources/views/admin/complaints/complaint-management.blade.php` — Replaced dummy page with real modular feature views.
+
+### Integration with Financial Module
+- When recording a complaint action, staff or admin can optionally specify `cost` (biaya perbaikan / pembelian material).
+- If filled, the system automatically creates an `Expense` categorized under `Perbaikan & Pemeliharaan Fasilitas` (`type: maintenance`) assigned to the complaint's room/location, and creates a corresponding `FinancialRecord` (`type: expense`).
+- This ensures maintenance expenses incurred during repair immediately reflect in the Unified Finance Hub (`/admin/finance`), Cash Flow (Phase 31), Profit & Loss (Phase 32), and Room Financial Recap (Phase 34).
+
+### Test Results
+- Phase 36 specific: **15 tests (9 staff + 6 admin), 60 assertions — all passing**
+- Full suite: **302 tests, 1290 assertions — all passing** (zero regressions)
 
 ---
 
