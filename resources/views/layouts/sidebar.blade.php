@@ -54,10 +54,12 @@
                        window.location.pathname.startsWith('/admin/expenses') ||
                        window.location.pathname.startsWith('/admin/payroll') ||
                        window.location.pathname.startsWith('/admin/cash-flow') ||
+                       window.location.pathname.startsWith('/admin/profit-loss') ||
                        current.startsWith('admin/finance') ||
                        current.startsWith('admin/expenses') ||
                        current.startsWith('admin/payroll') ||
-                       current.startsWith('admin/cash-flow');
+                       current.startsWith('admin/cash-flow') ||
+                       current.startsWith('admin/profit-loss');
             }
             return window.location.pathname === path || current === path.replace(/^\//, '');
         }

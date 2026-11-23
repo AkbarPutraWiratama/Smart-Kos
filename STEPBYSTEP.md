@@ -1282,7 +1282,7 @@ Historical records must survive staff deactivation.
 
 ---
 
-# 37. Phase 31 — Cash Flow ✅ COMPLETED
+# 37. Phase 31 — Cash Flow (Completed)
 
 Build monthly visualization:
 
@@ -1330,7 +1330,7 @@ The chart must use actual database data.
 
 ---
 
-# 38. Phase 32 — Profit and Loss
+# 38. Phase 32 — Profit and Loss (Completed)
 
 Admin can view:
 
@@ -1353,6 +1353,26 @@ Net Income   Rp 20.000.000
 Do not hardcode financial calculations in Blade.
 
 Calculate from the application/data layer.
+
+### Summary of Implementation:
+- **Routes & Controller**:
+  - `Admin\ProfitLossController`: `index` under `/admin/profit-loss` (named `admin.profit-loss.index`).
+  - Redirect from `/admin/finance?tab=profit-loss` to `/admin/profit-loss`.
+- **Navigation & Tabs**:
+  - Integrated into Keuangan tabs with Tab 5: **Laba Rugi** (`profit-loss`).
+  - Single sidebar menu `Keuangan` highlights properly when on `/admin/profit-loss*`.
+- **Application Layer Calculations**:
+  - All calculations (total income, total expenses, net profit/loss, status surplus/deficit/break-even, profit margin %, and expense ratio %) are strictly computed in `ProfitLossController`.
+  - Detailed breakdown of revenue (Midtrans VA, Manual Transfer, other income) and expenses (categorized operational expenses, staff payroll, staff cash advances).
+  - Scope filtering by month (`month`), year (`year`), all-time (`all`), and location (`location_id`).
+- **Modular Views**:
+  - `profit-loss-hub.blade.php`: Orchestrator layout extending `layouts.app`.
+  - `profit-loss-metrics.blade.php`: KPI summary cards (Total Pendapatan, Total Beban, Laba/Rugi Bersih, Margin Laba Bersih).
+  - `profit-loss-filters.blade.php`: Filter bar for period and kos location.
+  - `profit-loss-statement.blade.php`: Formal Income Statement structure with line items and mathematical calculation box.
+  - `profit-loss-breakdown.blade.php`: Proportion analysis of income sources and expense categories.
+- **Testing**:
+  - `tests/Feature/Admin/ProfitLossTest.php`: 9 feature tests covering guest/tenant/staff protection, accurate profit and loss calculation at application layer, month/year/location filtering, and tab redirection. All passed.
 
 ---
 

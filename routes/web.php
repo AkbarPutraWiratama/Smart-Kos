@@ -195,6 +195,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Cash Flow Visualization (Phase 31)
     Route::get('/cash-flow', [\App\Http\Controllers\Admin\CashFlowController::class, 'index'])->name('cash-flow.index');
 
+    // Profit and Loss Statement (Phase 32)
+    Route::get('/profit-loss', [\App\Http\Controllers\Admin\ProfitLossController::class, 'index'])->name('profit-loss.index');
+
     // Dummy placeholder pages (sidebar links)
     Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
