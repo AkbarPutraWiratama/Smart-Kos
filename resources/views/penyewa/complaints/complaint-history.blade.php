@@ -1,0 +1,139 @@
+{{-- Riwayat Aduan Fasilitas Saya --}}
+<div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="mb-5 flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
+        <div>
+            <h3 class="text-base font-bold text-gray-800 dark:text-white/90">Riwayat Aduan Saya</h3>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Pantau progres penanganan aduan dan catatan perbaikan dari petugas kos.
+            </p>
+        </div>
+        <span class="rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+            {{ $complaints instanceof \Illuminate\Pagination\LengthAwarePaginator ? $complaints->total() : $complaints->count() }} Total
+        </span>
+    </div>
+
+    @if ($complaints->isEmpty())
+        <div class="flex flex-col items-center justify-center py-12 text-center">
+            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <p class="mt-3 text-sm font-semibold text-gray-700 dark:text-gray-300">Belum Ada Aduan</p>
+            <p class="mt-1 text-xs text-gray-400 max-w-sm">
+                Jika Anda mengalami kendala fasilitas atau kerusakan kamar, silakan gunakan formulir di sebelah kiri untuk melaporkannya.
+            </p>
+        </div>
+    @else
+        <div class="space-y-4">
+            @foreach ($complaints as $complaint)
+                <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-4 transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.01] dark:hover:border-gray-700">
+                    <div class="flex flex-wrap items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h4 class="text-sm font-bold text-gray-800 dark:text-white/90 truncate">
+                                    {{ $complaint->title }}
+                                </h4>
+                                @if ($complaint->highlighted)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-error-50 px-2 py-0.5 text-[10px] font-semibold text-error-600 dark:bg-error-500/15 dark:text-error-400">
+                                        <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        Prioritas Admin
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="mt-0.5 text-[11px] text-gray-400">
+                                Dilaporkan: {{ $complaint->submitted_at ? $complaint->submitted_at->translatedFormat('d F Y, H:i') : $complaint->created_at->translatedFormat('d F Y, H:i') }}
+                            </p>
+                        </div>
+
+                        {{-- Status Badge --}}
+                        <div>
+                            @if ($complaint->status === 'selesai')
+                                <span class="inline-flex items-center gap-1 rounded-full bg-success-50 px-2.5 py-1 text-xs font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-success-500"></span>
+                                    Selesai
+                                </span>
+                            @elseif ($complaint->status === 'dalam_perbaikan')
+                                <span class="inline-flex items-center gap-1 rounded-full bg-blue-light-50 px-2.5 py-1 text-xs font-semibold text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-blue-light-500 animate-pulse"></span>
+                                    Dalam Perbaikan
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 rounded-full bg-warning-50 px-2.5 py-1 text-xs font-semibold text-warning-700 dark:bg-warning-500/15 dark:text-warning-400">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-warning-500"></span>
+                                    Menunggu Penanganan
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Deskripsi Aduan --}}
+                    <p class="mt-3 text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+                        {{ $complaint->description }}
+                    </p>
+
+                    {{-- Foto Lampiran Aduan --}}
+                    @if ($complaint->image_path)
+                        <div class="mt-3">
+                            <a href="{{ Storage::url($complaint->image_path) }}" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <span>Lihat Foto Bukti</span>
+                            </a>
+                        </div>
+                    @endif
+
+                    {{-- Catatan / Tindakan Petugas (Complaint Actions) --}}
+                    @if ($complaint->actions && $complaint->actions->isNotEmpty())
+                        <div class="mt-4 border-t border-gray-200/60 pt-3 dark:border-gray-800">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                Tindakan Petugas ({{ $complaint->actions->count() }}):
+                            </p>
+                            <div class="mt-2 space-y-2">
+                                @foreach ($complaint->actions as $action)
+                                    <div class="rounded-lg border border-gray-200 bg-white p-2.5 text-xs dark:border-gray-700 dark:bg-gray-900">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span class="font-semibold text-gray-700 dark:text-gray-200">
+                                                {{ $action->staff?->name ?? 'Petugas Kos' }}
+                                            </span>
+                                            <span class="text-[10px] text-gray-400">
+                                                {{ $action->created_at ? $action->created_at->translatedFormat('d M Y, H:i') : '' }}
+                                            </span>
+                                        </div>
+                                        <p class="mt-1 text-gray-600 dark:text-gray-300">
+                                            {{ $action->action_description }}
+                                        </p>
+                                        @if ($action->image_path)
+                                            <a href="{{ Storage::url($action->image_path) }}" target="_blank" rel="noopener noreferrer"
+                                               class="mt-1 inline-flex items-center gap-1 text-[11px] text-brand-600 hover:underline dark:text-brand-400">
+                                                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                                    <polyline points="21 15 16 10 5 21"/>
+                                                </svg>
+                                                Foto Tindakan
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Pagination Links --}}
+        @if ($complaints instanceof \Illuminate\Pagination\LengthAwarePaginator && $complaints->hasPages())
+            <div class="mt-5">
+                {{ $complaints->links() }}
+            </div>
+        @endif
+    @endif
+</div>

@@ -235,7 +235,8 @@ Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')
     Route::post('/payments/va', [TenantPaymentController::class, 'createVa'])->name('payments.va.create');
     Route::post('/payments/va/check-status', [TenantPaymentController::class, 'checkVaStatus'])->name('payments.va.check-status');
     Route::post('/payments/manual', [TenantPaymentController::class, 'storeManual'])->name('payments.manual.store');
-    Route::get('/complaints', fn () => view('penyewa.complaints.index'))->name('complaints.index');
+    Route::get('/complaints', [\App\Http\Controllers\Tenant\ComplaintController::class, 'index'])->name('complaints.index');
+    Route::post('/complaints', [\App\Http\Controllers\Tenant\ComplaintController::class, 'store'])->name('complaints.store');
     Route::get('/account', [TenantAccountController::class, 'index'])->name('account');
     Route::put('/account/profile', [TenantAccountController::class, 'updateProfile'])->name('account.profile');
     Route::put('/account/password', [TenantAccountController::class, 'updatePassword'])->name('account.password');

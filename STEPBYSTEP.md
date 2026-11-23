@@ -1469,41 +1469,7 @@ Use database queries/services rather than hardcoded UI values.
 
 ---
 
-# 41. Phase 35 — Payment Reminders
-
-Implement:
-
-```text
-payment_reminders
-```
-
-Reminder schedule:
-
-```text
-H-3
-Hari-H
-```
-
-Channels:
-
-```text
-Email
-WhatsApp
-```
-
-Use:
-
-```text
-Laravel Scheduler
-+
-Laravel Queue
-```
-
-Do not execute reminder delivery directly during a normal browser request.
-
----
-
-# 42. Phase 36 — Complaint Submission
+# 41. Phase 35 — Complaint Submission (Completed)
 
 Tenant complaint page:
 
@@ -1522,9 +1488,32 @@ one submission every 10 minutes
 
 Server-side validation is mandatory.
 
+## Summary of Implementation
+
+### Files Created
+- `app/Http/Requests/Tenant/ComplaintRequest.php` — FormRequest validating `title` (required, max:255), `description` (required), and `image` (nullable, image, mimes:jpeg,png,jpg,webp, max:4096).
+- `app/Http/Controllers/Tenant/ComplaintController.php` — Controller providing `index` (displaying active room, submission form, status metrics, and complaint history) and `store` (enforcing strict 10-minute rate limit on server side and storing optional images).
+- `resources/views/penyewa/complaints/complaint-submission.blade.php` — Main orchestrator view with room banner, alerts, and 2-column responsive layout.
+- `resources/views/penyewa/complaints/complaint-metrics.blade.php` — Metric cards (Total, Menunggu, Sedang Dikerjakan, Selesai).
+- `resources/views/penyewa/complaints/complaint-form.blade.php` — Form with rate limit cooldown banner, file upload, and validation feedback.
+- `resources/views/penyewa/complaints/complaint-history.blade.php` — History cards with status badges, admin priority highlights, image previews, and staff action logs.
+- `tests/Feature/Tenant/TenantComplaintTest.php` — 15 comprehensive feature tests covering authorization, view, submission, rate limiting, and staff action visibility.
+
+### Files Modified
+- `routes/web.php` — Connected `penyewa.complaints.index` and `penyewa.complaints.store` to `Tenant\ComplaintController`.
+- `resources/views/penyewa/complaints/index.blade.php` — Updated to include `complaint-submission.blade.php`.
+
+### Integration with Financial Module
+- Facilities and rooms incur maintenance expenses upon repair. In Phase 36 (Complaint Handling), maintenance costs resulting from resolving complaints are recorded into the Unified Finance Hub (`expenses` table under Maintenance/Perbaikan category and `financial_records` as expense).
+- Because complaints are associated with rooms and locations, repair expenses recorded directly reflect in **Cash Flow** (Phase 31), **Profit & Loss** (Phase 32), and **Room Financial Recap** (Phase 34) under allocated room expenses.
+
+### Test Results
+- Phase 35 specific: **15 tests, 58 assertions — all passing**
+- Full suite: **287 tests, 1230 assertions — all passing** (zero regressions)
+
 ---
 
-# 43. Phase 37 — Complaint Handling
+# 42. Phase 36 — Complaint Handling
 
 Staff/Admin see complaint cards:
 
@@ -1558,7 +1547,7 @@ requires confirmation.
 
 ---
 
-# 44. Phase 38 — Complaint Highlight
+# 43. Phase 37 — Complaint Highlight
 
 Admin can highlight complaints for staff.
 
@@ -1576,7 +1565,7 @@ Do not create a completely new visual framework.
 
 ---
 
-# 45. Phase 39 — Admin Account
+# 44. Phase 38 — Admin Account
 
 Admin can:
 
@@ -1595,7 +1584,7 @@ username + password
 
 ---
 
-# 46. Phase 40 — Separate Admin Recovery
+# 45. Phase 39 — Separate Admin Recovery
 
 Admin Recovery is deliberately separate from normal login.
 
@@ -1639,7 +1628,7 @@ Google OAuth secrets remain in environment configuration.
 
 ---
 
-# 47. Phase 41 — Admin Password Confirmation
+# 46. Phase 40 — Admin Password Confirmation
 
 Sensitive admin actions must require current password confirmation.
 
@@ -1665,6 +1654,40 @@ Execute
 ```
 
 Use Laravel server-side verification.
+
+---
+
+# 47. Phase 41 — Payment Reminders
+
+Implement:
+
+```text
+payment_reminders
+```
+
+Reminder schedule:
+
+```text
+H-3
+Hari-H
+```
+
+Channels:
+
+```text
+Email
+WhatsApp
+```
+
+Use:
+
+```text
+Laravel Scheduler
++
+Laravel Queue
+```
+
+Do not execute reminder delivery directly during a normal browser request.
 
 ---
 
