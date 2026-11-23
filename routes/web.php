@@ -192,6 +192,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('/cash-advances/{cashAdvance}/status', [\App\Http\Controllers\Admin\CashAdvanceController::class, 'updateStatus'])->name('cash-advances.update-status');
     Route::delete('/cash-advances/{cashAdvance}', [\App\Http\Controllers\Admin\CashAdvanceController::class, 'destroy'])->name('cash-advances.destroy');
 
+    // Cash Flow Visualization (Phase 31)
+    Route::get('/cash-flow', [\App\Http\Controllers\Admin\CashFlowController::class, 'index'])->name('cash-flow.index');
+
     // Dummy placeholder pages (sidebar links)
     Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');

@@ -31,7 +31,16 @@
             <span>Gaji &amp; Kasbon</span>
         </a>
 
-        {{-- Tab 4: Tunggakan (Upcoming Phase 33) --}}
+        {{-- Tab 4: Arus Kas (Phase 31) --}}
+        <a href="{{ route('admin.cash-flow.index') }}"
+           class="inline-flex items-center gap-2 border-b-2 py-3 px-1 text-sm font-medium whitespace-nowrap transition-colors {{ $active === 'cash-flow' ? 'border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400 font-semibold' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-700 dark:hover:text-gray-200' }}">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+            </svg>
+            <span>Arus Kas</span>
+        </a>
+
+        {{-- Tab 5: Tunggakan (Upcoming Phase 33) --}}
         <span class="inline-flex items-center gap-2 border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed whitespace-nowrap"
               title="Akan hadir di Phase 33 (Tenant Receivables / Arrears)">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

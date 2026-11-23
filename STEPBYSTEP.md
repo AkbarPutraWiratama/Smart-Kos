@@ -1227,7 +1227,7 @@ Peralihan antar tab dapat menggunakan query parameter (misal `?tab=expenses`) at
 
 ---
 
-# 36. Phase 30 — Payroll and Cash Advance ✅ COMPLETED
+# 36. Phase 30 — Payroll and Cash Advance (Completed)
 
 Implement:
 
@@ -1282,7 +1282,7 @@ Historical records must survive staff deactivation.
 
 ---
 
-# 37. Phase 31 — Cash Flow
+# 37. Phase 31 — Cash Flow ✅ COMPLETED
 
 Build monthly visualization:
 
@@ -1305,6 +1305,28 @@ Expense
 Use the existing TailAdmin chart example as the starting UI.
 
 The chart must use actual database data.
+
+### Summary of Implementation:
+- **Routes & Controller**:
+  - `Admin\CashFlowController`: `index` under `/admin/cash-flow` (named `admin.cash-flow.index`).
+  - Redirect from `/admin/finance?tab=cash-flow` to `/admin/cash-flow`.
+- **Navigation & Tabs**:
+  - Keuangan tabs updated with Tab 4: **Arus Kas** (`cash-flow`).
+  - Admin sidebar highlights `Keuangan` menu when navigating to `/admin/cash-flow`.
+- **Backend Data Aggregation**:
+  - Auto-sync via `FinancialRecordSyncService::syncIfNeeded()`.
+  - Database-agnostic monthly aggregation (12 months) computing total income, total expense, net cash flow, and monthly status (surplus, deficit, balanced).
+  - Scope filtering by budget year (`year`), kos location (`location_id`), and highlighted month (`month`).
+- **Modular Views**:
+  - `cash-flow-hub.blade.php`: Orchestrator layout.
+  - `cash-flow-metrics.blade.php`: KPI summary cards (Total Arus Masuk, Total Arus Keluar, Arus Kas Bersih, Rata-rata Arus Bulanan).
+  - `cash-flow-filters.blade.php`: Filter bar by year, location, and highlight month.
+  - `cash-flow-chart.blade.php`:
+    - Responsive horizontal comparison bars for active month showing direct scale of Income vs Expense.
+    - 12-month side-by-side column bar chart using ApexCharts with responsive tooltip formatting and dark mode listener.
+  - `cash-flow-table.blade.php`: Complete 12-month tabular ledger with surplus/deficit badges and yearly summary row.
+- **Testing**:
+  - `tests/Feature/Admin/CashFlowTest.php`: 8 feature tests covering guest/tenant/staff protection, metric aggregation, surplus/deficit calculation, year filtering, location filtering, month highlighting, and tab redirection. All passed.
 
 ---
 
