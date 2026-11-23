@@ -2150,7 +2150,7 @@ introduce a new UI framework
 add a package without approval
 use an unallowlisted command
 use destructive database commands
-modify Git history
+stage files or modify Git history (git add / git commit is manual by user only)
 ```
 
 Refer to `AGENTS.md` for the complete command and path policy.

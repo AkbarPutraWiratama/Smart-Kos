@@ -7,6 +7,7 @@
 - **Mandatory Modular Views**: Never create or maintain a monolithic Blade feature page. Split large screens into feature-named Blade files under `resources/views/{role}/{feature}/` or directly under `resources/views/{role}/` when the project convention already uses that structure. The main view must act as an orchestrator.
 - **Feature-Named Files**: Do not name primary feature views `index.blade.php`. Use names that describe the feature, for example `tenant-status.blade.php`, `manual-verification.blade.php`, `location-management.blade.php`, or `announcement-history.blade.php`.
 > - **Command Security Policy**: Commands are **DEFAULT-DENY**. Only execute explicitly allowlisted commands listed in `SMARTKOSAGENTS.md`. Never run destructive database commands (`migrate:fresh`, `db:wipe`), unauthorized package installs, or shell code execution.
+> - **Git Staging & Commit Policy**: Git staging (`git add`) and commits (`git commit`, `git push`) **MUST strictly and exclusively be performed manually by the USER**. Coding agents are strictly prohibited from staging files or creating commits automatically. The agent may only inspect Git state via read-only commands (`git status`, `git diff`, `git log`) and provide recommended commit messages for the user upon request.
 > - **Architectural Invariants**: Central `users` table, isolated `/admin-recovery` via Google OAuth, strict separation between Midtrans VA and Manual Payment flows, rate limits (10m), and permanent preservation of financial history.
 
 ## Repo Map
@@ -131,6 +132,7 @@ routes/
 
 ## Don'ts
 
+- Don't stage files or commit to Git (`git add`, `git commit`, `git push`, `git checkout`, `git reset`) — Git staging and committing must strictly be done manually by the user.
 - Don't install new Composer packages or NPM dependencies without asking the user.
 - Don't hardcode physical directional utilities (`ml-*`, `mr-*`, `pl-*`, `pr-*`, `left-*`, `right-*`, `border-l-*`, `border-r-*`, `rounded-l-*`, `rounded-r-*`, `text-left`, `text-right`) without providing proper RTL support (`ltr:` / `rtl:` or CSS logical equivalents).
 - Don't create a `tailwind.config.js` file — Tailwind v4 configuration belongs in `resources/css/app.css`.

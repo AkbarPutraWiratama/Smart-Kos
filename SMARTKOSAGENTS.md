@@ -1012,7 +1012,10 @@ Never mass-replace files in TailAdmin directories.
 
 # 20. Command Blacklist — Git Mutation
 
-Only read-only Git commands are allowed.
+**CRITICAL POLICY: Git staging (`git add`), committing (`git commit`), and pushing (`git push`) MUST ONLY be performed manually by the USER.**
+The agent is strictly forbidden from executing any mutating Git commands. All staging and commit operations are reserved exclusively for the human user.
+
+Only read-only Git commands are allowed for inspection (`git status`, `git diff`, `git log`, etc.). When work is completed, the agent may only provide a recommended Git commit message to the user upon request.
 
 Forbidden:
 
@@ -2525,7 +2528,7 @@ Before declaring a feature complete:
 [ ] No new dependency added without authorization
 [ ] Only allowlisted commands were executed
 [ ] No destructive command was executed
-[ ] No Git history mutation was executed
+[ ] No Git staging or commit was executed (staging and committing is done only manually by the user)
 [ ] Server-side authorization implemented
 [ ] Input validation implemented
 [ ] Sensitive data protected
