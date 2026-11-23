@@ -113,11 +113,13 @@ use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\TenantAssignmentController;
 use App\Http\Controllers\Tenant\DashboardController as TenantDashboardController;
 use App\Http\Controllers\Tenant\AccountController as TenantAccountController;
 use App\Http\Controllers\Tenant\PaymentController as TenantPaymentController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Staff\AccountController as StaffAccountController;
 use App\Http\Controllers\Staff\PostController as StaffPostController;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -209,7 +211,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/complaints/{complaint}/actions', [\App\Http\Controllers\Admin\ComplaintController::class, 'storeAction'])->name('complaints.actions.store');
     Route::patch('/complaints/{complaint}/highlight', [\App\Http\Controllers\Admin\ComplaintController::class, 'toggleHighlight'])->name('complaints.highlight');
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');
-    Route::get('/account', fn () => view('admin.account'))->name('account');
+    Route::get('/account', [AdminAccountController::class, 'index'])->name('account');
+    Route::put('/account/profile', [AdminAccountController::class, 'updateProfile'])->name('account.profile');
+    Route::put('/account/password', [AdminAccountController::class, 'updatePassword'])->name('account.password');
 });
 
 // Midtrans Webhook Notification Callback (CSRF exempt)
@@ -230,7 +234,9 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     // Complaints Handling (Phase 36)
     Route::get('/complaints', [\App\Http\Controllers\Staff\ComplaintController::class, 'index'])->name('complaints.index');
     Route::post('/complaints/{complaint}/actions', [\App\Http\Controllers\Staff\ComplaintController::class, 'storeAction'])->name('complaints.actions.store');
-    Route::get('/account', fn () => view('staff.account'))->name('account');
+    Route::get('/account', [StaffAccountController::class, 'index'])->name('account');
+    Route::put('/account/profile', [StaffAccountController::class, 'updateProfile'])->name('account.profile');
+    Route::put('/account/password', [StaffAccountController::class, 'updatePassword'])->name('account.password');
 });
 
 Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')->group(function () {
