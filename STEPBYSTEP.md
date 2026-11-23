@@ -1172,7 +1172,7 @@ reference_id
 
 ---
 
-# 35. Phase 29 — Expense Management ✅ COMPLETED
+# 35. Phase 29 — Expense Management (Completed)
 
 Admin can record:
 
@@ -1227,7 +1227,7 @@ Peralihan antar tab dapat menggunakan query parameter (misal `?tab=expenses`) at
 
 ---
 
-# 36. Phase 30 — Payroll and Cash Advance
+# 36. Phase 30 — Payroll and Cash Advance ✅ COMPLETED
 
 Implement:
 
@@ -1255,6 +1255,30 @@ notes
 ```
 
 Historical records must survive staff deactivation.
+
+### Summary of Implementation:
+- **Routes & Controllers**:
+  - `Admin\PayrollController`: `index`, `store`, `destroy` routes under `/admin/payroll`.
+  - `Admin\CashAdvanceController`: `store`, `updateStatus`, `destroy` routes under `/admin/cash-advances`.
+- **Form Requests**:
+  - `PayrollRequest`: validates staff_id, gross_amount, cash_advance_deduction (lte:gross_amount), payment_date, notes.
+  - `CashAdvanceRequest`: validates staff_id, amount, advance_date, notes.
+- **Financial Synchronization**:
+  - Integrated with `FinancialRecordSyncService` and `FinancialRecord`.
+  - Payroll net salary and cash advance disbursements are recorded as `expense`.
+  - Cash advance deduction in payroll automatically settles outstanding staff cash advances chronologically.
+  - Deleting payroll or cash advance cleans up corresponding `financial_records`.
+- **Modular Views**:
+  - Integrated into single Admin finance hub Tab: `Gaji & Kasbon` (`/admin/finance?tab=payroll` -> `/admin/payroll`).
+  - `payroll-hub.blade.php`: Orchestrator view with Alpine modal triggers.
+  - `payroll-metrics.blade.php`: Summary cards for net salary, gross salary, cash advance deductions, and outstanding advances.
+  - `payroll-filters.blade.php`: Filters for staff and period (month/year/all).
+  - `payroll-table.blade.php`: History of payroll with delete modal.
+  - `cash-advance-table.blade.php`: List of cash advances with status switcher and delete modal.
+  - `payroll-modal.blade.php`: Modal to record staff salary with real-time net salary calculator.
+  - `cash-advance-modal.blade.php`: Modal to record cash advance.
+- **Testing**:
+  - `PayrollManagementTest`: 13 feature tests covering access control, CRUD, auto-settlement, financial records sync, filter scoping, and lifecycle deletion protection for staff with payroll records. All passed.
 
 ---
 

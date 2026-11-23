@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CashAdvance extends Model
 {
@@ -35,5 +36,10 @@ class CashAdvance extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
+    }
+
+    public function financialRecord(): HasOne
+    {
+        return $this->hasOne(FinancialRecord::class, 'reference_id')->where('reference_type', 'cash_advance');
     }
 }

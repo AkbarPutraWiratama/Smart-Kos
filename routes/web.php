@@ -184,6 +184,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/expenses/{expense}', [\App\Http\Controllers\Admin\ExpenseController::class, 'update'])->name('expenses.update');
     Route::delete('/expenses/{expense}', [\App\Http\Controllers\Admin\ExpenseController::class, 'destroy'])->name('expenses.destroy');
 
+    // Payroll and Cash Advance Management (Phase 30)
+    Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])->name('payroll.index');
+    Route::post('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'store'])->name('payroll.store');
+    Route::delete('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'destroy'])->name('payroll.destroy');
+    Route::post('/cash-advances', [\App\Http\Controllers\Admin\CashAdvanceController::class, 'store'])->name('cash-advances.store');
+    Route::patch('/cash-advances/{cashAdvance}/status', [\App\Http\Controllers\Admin\CashAdvanceController::class, 'updateStatus'])->name('cash-advances.update-status');
+    Route::delete('/cash-advances/{cashAdvance}', [\App\Http\Controllers\Admin\CashAdvanceController::class, 'destroy'])->name('cash-advances.destroy');
+
     // Dummy placeholder pages (sidebar links)
     Route::get('/complaints', fn () => view('admin.complaints.complaint-management'))->name('complaints.index');
     Route::get('/finance', [AdminFinanceController::class, 'index'])->name('finance.index');

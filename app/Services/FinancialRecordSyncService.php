@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\CashAdvance;
 use App\Models\Expense;
 use App\Models\FinancialRecord;
 use App\Models\ManualPayment;
+use App\Models\PayrollRecord;
 use App\Models\VAPayment;
 
 class FinancialRecordSyncService
@@ -28,7 +30,16 @@ class FinancialRecordSyncService
             ->whereDoesntHave('financialRecord')
             ->exists();
 
-        if ($hasMissingManual || $hasMissingVA || $hasMissingExpense) {
+        $hasMissingPayroll = PayrollRecord::query()
+            ->whereDoesntHave('financialRecord')
+            ->exists();
+
+        $hasMissingAdvance = CashAdvance::query()
+            ->where('status', '!=', 'cancelled')
+            ->whereDoesntHave('financialRecord')
+            ->exists();
+
+        if ($hasMissingManual || $hasMissingVA || $hasMissingExpense || $hasMissingPayroll || $hasMissingAdvance) {
             self::syncAll();
         }
     }
@@ -146,6 +157,62 @@ class FinancialRecordSyncService
         FinancialRecord::query()
             ->where('reference_type', 'expense')
             ->whereNotIn('reference_id', $expenseIds)
+            ->delete();
+
+        // 4. Sync Payroll Records
+        $payrolls = PayrollRecord::with(['staff', 'recordedBy'])->get();
+        foreach ($payrolls as $payroll) {
+            $staffName = $payroll->staff?->name ?? 'Staf';
+            $dateLabel = $payroll->payment_date ? $payroll->payment_date->translatedFormat('d F Y') : '';
+            FinancialRecord::updateOrCreate(
+                [
+                    'reference_type' => 'payroll',
+                    'reference_id'   => $payroll->id,
+                ],
+                [
+                    'location_id'      => null,
+                    'recorded_by'      => $payroll->recorded_by,
+                    'type'             => 'expense',
+                    'description'      => "Gaji Staf - {$staffName} ({$dateLabel})",
+                    'amount'           => $payroll->net_amount,
+                    'transaction_date' => $payroll->payment_date->toDateString(),
+                ]
+            );
+        }
+
+        $payrollIds = $payrolls->pluck('id')->all();
+        FinancialRecord::query()
+            ->where('reference_type', 'payroll')
+            ->whereNotIn('reference_id', $payrollIds)
+            ->delete();
+
+        // 5. Sync Cash Advances
+        $advances = CashAdvance::with(['staff', 'recordedBy'])
+            ->where('status', '!=', 'cancelled')
+            ->get();
+        foreach ($advances as $advance) {
+            $staffName = $advance->staff?->name ?? 'Staf';
+            $dateLabel = $advance->advance_date ? $advance->advance_date->translatedFormat('d F Y') : '';
+            FinancialRecord::updateOrCreate(
+                [
+                    'reference_type' => 'cash_advance',
+                    'reference_id'   => $advance->id,
+                ],
+                [
+                    'location_id'      => null,
+                    'recorded_by'      => $advance->recorded_by,
+                    'type'             => 'expense',
+                    'description'      => "Kasbon Staf - {$staffName} ({$dateLabel})",
+                    'amount'           => $advance->amount,
+                    'transaction_date' => $advance->advance_date->toDateString(),
+                ]
+            );
+        }
+
+        $advanceIds = $advances->pluck('id')->all();
+        FinancialRecord::query()
+            ->where('reference_type', 'cash_advance')
+            ->whereNotIn('reference_id', $advanceIds)
             ->delete();
     }
 }

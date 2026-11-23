@@ -22,15 +22,14 @@
             <span>Pengeluaran</span>
         </a>
 
-        {{-- Tab 3: Gaji & Kasbon (Upcoming Phase 30) --}}
-        <span class="inline-flex items-center gap-2 border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed whitespace-nowrap"
-              title="Akan hadir di Phase 30 (Payroll & Cash Advance)">
+        {{-- Tab 3: Gaji & Kasbon --}}
+        <a href="{{ route('admin.payroll.index') }}"
+           class="inline-flex items-center gap-2 border-b-2 py-3 px-1 text-sm font-medium whitespace-nowrap transition-colors {{ $active === 'payroll' ? 'border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400 font-semibold' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-700 dark:hover:text-gray-200' }}">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <span>Gaji & Kasbon</span>
-            <span class="rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[10px] font-semibold text-gray-400 dark:text-gray-500">Segera</span>
-        </span>
+            <span>Gaji &amp; Kasbon</span>
+        </a>
 
         {{-- Tab 4: Tunggakan (Upcoming Phase 33) --}}
         <span class="inline-flex items-center gap-2 border-b-2 border-transparent py-3 px-1 text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed whitespace-nowrap"

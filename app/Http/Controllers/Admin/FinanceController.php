@@ -25,6 +25,10 @@ class FinanceController extends Controller
             return redirect()->route('admin.expenses.index', $request->except('tab'));
         }
 
+        if ($request->query('tab') === 'payroll') {
+            return redirect()->route('admin.payroll.index', $request->except('tab'));
+        }
+
         // Ensure financial records are always accurately synchronized with approved payments and expenses
         FinancialRecordSyncService::syncIfNeeded();
 
