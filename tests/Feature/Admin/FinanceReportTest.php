@@ -621,4 +621,11 @@ class FinanceReportTest extends TestCase
             ->get(route('admin.finance.index', ['scope' => 'invalid_scope']))
             ->assertRedirect();
     }
+
+    public function test_expenses_tab_query_redirects_to_expense_index(): void
+    {
+        $this->actingAs($this->admin)
+            ->get(route('admin.finance.index', ['tab' => 'expenses']))
+            ->assertRedirect(route('admin.expenses.index'));
+    }
 }

@@ -10,6 +10,7 @@ use App\Models\Room;
 use App\Models\User;
 use App\Models\VAPayment;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -17,13 +18,14 @@ use Illuminate\View\View;
 
 class FinanceController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if ($request->query('tab') === 'expenses') {
+            return redirect()->route('admin.expenses.index', $request->except('tab'));
+        }
+
         $requestedScope = $request->query('scope', 'all');
         $scope = is_string($requestedScope) ? $requestedScope : 'all';
-        $requestedTimeScope = $request->query('time_scope', 'month');
-        $timeScope = is_string($requestedTimeScope) && in_array($requestedTimeScope, ['all', 'year', 'month']) ? $requestedTimeScope : 'month';
-
         $requestedTimeScope = $request->query('time_scope', 'month');
         $timeScope = is_string($requestedTimeScope) && in_array($requestedTimeScope, ['all', 'year', 'month']) ? $requestedTimeScope : 'month';
 

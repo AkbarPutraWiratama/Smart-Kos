@@ -48,7 +48,14 @@
             return this.openSubmenus[key] || false;
         },
         isActive(path) {
-            return window.location.pathname === path || '{{ $currentPath }}' === path.replace(/^\//, '');
+            const current = '{{ $currentPath }}';
+            if (path === '/admin/finance') {
+                return window.location.pathname.startsWith('/admin/finance') ||
+                       window.location.pathname.startsWith('/admin/expenses') ||
+                       current.startsWith('admin/finance') ||
+                       current.startsWith('admin/expenses');
+            }
+            return window.location.pathname === path || current === path.replace(/^\//, '');
         }
     }"
     :class="{

@@ -169,11 +169,6 @@ class SmartKosMenuHelper
                         'name' => 'Keuangan',
                         'path' => '/admin/finance',
                     ],
-                    [
-                        'icon' => 'ecommerce',
-                        'name' => 'Pengeluaran',
-                        'path' => '/admin/expenses',
-                    ],
                 ],
             ],
             [

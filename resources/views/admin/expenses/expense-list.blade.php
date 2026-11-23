@@ -2,7 +2,9 @@
 
 @section('content')
 <div class="space-y-5">
-    <x-common.page-breadcrumb pageTitle="Manajemen Pengeluaran" />
+    <x-common.page-breadcrumb pageTitle="Keuangan" />
+
+    <x-smart-kos.finance-tabs active="expenses" />
 
     {{-- Summary + actions bar --}}
     <div class="flex flex-wrap items-center justify-between gap-3">
