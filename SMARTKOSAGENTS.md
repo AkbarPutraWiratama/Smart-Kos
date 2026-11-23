@@ -1331,6 +1331,18 @@ Akun
 
 Do not add extra navigation items without a corresponding approved feature.
 
+### Financial Feature Architecture (Single Menu with Tabs)
+
+The admin sidebar maintains only one single entry for all finance-related functions: **Keuangan** (`/admin/finance`).
+Do not add separate sidebar menu items for Pengeluaran, Payroll, Kasbon, Arus Kas, Piutang, etc.
+Instead, all financial sub-features must be organized as **tabs** inside the unified `Keuangan` view (`/admin/finance`):
+- Tab 1: **Laporan Keuangan & Buku Kas** (`tab=report` / default) — Ringkasan pendapatan, pengeluaran, laba rugi, buku kas (ledger), dan histori transaksi VA/Manual.
+- Tab 2: **Pengeluaran** (`tab=expenses`) — Pencatatan & manajemen pengeluaran operasional dan pemeliharaan kos beserta bukti struk.
+- Tab 3: **Gaji & Kasbon** (`tab=payroll` — Phase 30) — Manajemen gaji staff dan potongan kasbon.
+- Tab 4: **Tunggakan & Piutang** (`tab=arrears` — Phase 33) — Monitoring piutang sewa kamar penyewa.
+
+This tabbed structure simplifies navigation, avoids sidebar bloat, and provides a unified financial workspace.
+
 ---
 
 # 31. Blade View Rules

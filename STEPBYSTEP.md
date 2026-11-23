@@ -489,6 +489,8 @@ Pelanggan & Staff
 Akun
 ```
 
+> **Catatan Fitur Keuangan**: Menu sidebar Admin tetap ringkas dengan hanya menampilkan satu menu **Keuangan** (`/admin/finance`). Seluruh fitur finansial (Laporan Keuangan, Pengeluaran, Gaji & Kasbon, Arus Kas, Piutang) dikelompokkan dalam sistem **tab** di dalam halaman `/admin/finance`, bukan dipisah menjadi menu-menu baru di sidebar.
+
 Connect the menu to the existing TailAdmin sidebar with the smallest possible modification.
 
 Do not replace the entire sidebar.
@@ -1211,6 +1213,17 @@ category
 receipt
 recorded_by
 ```
+
+### UI Architecture — Unified Tab-Based Finance Hub (`/admin/finance`)
+
+Seluruh fitur modul keuangan dikelompokkan ke dalam menu tunggal **Keuangan** (`/admin/finance`) menggunakan sistem **tab**:
+- Tidak membuat menu sidebar baru (seperti "Pengeluaran" atau "Payroll").
+- Tab 1: **Laporan Keuangan & Buku Kas** (`?tab=report` / default) — Menampilkan ringkasan income/expense, filter cakupan (All/Location/Room/Person), buku kas (financial ledger), serta histori pembayaran VA & Manual.
+- Tab 2: **Pengeluaran** (`?tab=expenses`) — Menampilkan daftar pengeluaran operasional & pemeliharaan, filter kategori & lokasi, modal/tombol catat pengeluaran baru, upload struk, serta aksi edit/hapus.
+- Tab 3: **Gaji & Kasbon** (`?tab=payroll` — Phase 30) — Penggajian staff dan pencatatan kasbon.
+- Tab 4: **Tunggakan & Piutang** (`tab=arrears` — Phase 33) — Monitoring piutang sewa.
+
+Peralihan antar tab dapat menggunakan query parameter (misal `?tab=expenses`) atau Alpine.js tab switcher agar navigasi tetap instan, bersih, dan mudah di-bookmark.
 
 ---
 
