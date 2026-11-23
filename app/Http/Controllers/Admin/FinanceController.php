@@ -9,6 +9,7 @@ use App\Models\ManualPayment;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\VAPayment;
+use App\Services\FinancialRecordSyncService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,9 @@ class FinanceController extends Controller
         if ($request->query('tab') === 'expenses') {
             return redirect()->route('admin.expenses.index', $request->except('tab'));
         }
+
+        // Ensure financial records are always accurately synchronized with approved payments and expenses
+        FinancialRecordSyncService::syncIfNeeded();
 
         $requestedScope = $request->query('scope', 'all');
         $scope = is_string($requestedScope) ? $requestedScope : 'all';
@@ -56,10 +60,14 @@ class FinanceController extends Controller
                 'recordedBy',
                 'vaPayment.roomAssignment.room.location',
                 'vaPayment.roomAssignment.tenantProfile.user',
+                'vaPayment.vaAccount.room.location',
                 'manualPayment.roomAssignment.room.location',
                 'manualPayment.roomAssignment.tenantProfile.user',
+                'manualPayment.submittedBy',
+                'manualPayment.verifiedBy',
                 'expense.category',
                 'expense.recordedBy',
+                'expense.location',
                 'payrollRecord.staff',
                 'cashAdvance.staff',
             ]);

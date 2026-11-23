@@ -12,6 +12,7 @@ use App\Models\Room;
 use App\Models\RoomAssignment;
 use App\Models\TenantProfile;
 use App\Models\User;
+use App\Models\VAPayment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -275,6 +276,9 @@ class TenantAssignmentController extends Controller
             // Keep manual payment history and verification state attached to this tenant,
             // now under the new room assignment.
             ManualPayment::where('room_assignment_id', $assignment->id)
+                ->update(['room_assignment_id' => $newAssignment->id]);
+
+            VAPayment::where('room_assignment_id', $assignment->id)
                 ->update(['room_assignment_id' => $newAssignment->id]);
         });
 

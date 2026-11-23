@@ -22,21 +22,54 @@
             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                 @forelse ($financialRecords as $record)
                     <tr class="transition hover:bg-gray-50/70 dark:hover:bg-white/[0.02]">
-                        <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600 dark:text-gray-400 sm:px-6">{{ $record->transaction_date?->format('d M Y') ?? '—' }}</td>
-                        <td class="min-w-48 px-5 py-4 sm:px-6"><span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $record->description }}</span><span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">{{ $record->recordedBy?->name ? 'Dicatat oleh ' . $record->recordedBy->name : 'Pencatat tidak tersedia' }}</span></td>
-                        <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600 dark:text-gray-400 sm:px-6">{{ $record->location?->name ?? 'Umum' }}</td>
+                        <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600 dark:text-gray-400 sm:px-6">
+                            <span class="block font-medium text-gray-800 dark:text-white/90">{{ $record->transaction_date?->format('d M Y') ?? '—' }}</span>
+                        </td>
                         <td class="min-w-48 px-5 py-4 sm:px-6">
-                            <span class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ $record->reference_type ? ucwords(str_replace('_', ' ', $record->reference_type)) . ' #' . $record->reference_id : 'Catatan manual' }}</span>
+                            <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $record->description }}</span>
+                            <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                                @if ($record->recordedBy)
+                                    Dicatat oleh {{ $record->recordedBy->name }}
+                                @elseif ($record->reference_type === 'va_payment')
+                                    Sistem Otomatis (Midtrans VA)
+                                @elseif ($record->manualPayment?->verifiedBy)
+                                    Diverifikasi oleh {{ $record->manualPayment->verifiedBy->name }}
+                                @else
+                                    Sistem
+                                @endif
+                            </span>
+                        </td>
+                        <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600 dark:text-gray-400 sm:px-6">
+                            {{ $record->location?->name ?? $record->manualPayment?->roomAssignment?->room?->location?->name ?? $record->vaPayment?->roomAssignment?->room?->location?->name ?? $record->expense?->location?->name ?? 'Semua Lokasi' }}
+                        </td>
+                        <td class="min-w-48 px-5 py-4 sm:px-6">
                             @if ($record->reference_type === 'va_payment')
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">{{ $record->vaPayment?->roomAssignment?->tenantProfile?->user?->name ?? 'Penyewa' }} · Kamar {{ $record->vaPayment?->roomAssignment?->room?->room_number ?? '—' }}</span>
+                                <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Virtual Account Midtrans</span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $record->vaPayment?->roomAssignment?->tenantProfile?->user?->name ?? 'Penyewa' }} · Kamar {{ $record->vaPayment?->roomAssignment?->room?->room_number ?? $record->vaPayment?->vaAccount?->room?->room_number ?? '—' }}
+                                </span>
                             @elseif ($record->reference_type === 'manual_payment')
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">{{ $record->manualPayment?->roomAssignment?->tenantProfile?->user?->name ?? 'Penyewa' }} · Kamar {{ $record->manualPayment?->roomAssignment?->room?->room_number ?? '—' }}</span>
+                                <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Transfer Manual ({{ $record->manualPayment?->bank_name ?? 'Bank' }})</span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $record->manualPayment?->roomAssignment?->tenantProfile?->user?->name ?? $record->manualPayment?->submittedBy?->name ?? 'Penyewa' }} · Kamar {{ $record->manualPayment?->roomAssignment?->room?->room_number ?? '—' }}
+                                </span>
                             @elseif ($record->reference_type === 'expense')
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">{{ $record->expense?->category?->name ?? 'Pengeluaran' }}</span>
+                                <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Pengeluaran: {{ $record->expense?->category?->name ?? 'Umum' }}</span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $record->expense?->title ?? 'Pengeluaran' }}
+                                </span>
                             @elseif ($record->reference_type === 'payroll')
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">Staf: {{ $record->payrollRecord?->staff?->name ?? '—' }}</span>
+                                <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Gaji Staf</span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                                    Staf: {{ $record->payrollRecord?->staff?->name ?? '—' }}
+                                </span>
                             @elseif ($record->reference_type === 'cash_advance')
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">Staf: {{ $record->cashAdvance?->staff?->name ?? '—' }}</span>
+                                <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Kasbon Staf</span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                                    Staf: {{ $record->cashAdvance?->staff?->name ?? '—' }}
+                                </span>
+                            @else
+                                <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ $record->reference_type ? ucwords(str_replace('_', ' ', $record->reference_type)) . ' #' . $record->reference_id : 'Catatan manual' }}</span>
                             @endif
                         </td>
                         <td class="whitespace-nowrap px-5 py-4 sm:px-6">

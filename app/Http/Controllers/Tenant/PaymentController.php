@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinancialRecord;
 use App\Models\ManualPayment;
 use App\Services\MidtransService;
 use Illuminate\Http\RedirectResponse;
@@ -142,11 +143,38 @@ class PaymentController extends Controller
                 $vaPayment->paid_at = ! empty($statusData['settlement_time'])
                     ? \Carbon\Carbon::parse($statusData['settlement_time'])
                     : now();
-            } elseif (in_array($normalizedStatus, ['expired', 'cancelled'], true)) {
-                $vaPayment->paid_at = null;
-            }
 
-            $vaPayment->save();
+                $vaPayment->save();
+
+                $vaPayment->loadMissing(['roomAssignment.room', 'roomAssignment.tenantProfile.user', 'vaAccount.room']);
+
+                $locationId = $vaPayment->roomAssignment?->room?->location_id
+                    ?? $vaPayment->vaAccount?->room?->location_id;
+                $roomNumber = $vaPayment->roomAssignment?->room?->room_number
+                    ?? $vaPayment->vaAccount?->room?->room_number
+                    ?? '—';
+                $tenantName = $vaPayment->roomAssignment?->tenantProfile?->user?->name ?? 'Penyewa';
+
+                FinancialRecord::updateOrCreate(
+                    [
+                        'reference_type' => 'va_payment',
+                        'reference_id'   => $vaPayment->id,
+                    ],
+                    [
+                        'location_id'      => $locationId,
+                        'recorded_by'      => null,
+                        'type'             => 'income',
+                        'description'      => "Pembayaran Sewa VA Midtrans - Kamar {$roomNumber} - {$tenantName}",
+                        'amount'           => $vaPayment->amount,
+                        'transaction_date' => $vaPayment->paid_at?->toDateString() ?? now()->toDateString(),
+                    ]
+                );
+            } else {
+                if (in_array($normalizedStatus, ['expired', 'cancelled'], true)) {
+                    $vaPayment->paid_at = null;
+                }
+                $vaPayment->save();
+            }
 
             if ($vaPayment->isPaid()) {
                 return back()->with('success', 'Pembayaran berhasil terverifikasi! Status sewa kamar telah lunas.');

@@ -628,4 +628,36 @@ class FinanceReportTest extends TestCase
             ->get(route('admin.finance.index', ['tab' => 'expenses']))
             ->assertRedirect(route('admin.expenses.index'));
     }
+
+    public function test_missing_financial_records_are_automatically_synced_on_finance_index(): void
+    {
+        // Create an approved manual payment without a financial record
+        $manualPayment = ManualPayment::create([
+            'room_assignment_id'  => $this->assignment->id,
+            'submitted_by'        => $this->tenantUser->id,
+            'verified_by'         => $this->admin->id,
+            'amount'              => 850000,
+            'bank_name'           => 'BCA',
+            'bank_account_number' => '987654321',
+            'proof_path'          => 'proofs/sync-test.jpg',
+            'status'              => 'approved',
+            'submitted_at'        => now(),
+            'verified_at'         => now(),
+        ]);
+
+        $this->assertDatabaseMissing('financial_records', [
+            'reference_type' => 'manual_payment',
+            'reference_id'   => $manualPayment->id,
+        ]);
+
+        // Accessing the finance overview triggers syncIfNeeded
+        $this->actingAs($this->admin)->get(route('admin.finance.index'))->assertOk();
+
+        $this->assertDatabaseHas('financial_records', [
+            'reference_type' => 'manual_payment',
+            'reference_id'   => $manualPayment->id,
+            'amount'         => 850000,
+            'type'           => 'income',
+        ]);
+    }
 }
