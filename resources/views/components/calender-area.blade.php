@@ -7,7 +7,7 @@
 
     <!-- Modal -->
     <div class="fixed inset-0 items-center justify-center hidden p-4 sm:p-5 overflow-y-auto modal z-99999" id="eventModal">
-        <div class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
+        <div class="modal-close-btn fixed inset-0 h-full w-full bg-gray-900/60"></div>
         <div class="modal-dialog relative flex w-full max-w-175 flex-col overflow-y-auto rounded-3xl bg-white p-4 sm:p-6 lg:p-10 dark:bg-gray-900">
 
             <!-- Close Button -->

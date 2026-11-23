@@ -57,8 +57,24 @@
 	</div>
 
 	<div x-show="isCreateLocationOpen" x-cloak @keydown.escape.window="isCreateLocationOpen = false" class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5">
-		<div @click="isCreateLocationOpen = false" class="fixed inset-0 bg-gray-900/50"></div>
-		<div @click.stop class="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-theme-xl dark:bg-gray-900 sm:p-6">
+		<div @click="isCreateLocationOpen = false"
+             x-show="isCreateLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/50"></div>
+		<div @click.stop
+             x-show="isCreateLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-theme-xl dark:bg-gray-900 sm:p-6">
 			<div class="mb-6 flex items-start justify-between gap-4">
 				<div>
 					<h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Tambah lokasi</h2>

@@ -7,7 +7,32 @@
             <p class="text-sm">Belum ada catatan penggajian untuk periode ini.</p>
         </div>
     @else
-        <div class="overflow-x-auto custom-scrollbar">
+        {{-- Mobile Card View --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @foreach ($payrollRecords as $payroll)
+                <div class="p-4 space-y-1.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-gray-800 dark:text-white/90 text-sm">{{ $payroll->staff?->name ?? 'Staf' }}</p>
+                            <p class="text-xs text-gray-400">{{ $payroll->staff?->email ?? $payroll->staff?->username ?? '' }}</p>
+                        </div>
+                        <span class="shrink-0 font-semibold tabular-nums text-error-600 dark:text-error-400 text-sm">Rp {{ number_format((float) $payroll->net_amount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <span>{{ $payroll->payment_date?->translatedFormat('d M Y') ?? '—' }}</span>
+                        @if ($payroll->cash_advance_deduction > 0)
+                            <span class="text-blue-light-600 dark:text-blue-light-400">Potongan: Rp {{ number_format((float) $payroll->cash_advance_deduction, 0, ',', '.') }}</span>
+                        @endif
+                    </div>
+                    @if ($payroll->notes)
+                        <p class="text-xs text-gray-400 italic line-clamp-1">{{ $payroll->notes }}</p>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Desktop Table --}}
+        <div class="hidden sm:block overflow-x-auto custom-scrollbar">
             <table class="w-full min-w-[750px] text-sm">
                 <thead>
                     <tr class="border-b border-gray-100 dark:border-gray-800">

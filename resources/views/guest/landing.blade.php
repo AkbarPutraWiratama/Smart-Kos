@@ -4,17 +4,27 @@
 <div class="relative min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-between">
     <!-- Navbar -->
     <header class="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 font-bold text-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
+            {{-- Logo --}}
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 font-bold text-base sm:text-xl">
                     SK
                 </div>
-                <span class="text-xl font-bold text-gray-900 dark:text-white">Smart Kos</span>
+                <span class="text-base sm:text-xl font-bold text-gray-900 dark:text-white">Smart Kos</span>
             </div>
-            <div class="flex items-center gap-4">
-                <a href="{{ $singleLocationId ? route('guest.rooms', ['location_id' => $singleLocationId]) : route('guest.rooms') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">
-                    Lokasi & Kamar
+
+            {{-- Right actions --}}
+            <div class="flex items-center gap-1.5 sm:gap-3">
+                {{-- Link Lokasi & Kamar — hidden on very small screens, shown as icon+text on sm+ --}}
+                <a href="{{ $singleLocationId ? route('guest.rooms', ['location_id' => $singleLocationId]) : route('guest.rooms') }}"
+                   class="hidden xs:inline-flex sm:inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-xs sm:text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">
+                    <svg class="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span class="hidden sm:inline">Lokasi & Kamar</span>
+                    <span class="inline sm:hidden">Kamar</span>
                 </a>
+
                 @auth
                     @php
                         $dashboardRoute = match (auth()->user()->role) {
@@ -24,18 +34,24 @@
                             default => route('home'),
                         };
                     @endphp
-                    <a href="{{ $dashboardRoute }}" class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">
-                        Buka Dashboard
+                    <a href="{{ $dashboardRoute }}"
+                       class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">
+                        <span class="hidden sm:inline">Buka Dashboard</span>
+                        <span class="inline sm:hidden">Dashboard</span>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">
-                        Masuk ke Sistem
+                    <a href="{{ route('login') }}"
+                       class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">
+                        <span class="hidden sm:inline">Masuk ke Sistem</span>
+                        <span class="inline sm:hidden">Masuk</span>
                     </a>
                 @endauth
-                <!-- Dark mode toggle -->
-                <button @click.prevent="$store.theme.toggle()" class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition">
-                    <svg class="hidden fill-current dark:block" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill="currentColor"/></svg>
-                    <svg class="fill-current dark:hidden" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" fill="currentColor"/></svg>
+
+                {{-- Dark mode toggle --}}
+                <button @click.prevent="$store.theme.toggle()"
+                        class="p-1.5 sm:p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <svg class="hidden fill-current dark:block" width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill="currentColor"/></svg>
+                    <svg class="fill-current dark:hidden" width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" fill="currentColor"/></svg>
                 </button>
             </div>
         </div>

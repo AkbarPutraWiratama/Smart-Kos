@@ -252,8 +252,24 @@
         @keydown.escape.window="isDeactivateModalOpen = false"
         class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5"
     >
-        <div @click="isDeactivateModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-        <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+        <div @click="isDeactivateModalOpen = false"
+             x-show="isDeactivateModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/60"></div>
+        <div @click.stop
+             x-show="isDeactivateModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
             <div class="mb-4 flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -310,8 +326,24 @@
         @keydown.escape.window="isReactivateModalOpen = false"
         class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5"
     >
-        <div @click="isReactivateModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-        <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+        <div @click="isReactivateModalOpen = false"
+             x-show="isReactivateModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/60"></div>
+        <div @click.stop
+             x-show="isReactivateModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
             <div class="mb-4 flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-500">
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -368,8 +400,24 @@
         @keydown.escape.window="isResetPasswordModalOpen = false"
         class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5"
     >
-        <div @click="isResetPasswordModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-        <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+        <div @click="isResetPasswordModalOpen = false"
+             x-show="isResetPasswordModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/60"></div>
+        <div @click.stop
+             x-show="isResetPasswordModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
             <div class="mb-4 flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -449,8 +497,24 @@
         @keydown.escape.window="isDeleteModalOpen = false"
         class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5"
     >
-        <div @click="isDeleteModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-        <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+        <div @click="isDeleteModalOpen = false"
+             x-show="isDeleteModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/60"></div>
+        <div @click.stop
+             x-show="isDeleteModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
             <div class="mb-4 flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

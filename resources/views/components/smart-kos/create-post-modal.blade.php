@@ -9,11 +9,24 @@
 <div
     x-show="isCreateModalOpen"
     x-cloak
-    class="fixed inset-0 z-99999 flex items-start justify-center overflow-y-auto bg-gray-900/60 p-4 pt-10 backdrop-blur-sm"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-99999 flex items-start justify-center overflow-y-auto bg-gray-900/60 p-4 pt-10"
     @keydown.escape.window="isCreateModalOpen = false"
 >
     <div
         @click.outside="isCreateModalOpen = false"
+        x-show="isCreateModalOpen"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
         class="w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-theme-xl dark:border-gray-800 dark:bg-gray-900 mb-10"
     >
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">

@@ -161,11 +161,26 @@
                 </template>
             </div>
 
-            <!-- Confirm Deletion Popup Modal (Confirm or Cancel - No Admin Password Required) -->
+            <!-- Confirm Deletion Popup Modal (No blur, pop up animation) -->
             <template x-teleport="body">
-                <div x-show="isConfirmModalOpen" x-cloak @keydown.escape.window="isConfirmModalOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto bg-gray-900/60 p-5">
+                <div x-show="isConfirmModalOpen" x-cloak @keydown.escape.window="isConfirmModalOpen = false"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto bg-gray-900/60 p-5">
                     <div @click="isConfirmModalOpen = false" class="fixed inset-0"></div>
-                    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+                    <div @click.stop
+                         x-show="isConfirmModalOpen"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
                         <div class="mb-4 flex items-center gap-3">
                             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
                                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

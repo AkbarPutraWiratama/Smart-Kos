@@ -129,10 +129,26 @@
 									<p class="mt-4 text-sm font-medium text-brand-500">Klik untuk edit kamar</p>
 								</div>
 
-								<!-- Modal Edit Kamar -->
+								<!-- Modal Edit Kamar (No blur, pop up animation) -->
 								<div x-show="isRoomEditOpen" x-cloak @keydown.escape.window="isRoomEditOpen = false" class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5">
-									<div @click="isRoomEditOpen = false" class="fixed inset-0 bg-gray-900/50"></div>
-									<div @click.stop class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+									<div @click="isRoomEditOpen = false"
+                                         x-show="isRoomEditOpen"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0"
+                                         x-transition:enter-end="opacity-100"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100"
+                                         x-transition:leave-end="opacity-0"
+                                         class="fixed inset-0 bg-gray-900/50"></div>
+									<div @click.stop
+                                         x-show="isRoomEditOpen"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 scale-95"
+                                         x-transition:enter-end="opacity-100 scale-100"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100 scale-100"
+                                         x-transition:leave-end="opacity-0 scale-95"
+                                         class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
 										<div class="mb-6 flex items-start justify-between gap-4">
 											<div>
 												<h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Edit kamar {{ $room->room_number }}</h2>
@@ -189,10 +205,26 @@
 									</div>
 								</div>
 
-								<!-- Modal Konfirmasi Simpan Perubahan Kamar -->
+								<!-- Modal Konfirmasi Simpan Perubahan Kamar (No blur, pop up animation) -->
 								<div x-show="isConfirmSaveRoomOpen" x-cloak @keydown.escape.window="isConfirmSaveRoomOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
-									<div @click="isConfirmSaveRoomOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-									<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+									<div @click="isConfirmSaveRoomOpen = false"
+                                         x-show="isConfirmSaveRoomOpen"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0"
+                                         x-transition:enter-end="opacity-100"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100"
+                                         x-transition:leave-end="opacity-0"
+                                         class="fixed inset-0 bg-gray-900/60"></div>
+									<div @click.stop
+                                         x-show="isConfirmSaveRoomOpen"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 scale-95"
+                                         x-transition:enter-end="opacity-100 scale-100"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100 scale-100"
+                                         x-transition:leave-end="opacity-0 scale-95"
+                                         class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
 										<div class="mb-4 flex items-center gap-3">
 											<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
 												<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -218,10 +250,26 @@
 									</div>
 								</div>
 
-								<!-- Modal Konfirmasi Hapus Kamar -->
+								<!-- Modal Konfirmasi Hapus Kamar (No blur, pop up animation) -->
 								<div x-show="isDeleteRoomOpen" x-cloak @keydown.escape.window="isDeleteRoomOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
-									<div @click="isDeleteRoomOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-									<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+									<div @click="isDeleteRoomOpen = false"
+                                         x-show="isDeleteRoomOpen"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0"
+                                         x-transition:enter-end="opacity-100"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100"
+                                         x-transition:leave-end="opacity-0"
+                                         class="fixed inset-0 bg-gray-900/60"></div>
+									<div @click.stop
+                                         x-show="isDeleteRoomOpen"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 scale-95"
+                                         x-transition:enter-end="opacity-100 scale-100"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100 scale-100"
+                                         x-transition:leave-end="opacity-0 scale-95"
+                                         class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
 										<div class="mb-4 flex items-center gap-3">
 											<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
 												<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -261,9 +309,26 @@
 
 	</div>
 
+	<!-- Modal Tambah Kamar (No blur, pop up animation) -->
 	<div x-show="isAddRoomOpen" x-cloak @keydown.escape.window="isAddRoomOpen = false" class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5">
-		<div @click="isAddRoomOpen = false" class="fixed inset-0 bg-gray-900/50"></div>
-		<div @click.stop class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+		<div @click="isAddRoomOpen = false"
+             x-show="isAddRoomOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/50"></div>
+		<div @click.stop
+             x-show="isAddRoomOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
 			<div class="mb-6 flex items-start justify-between gap-4">
 				<div>
 					<h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Tambah kamar</h2>
@@ -305,9 +370,26 @@
 		</div>
 	</div>
 
+	<!-- Modal Edit Lokasi (No blur, pop up animation) -->
 	<div x-show="isEditLocationOpen" x-cloak @keydown.escape.window="isEditLocationOpen = false" class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5">
-		<div @click="isEditLocationOpen = false" class="fixed inset-0 bg-gray-900/50"></div>
-		<div @click.stop class="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-theme-xl dark:bg-gray-900 sm:p-6">
+		<div @click="isEditLocationOpen = false"
+             x-show="isEditLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/50"></div>
+		<div @click.stop
+             x-show="isEditLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-theme-xl dark:bg-gray-900 sm:p-6">
 			<div class="mb-6 flex items-start justify-between gap-4">
 				<div>
 					<h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">Edit lokasi</h2>
@@ -400,9 +482,26 @@
 		</div>
 	</div>
 
+	<!-- Modal Hapus Lokasi (No blur, pop up animation) -->
 	<div x-show="isDeleteLocationOpen" x-cloak @keydown.escape.window="isDeleteLocationOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
-		<div @click="isDeleteLocationOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-		<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+		<div @click="isDeleteLocationOpen = false"
+             x-show="isDeleteLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/60"></div>
+		<div @click.stop
+             x-show="isDeleteLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
 			<div class="mb-4 flex items-center gap-3">
 				<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
 					<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

@@ -24,19 +24,43 @@
     </div>
 
     <!-- Metric Summary Cards -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Akun Penyewa</p>
-            <p class="mt-2 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $metrics['total'] }}</p>
-        </div>
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-            <p class="text-xs font-medium text-success-600 dark:text-success-400">Penyewa Aktif</p>
-            <p class="mt-2 text-2xl font-bold text-success-600 dark:text-success-400">{{ $metrics['active'] }}</p>
-        </div>
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Nonaktif</p>
-            <p class="mt-2 text-2xl font-bold text-gray-600 dark:text-gray-400">{{ $metrics['inactive'] }}</p>
-        </div>
+    <div class="grid grid-cols-3 gap-3 sm:gap-4">
+        <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Penyewa</span>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </span>
+            </div>
+            <div class="mt-2.5">
+                <p class="text-lg font-bold tracking-tight tabular-nums text-gray-800 dark:text-white/90 sm:text-xl">{{ $metrics['total'] }}</p>
+                <p class="mt-0.5 text-[11px] text-gray-400">Total akun terdaftar</p>
+            </div>
+        </article>
+        <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Aktif</span>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </span>
+            </div>
+            <div class="mt-2.5">
+                <p class="text-lg font-bold tracking-tight tabular-nums text-success-600 dark:text-success-400 sm:text-xl">{{ $metrics['active'] }}</p>
+                <p class="mt-0.5 text-[11px] text-gray-400">Penyewa aktif</p>
+            </div>
+        </article>
+        <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Nonaktif</span>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                </span>
+            </div>
+            <div class="mt-2.5">
+                <p class="text-lg font-bold tracking-tight tabular-nums text-gray-600 dark:text-gray-400 sm:text-xl">{{ $metrics['inactive'] }}</p>
+                <p class="mt-0.5 text-[11px] text-gray-400">Akun nonaktif</p>
+            </div>
+        </article>
     </div>
 
     <!-- Main Table Card -->

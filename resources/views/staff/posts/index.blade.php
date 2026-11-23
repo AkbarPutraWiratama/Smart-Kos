@@ -69,7 +69,71 @@
 
     {{-- Trash List Card --}}
     <div class="rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
-        <div class="overflow-x-auto">
+
+        {{-- Mobile Card View (sm:hidden) --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @forelse ($trashedPosts as $post)
+                @php
+                    $primaryTarget = $post->targets->first();
+                    $targetLabel = 'Semua Lokasi';
+                    $targetBadge = 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400';
+
+                    if ($primaryTarget?->target_type === 'location' && $primaryTarget->location) {
+                        $targetLabel = 'Lokasi: ' . $primaryTarget->location->name;
+                        $targetBadge = 'bg-blue-light-50 text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400';
+                    } elseif ($primaryTarget?->target_type === 'room' && $primaryTarget->room) {
+                        $targetLabel = 'Kamar: ' . $primaryTarget->room->room_number . ' (' . ($primaryTarget->room->location->name ?? '') . ')';
+                        $targetBadge = 'bg-theme-purple-500/10 text-theme-purple-500 dark:bg-theme-purple-500/20';
+                    }
+                @endphp
+                <div class="p-4 space-y-1.5 opacity-75">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-gray-800 dark:text-white/90 text-sm">{{ $post->title }}</p>
+                            <p class="text-xs text-gray-400 line-clamp-2 mt-0.5">{{ $post->content }}</p>
+                        </div>
+                        <span class="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $targetBadge }}">
+                            {{ $targetLabel }}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-gray-400">
+                            Dihapus: {{ $post->deleted_at->translatedFormat('d M Y, H:i') }}
+                        </span>
+                        {{-- Hidden per-row force-delete form (mobile) --}}
+                        <form
+                            id="force-delete-form-mobile-{{ $post->id }}"
+                            action="{{ route('staff.posts.force-destroy', $post->id) }}"
+                            method="POST"
+                            class="hidden"
+                        >
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                        <button
+                            type="button"
+                            @click="deleteOneFormId = 'force-delete-form-mobile-{{ $post->id }}'; showDeleteOneConfirm = true"
+                            class="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-error-600 hover:bg-error-50 dark:text-error-400 dark:hover:bg-error-500/10 transition"
+                        >
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span>Hapus</span>
+                        </button>
+                    </div>
+                </div>
+            @empty
+                <div class="p-10 text-center text-gray-400">
+                    <svg class="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">Tidak ada riwayat yang dihapus.</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop Table (hidden sm:block) --}}
+        <div class="hidden sm:block overflow-x-auto custom-scrollbar">
             <table class="w-full text-start text-xs">
                 <thead class="bg-gray-50/75 border-b border-gray-100 text-gray-500 dark:bg-white/[0.02] dark:border-gray-800 dark:text-gray-400 uppercase tracking-wider text-[11px]">
                     <tr>
@@ -167,15 +231,28 @@
         @endif
     </div>
 
-    {{-- ── Confirm Delete ONE Modal ── --}}
+    {{-- ── Confirm Delete ONE Modal (No blur, pop up animation) ── --}}
     <div
         x-show="showDeleteOneConfirm"
         x-cloak
-        class="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/60 p-4"
         @keydown.escape.window="showDeleteOneConfirm = false"
     >
         <div
             @click.outside="showDeleteOneConfirm = false"
+            x-show="showDeleteOneConfirm"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
             class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900"
         >
             <div class="flex flex-col items-center text-center">
@@ -208,15 +285,28 @@
         </div>
     </div>
 
-    {{-- ── Confirm Delete ALL Modal ── --}}
+    {{-- ── Confirm Delete ALL Modal (No blur, pop up animation) ── --}}
     <div
         x-show="showDeleteAllConfirm"
         x-cloak
-        class="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-99999 flex items-center justify-center bg-gray-900/60 p-4"
         @keydown.escape.window="showDeleteAllConfirm = false"
     >
         <div
             @click.outside="showDeleteAllConfirm = false"
+            x-show="showDeleteAllConfirm"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
             class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900"
         >
             <div class="flex flex-col items-center text-center">

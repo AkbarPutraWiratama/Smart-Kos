@@ -16,11 +16,62 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Tidak ada kamar yang cocok dengan filter.</p>
         </div>
     @else
-        <div class="overflow-x-auto">
+        {{-- Mobile Card View --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @foreach ($roomRecap as $room)
+                <div class="p-4 space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-semibold text-gray-700 dark:border-gray-700 dark:bg-white/[0.04] dark:text-gray-200 shrink-0">#{{ $room['room_number'] }}</span>
+                            <div class="min-w-0">
+                                <p class="font-semibold text-gray-800 dark:text-white/90 text-sm truncate">{{ $room['location_name'] }}</p>
+                                <p class="text-xs text-gray-400">Lantai {{ $room['floor_name'] }}</p>
+                            </div>
+                        </div>
+                        @if ($room['is_occupied'])
+                            <span class="inline-flex items-center gap-1 rounded-full bg-success-50 px-2 py-0.5 text-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-400 shrink-0">
+                                <span class="h-1.5 w-1.5 rounded-full bg-success-500"></span>Terisi
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400 shrink-0">
+                                <span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span>Kosong
+                            </span>
+                        @endif
+                    </div>
+                    @if ($room['is_occupied'] && $room['current_tenant'])
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $room['current_tenant'] }}</p>
+                    @endif
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <p class="text-gray-400">Pembayaran</p>
+                            <p class="font-semibold tabular-nums text-gray-800 dark:text-white/90">Rp {{ number_format($room['total_payments'], 0, ',', '.') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Piutang</p>
+                            @if ($room['total_outstanding'] > 0)
+                                <p class="font-semibold tabular-nums text-error-600 dark:text-error-400">Rp {{ number_format($room['total_outstanding'], 0, ',', '.') }}</p>
+                            @else
+                                <p class="text-gray-400">—</p>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Beban</p>
+                            <p class="tabular-nums text-warning-600 dark:text-warning-400">Rp {{ number_format($room['total_expenses'], 0, ',', '.') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Net</p>
+                            <p class="font-bold tabular-nums {{ $room['net_amount'] >= 0 ? 'text-success-600 dark:text-success-400' : 'text-error-600 dark:text-error-400' }}">{{ $room['net_amount'] < 0 ? '-' : '' }}Rp {{ number_format(abs($room['net_amount']), 0, ',', '.') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Desktop Table --}}
+        <div class="hidden sm:block overflow-x-auto">
             <table class="w-full text-left text-sm" aria-label="Rekap keuangan per kamar">
                 <thead>
-                    <tr class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/[0.02]">
-                        <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">No. Kamar</th>
+                    <tr class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/[0.02]">                        <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">No. Kamar</th>
                         <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Lokasi / Lantai</th>
                         <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Status &amp; Penyewa</th>
                         <th scope="col" class="px-5 py-3 text-end text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Total Pembayaran</th>

@@ -31,7 +31,7 @@
                     })->values();
                 @endphp
 
-                <article class="relative flex flex-col justify-between rounded-2xl border bg-white p-5 shadow-theme-xs transition hover:shadow-theme-sm dark:bg-white/[0.03] {{ $complaint->highlighted ? 'border-error-300 ring-1 ring-error-300 dark:border-error-500/40 dark:ring-error-500/30' : 'border-gray-200 dark:border-gray-800' }}">
+                <article class="relative flex flex-col justify-between rounded-2xl border bg-white p-4 sm:p-5 shadow-theme-xs transition hover:shadow-theme-sm dark:bg-white/[0.03] {{ $complaint->highlighted ? 'border-error-300 ring-1 ring-error-300 dark:border-error-500/40 dark:ring-error-500/30' : 'border-gray-200 dark:border-gray-800' }}">
 
                     <div>
                         {{-- Top Bar: Highlight Toggle + Status --}}
@@ -44,7 +44,7 @@
                                     <button
                                         type="submit"
                                         title="{{ $complaint->highlighted ? 'Hapus dari prioritas staf' : 'Tandai sebagai prioritas perhatian staf' }}"
-                                        class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold transition {{ $complaint->highlighted ? 'bg-error-500 text-white shadow-sm hover:bg-error-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700' }}"
+                                        class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold transition {{ $complaint->highlighted ? 'bg-error-500 text-white shadow-sm hover:bg-error-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700' }}"
                                     >
                                         <svg class="h-3 w-3 {{ $complaint->highlighted ? 'fill-current' : 'fill-none stroke-current stroke-2' }}" viewBox="0 0 24 24">
                                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -54,20 +54,20 @@
                                 </form>
                             </div>
 
-                            {{-- Status Badge --}}
+                            {{-- Status Badge (Compact & Modern) --}}
                             <div>
                                 @if ($complaint->status === 'selesai')
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-success-50 px-2 py-0.5 text-xs font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-success-50 px-2 py-0.5 text-[11px] font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">
                                         <span class="h-1.5 w-1.5 rounded-full bg-success-500"></span>
                                         Selesai
                                     </span>
                                 @elseif ($complaint->status === 'dalam_perbaikan')
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-light-50 px-2 py-0.5 text-xs font-semibold text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-light-50 px-2 py-0.5 text-[11px] font-semibold text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">
                                         <span class="h-1.5 w-1.5 rounded-full bg-blue-light-500 animate-pulse"></span>
                                         Dalam Perbaikan
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-warning-50 px-2 py-0.5 text-xs font-semibold text-warning-700 dark:bg-warning-500/15 dark:text-warning-400">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-warning-50 px-2 py-0.5 text-[11px] font-semibold text-warning-700 dark:bg-warning-500/15 dark:text-warning-400">
                                         <span class="h-1.5 w-1.5 rounded-full bg-warning-500"></span>
                                         Belum
                                     </span>
@@ -102,28 +102,72 @@
                             {{ $complaint->description }}
                         </p>
 
-                        {{-- Attachment indicator --}}
+                        {{-- Attachment Photo with Visual Preview & Lightbox --}}
                         @if ($complaint->image_path)
-                            <div class="mt-3">
-                                <a href="{{ \Illuminate\Support\Facades\Storage::url($complaint->image_path) }}" target="_blank" rel="noopener noreferrer"
-                                   class="inline-flex items-center gap-1 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400">
-                                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                                        <polyline points="21 15 16 10 5 21"/>
-                                    </svg>
-                                    Lihat Foto Aduan
-                                </a>
+                            <div class="mt-3.5" x-data="{ imgLightbox: false }">
+                                <div class="group relative cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-theme-xs transition hover:border-brand-500 dark:border-gray-700 dark:bg-gray-800"
+                                     @click="imgLightbox = true">
+                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($complaint->image_path) }}" alt="Foto Aduan"
+                                         class="h-28 w-full object-cover transition duration-300 group-hover:scale-105">
+                                    <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                                        <span class="inline-flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1 text-xs font-semibold text-white">
+                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                                <line x1="11" y1="8" x2="11" y2="14"/>
+                                                <line x1="8" y1="11" x2="14" y2="11"/>
+                                            </svg>
+                                            Perbesar Foto
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {{-- Lightbox Modal (No blur, clean pop up animation) --}}
+                                <div x-show="imgLightbox"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 p-4"
+                                     @click="imgLightbox = false"
+                                     @keydown.escape.window="imgLightbox = false"
+                                     x-cloak>
+                                    <div class="relative max-h-[90vh] max-w-3xl overflow-hidden rounded-2xl bg-black/90 p-2" @click.stop>
+                                        <button type="button" @click="imgLightbox = false"
+                                                class="absolute end-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/90">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($complaint->image_path) }}" alt="Foto Aduan"
+                                             class="max-h-[85vh] w-auto max-w-full rounded-xl object-contain mx-auto">
+                                    </div>
+                                </div>
                             </div>
                         @endif
                     </div>
 
-                    {{-- Card Footer --}}
+                    {{-- Card Footer with Direct Forward/Highlight & Action Buttons --}}
                     <div class="mt-5 border-t border-gray-100 pt-3 dark:border-gray-800">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] text-gray-400">
-                                {{ $complaint->actions->count() }} tindakan tercatat
-                            </span>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            {{-- Direct Forward / Highlight Button for Admin --}}
+                            <form action="{{ route('admin.complaints.highlight', $complaint) }}" method="POST" class="w-full sm:w-auto">
+                                @csrf
+                                @method('PATCH')
+                                <button
+                                    type="submit"
+                                    title="{{ $complaint->highlighted ? 'Hapus dari prioritas staf' : 'Teruskan aduan ini sebagai prioritas ke staf' }}"
+                                    class="inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition {{ $complaint->highlighted ? 'border-error-200 bg-error-50 text-error-700 hover:bg-error-100 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-300' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700' }}"
+                                >
+                                    <svg class="h-3.5 w-3.5 {{ $complaint->highlighted ? 'fill-current text-error-600 dark:text-error-400' : 'fill-none stroke-current stroke-2' }}" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    <span>{{ $complaint->highlighted ? 'Cabut Prioritas' : 'Forward ke Staf' }}</span>
+                                </button>
+                            </form>
 
                             {{-- Click to open Popup modal --}}
                             <button
@@ -142,7 +186,7 @@
                                     actions: @js($actionPayload),
                                     postUrl: '{{ route('admin.complaints.actions.store', $complaint) }}'
                                 })"
-                                class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                                class="inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                             >
                                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>

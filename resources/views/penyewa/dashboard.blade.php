@@ -363,14 +363,28 @@
         x-cloak
         class="fixed inset-0 z-99999 flex items-center justify-center p-4"
     >
-        <!-- Backdrop -->
+        <!-- Backdrop (No blur) -->
         <div
             @click="isAnnouncementModalOpen = false"
-            class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"
+            x-show="isAnnouncementModalOpen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-gray-900/50"
         ></div>
 
-        <!-- Dialog Content -->
+        <!-- Dialog Content (Clean Pop Up) -->
         <div
+            x-show="isAnnouncementModalOpen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
             class="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900 dark:border dark:border-gray-800"
             @click.away="isAnnouncementModalOpen = false"
         >

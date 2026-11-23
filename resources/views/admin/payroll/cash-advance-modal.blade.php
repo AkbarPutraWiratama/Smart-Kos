@@ -1,7 +1,20 @@
 <div x-show="showAdvanceModal" x-cloak
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
     class="fixed inset-0 z-999999 flex items-center justify-center bg-black/50 p-4"
     @keydown.escape.window="showAdvanceModal = false">
-    <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900" @click.stop>
+    <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900" @click.stop
+        x-show="showAdvanceModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95">>
         <div class="flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
             <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Catat Kasbon Staf Baru</h3>
             <button type="button" @click="showAdvanceModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">

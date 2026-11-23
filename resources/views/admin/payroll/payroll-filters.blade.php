@@ -1,7 +1,7 @@
-<div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
-    <form method="GET" action="{{ route('admin.payroll.index') }}" class="flex flex-wrap items-end gap-3">
+<div class="rounded-2xl border border-gray-200 bg-white p-3.5 sm:p-4 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+    <form method="GET" action="{{ route('admin.payroll.index') }}" class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
         {{-- Staff selector --}}
-        <div class="min-w-48 flex-1 sm:flex-none">
+        <div class="w-full sm:w-auto sm:min-w-48">
             <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Pilih Staf</label>
             <select name="staff_id" onchange="this.form.submit()"
                 class="h-9 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 outline-none focus:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
@@ -13,7 +13,7 @@
         </div>
 
         {{-- Time Scope selector --}}
-        <div x-data="{ ts: @js($timeScope) }" class="flex items-end gap-2">
+        <div x-data="{ ts: @js($timeScope) }" class="flex w-full flex-wrap items-end gap-2 sm:w-auto">
             <div>
                 <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">Periode</label>
                 <div class="flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-gray-800/60">
@@ -50,14 +50,16 @@
             </div>
         </div>
 
-        <button type="submit"
-            class="h-9 rounded-lg bg-brand-500 px-4 text-sm font-semibold text-white transition hover:bg-brand-600">
-            Terapkan
-        </button>
+        <div class="flex w-full items-center gap-2 pt-1 sm:w-auto sm:pt-0">
+            <button type="submit"
+                class="inline-flex h-9 flex-1 items-center justify-center rounded-lg bg-brand-500 px-4 text-xs font-semibold text-white transition hover:bg-brand-600 sm:flex-none">
+                Terapkan
+            </button>
 
-        <a href="{{ route('admin.payroll.index') }}"
-            class="inline-flex h-9 items-center rounded-lg border border-gray-300 px-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">
-            Reset
-        </a>
+            <a href="{{ route('admin.payroll.index') }}"
+                class="inline-flex h-9 flex-1 items-center justify-center rounded-lg border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50 sm:flex-none dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">
+                Reset
+            </a>
+        </div>
     </form>
 </div>

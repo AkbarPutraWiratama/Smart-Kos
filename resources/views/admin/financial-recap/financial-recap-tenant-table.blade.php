@@ -16,11 +16,56 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Tidak ada data penyewa yang cocok dengan filter.</p>
         </div>
     @else
-        <div class="overflow-x-auto">
+        {{-- Mobile Card View --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @foreach ($tenantRecap as $tenant)
+                <div class="p-4 space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                                {{ mb_strtoupper(mb_substr($tenant['tenant_name'], 0, 1)) }}
+                            </span>
+                            <div class="min-w-0">
+                                <p class="font-semibold text-gray-800 dark:text-white/90 text-sm truncate">{{ $tenant['tenant_name'] }}</p>
+                                <p class="text-xs text-gray-400 truncate">{{ $tenant['tenant_email'] }}</p>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center gap-1 text-xs shrink-0 {{ $tenant['has_active'] ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400' }}">
+                            @if ($tenant['has_active'])<span class="h-1.5 w-1.5 rounded-full bg-success-500"></span>@endif
+                            {{ $tenant['active_room'] }}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <p class="text-gray-400">Total Bayar</p>
+                            <p class="font-semibold tabular-nums text-gray-800 dark:text-white/90">Rp {{ number_format($tenant['total_payments'], 0, ',', '.') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Piutang</p>
+                            @if ($tenant['total_outstanding'] > 0)
+                                <p class="font-semibold tabular-nums text-error-600 dark:text-error-400">Rp {{ number_format($tenant['total_outstanding'], 0, ',', '.') }}</p>
+                            @else
+                                <p class="text-gray-400">—</p>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Transaksi</p>
+                            <p class="text-gray-600 dark:text-gray-300">{{ number_format($tenant['transaction_count'], 0, ',', '.') }}x</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Net</p>
+                            <p class="font-bold tabular-nums {{ $tenant['net_amount'] >= 0 ? 'text-success-600 dark:text-success-400' : 'text-error-600 dark:text-error-400' }}">{{ $tenant['net_amount'] < 0 ? '-' : '' }}Rp {{ number_format(abs($tenant['net_amount']), 0, ',', '.') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Desktop Table --}}
+        <div class="hidden sm:block overflow-x-auto">
             <table class="w-full text-left text-sm" aria-label="Rekap keuangan per penyewa">
                 <thead>
-                    <tr class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/[0.02]">
-                        <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Penyewa</th>
+                    <tr class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/[0.02]">                        <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Penyewa</th>
                         <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Kamar Aktif</th>
                         <th scope="col" class="px-5 py-3 text-end text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Total Pembayaran</th>
                         <th scope="col" class="px-5 py-3 text-end text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Piutang Tertunggak</th>

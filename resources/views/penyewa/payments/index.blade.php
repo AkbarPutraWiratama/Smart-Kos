@@ -79,84 +79,84 @@
         @endphp
 
         <!-- 1. Billing Summary Cards -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <!-- Total Rent -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+            <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Nominal Sewa Bulanan</span>
-                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Sewa Bulanan</span>
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </span>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">
+                <div class="mt-2.5">
+                    <p class="text-lg font-bold tracking-tight tabular-nums text-gray-800 dark:text-white/90 sm:text-xl">
                         Rp {{ number_format($rentAmount, 0, ',', '.') }}
-                    </h3>
-                    <p class="mt-1 text-xs text-gray-400">Per bulan / kamar</p>
+                    </p>
+                    <p class="mt-0.5 text-[11px] text-gray-400">Per bulan / kamar</p>
                 </div>
-            </div>
+            </article>
 
             <!-- Due Date -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+            <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Jatuh Tempo Pembayaran</span>
-                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400">
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Jatuh Tempo</span>
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </span>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white/90">
+                <div class="mt-2.5">
+                    <p class="text-lg font-bold tracking-tight tabular-nums text-gray-800 dark:text-white/90 sm:text-xl">
                         {{ $dueDate->translatedFormat('d M Y') }}
-                    </h3>
-                    <span class="mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium {{ $badgeClass }}">
+                    </p>
+                    <span class="mt-0.5 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium {{ $badgeClass }}">
                         {{ $badgeLabel }}
                     </span>
                 </div>
-            </div>
+            </article>
 
             <!-- Payment Status -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+            <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Status Pembayaran</span>
-                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400">
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Status Bayar</span>
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </span>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white/90">
+                <div class="mt-2.5">
+                    <p class="text-lg font-bold tracking-tight tabular-nums text-gray-800 dark:text-white/90 sm:text-xl">
                         {{ $paymentStatus }}
-                    </h3>
-                    <p class="mt-1 text-xs text-gray-400">
+                    </p>
+                    <p class="mt-0.5 text-[11px] text-gray-400">
                         {{ $assignment->isPaidForCurrentPeriod() ? 'Terbayar periode ini' : 'Menunggu pelunasan' }}
                     </p>
                 </div>
-            </div>
+            </article>
 
             <!-- Room & Location -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+            <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Kamar & Lokasi</span>
-                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </span>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-base font-bold text-gray-800 truncate dark:text-white/90">
-                        Kamar No. {{ $room->room_number }} (Lt. {{ $room->floor_name }})
-                    </h3>
-                    <p class="mt-1 text-xs text-gray-400 truncate">
+                <div class="mt-2.5">
+                    <p class="text-base font-bold tracking-tight text-gray-800 truncate dark:text-white/90">
+                        Kamar {{ $room->room_number }} (Lt. {{ $room->floor_name }})
+                    </p>
+                    <p class="mt-0.5 text-[11px] text-gray-400 truncate">
                         {{ $location->name }}
                     </p>
                 </div>
-            </div>
+            </article>
         </div>
 
         <!-- 2. Payment Method Selector Tabs -->
@@ -466,7 +466,38 @@
                             Belum ada riwayat transaksi Virtual Account.
                         </div>
                     @else
-                        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+                        {{-- VA Mobile Card View --}}
+                        <div class="divide-y divide-gray-100 rounded-xl border border-gray-200 dark:divide-white/[0.05] dark:border-gray-800 sm:hidden">
+                            @foreach ($vaPayments as $vp)
+                                <div class="p-3 space-y-1.5">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="font-mono text-[11px] text-gray-600 dark:text-gray-400 truncate">{{ $vp->order_id }}</span>
+                                        <span class="shrink-0 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $vp->statusBadgeClass() }}">
+                                            {{ $vp->statusLabel() }}
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-semibold text-gray-800 dark:text-white">{{ $vp->formattedAmount() }}</span>
+                                        <span class="text-[11px] text-gray-400">
+                                            {{ $vp->paid_at ? $vp->paid_at->format('d/m/Y H:i') : ($vp->transaction_time ? $vp->transaction_time->format('d/m/Y H:i') : '-') }}
+                                        </span>
+                                    </div>
+                                    @if ($vp->isPending())
+                                        <form method="POST" action="{{ route('penyewa.payments.va.check-status') }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="order_id" value="{{ $vp->order_id }}">
+                                            <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-2 py-1 text-[11px] font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                                                <svg class="h-3 w-3 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                                Cek Status
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- VA Desktop Table --}}
+                        <div class="hidden sm:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
                             <table class="w-full text-left text-xs">
                                 <thead class="border-b border-gray-200 bg-gray-50/70 text-gray-600 dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400">
                                     <tr>
@@ -539,7 +570,37 @@
                             Belum ada riwayat pengajuan transfer manual.
                         </div>
                     @else
-                        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+                        {{-- Manual Mobile Card View --}}
+                        <div class="divide-y divide-gray-100 rounded-xl border border-gray-200 dark:divide-white/[0.05] dark:border-gray-800 sm:hidden">
+                            @foreach ($manualPayments as $mp)
+                                <div class="p-3 space-y-1.5">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="min-w-0">
+                                            <p class="font-medium text-sm text-gray-800 dark:text-white">{{ $mp->bank_name }}</p>
+                                            <p class="text-[11px] text-gray-500 dark:text-gray-400">{{ $mp->formattedAmount() }}</p>
+                                        </div>
+                                        <span class="shrink-0 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $mp->statusBadgeClass() }}" @if($mp->isRejected() && $mp->rejection_reason) title="{{ $mp->rejection_reason }}" @endif>
+                                            {{ $mp->statusLabel() }}
+                                        </span>
+                                    </div>
+                                    @if ($mp->isRejected() && $mp->rejection_reason)
+                                        <p class="text-[10px] text-error-600 dark:text-error-400 italic">{{ Str::limit($mp->rejection_reason, 40) }}</p>
+                                    @endif
+                                    <div class="flex items-center justify-between text-[11px] text-gray-400">
+                                        <span>{{ $mp->submitted_at ? $mp->submitted_at->format('d/m/Y H:i') : '-' }}</span>
+                                        @if ($mp->proofUrl())
+                                            <a href="{{ $mp->proofUrl() }}" target="_blank" class="inline-flex items-center gap-1 font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">
+                                                Lihat Bukti
+                                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Manual Desktop Table --}}
+                        <div class="hidden sm:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
                             <table class="w-full text-left text-xs">
                                 <thead class="border-b border-gray-200 bg-gray-50/70 text-gray-600 dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400">
                                     <tr>

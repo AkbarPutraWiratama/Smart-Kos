@@ -7,6 +7,7 @@
         <p class="text-xs text-gray-500 dark:text-gray-400">Jumlah data per tabel mengikuti pilihan pagination di atas.</p>
     </header>
 
+    {{-- VA Payments --}}
     <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
         <header class="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div class="flex items-center gap-3">
@@ -15,7 +16,31 @@
             </div>
             <span class="inline-flex w-fit items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{{ number_format($vaPayments->total(), 0, ',', '.') }} transaksi</span>
         </header>
-        <div class="max-w-full overflow-x-auto custom-scrollbar">
+
+        {{-- VA Mobile Card View --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @forelse ($vaPayments as $payment)
+                @php($assignment = $payment->roomAssignment)
+                <div class="p-4 space-y-1.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-medium text-gray-800 text-sm dark:text-white/90">{{ $assignment?->tenantProfile?->user?->name ?? 'Penyewa' }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $assignment?->room?->location?->name ?? 'Lokasi tidak tersedia' }} · Kamar {{ $assignment?->room?->room_number ?? '—' }}</p>
+                        </div>
+                        <span class="shrink-0 font-semibold tabular-nums text-gray-800 dark:text-white/90 text-sm">Rp {{ number_format((float) $payment->amount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-gray-400">
+                        <span>{{ $payment->transaction_time?->format('d M Y H:i') ?? $payment->created_at?->format('d M Y H:i') }}</span>
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium {{ $payment->statusBadgeClass() }}">{{ $payment->statusLabel }}</span>
+                    </div>
+                </div>
+            @empty
+                <div class="p-6 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada riwayat pembayaran Virtual Account pada cakupan ini.</div>
+            @endforelse
+        </div>
+
+        {{-- VA Desktop Table --}}
+        <div class="hidden sm:block max-w-full overflow-x-auto custom-scrollbar">
             <table class="w-full min-w-[760px]">
                 <thead><tr class="border-b border-gray-100 dark:border-gray-800"><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Waktu</th><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Penyewa &amp; Unit</th><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Order ID</th><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Status</th><th class="px-5 py-3 text-end text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Jumlah</th></tr></thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -37,6 +62,7 @@
         @if ($vaPayments->hasPages())<footer class="border-t border-gray-100 px-5 py-4 dark:border-gray-800 sm:px-6">{{ $vaPayments->links() }}</footer>@endif
     </article>
 
+    {{-- Manual Payments --}}
     <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
         <header class="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div class="flex items-center gap-3">
@@ -45,7 +71,32 @@
             </div>
             <span class="inline-flex w-fit items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{{ number_format($manualPayments->total(), 0, ',', '.') }} transaksi</span>
         </header>
-        <div class="max-w-full overflow-x-auto custom-scrollbar">
+
+        {{-- Manual Mobile Card View --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @forelse ($manualPayments as $payment)
+                @php($assignment = $payment->roomAssignment)
+                <div class="p-4 space-y-1.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-medium text-gray-800 text-sm dark:text-white/90">{{ $assignment?->tenantProfile?->user?->name ?? $payment->submittedBy?->name ?? 'Penyewa' }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $assignment?->room?->location?->name ?? 'Lokasi tidak tersedia' }} · Kamar {{ $assignment?->room?->room_number ?? '—' }}</p>
+                        </div>
+                        <span class="shrink-0 font-semibold tabular-nums text-gray-800 dark:text-white/90 text-sm">Rp {{ number_format((float) $payment->amount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-gray-400">
+                        <span>{{ $payment->bank_name }} · {{ $payment->bank_account_number }}</span>
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium {{ $payment->statusBadgeClass() }}">{{ $payment->statusLabel }}</span>
+                    </div>
+                    <p class="text-[11px] text-gray-400">{{ $payment->submitted_at?->format('d M Y H:i') ?? '—' }}</p>
+                </div>
+            @empty
+                <div class="p-6 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada riwayat transfer manual pada cakupan ini.</div>
+            @endforelse
+        </div>
+
+        {{-- Manual Desktop Table --}}
+        <div class="hidden sm:block max-w-full overflow-x-auto custom-scrollbar">
             <table class="w-full min-w-[850px]">
                 <thead><tr class="border-b border-gray-100 dark:border-gray-800"><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Diajukan</th><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Penyewa &amp; Unit</th><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Rekening Pengirim</th><th class="px-5 py-3 text-start text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Status &amp; Verifikator</th><th class="px-5 py-3 text-end text-xs font-medium text-gray-500 dark:text-gray-400 sm:px-6">Jumlah</th></tr></thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">

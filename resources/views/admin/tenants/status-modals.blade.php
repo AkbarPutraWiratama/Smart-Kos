@@ -1,7 +1,23 @@
-<!-- Kelola Kamar -->
+<!-- Kelola Kamar (No blur, pop up animation) -->
 <div x-show="isManageAssignmentModalOpen" x-cloak @keydown.escape.window="isManageAssignmentModalOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
-    <div @click="isManageAssignmentModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+    <div @click="isManageAssignmentModalOpen = false"
+         x-show="isManageAssignmentModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="isManageAssignmentModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
         <template x-if="currentAssignment">
             <div>
                 <div class="mb-4 flex items-center justify-between">
@@ -57,10 +73,26 @@
     </div>
 </div>
 
-<!-- Konfirmasi Setujui Pembayaran -->
+<!-- Konfirmasi Setujui Pembayaran (No blur, pop up animation) -->
 <div x-show="showApprovePaymentModal" x-cloak @keydown.escape.window="showApprovePaymentModal = false" class="fixed inset-0 z-999999 flex items-center justify-center p-4">
-    <div @click="showApprovePaymentModal = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
+    <div @click="showApprovePaymentModal = false"
+         x-show="showApprovePaymentModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="showApprovePaymentModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
         <h3 class="text-base font-bold text-gray-800 dark:text-white">Konfirmasi Setujui Pembayaran</h3>
         <form :action="approvePaymentActionUrl" method="POST" class="mt-4 space-y-4">
             @csrf
@@ -70,10 +102,26 @@
     </div>
 </div>
 
-<!-- Konfirmasi Tolak Pembayaran -->
+<!-- Konfirmasi Tolak Pembayaran (No blur, pop up animation) -->
 <div x-show="showRejectPaymentModal" x-cloak @keydown.escape.window="showRejectPaymentModal = false" class="fixed inset-0 z-999999 flex items-center justify-center p-4">
-    <div @click="showRejectPaymentModal = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
+    <div @click="showRejectPaymentModal = false"
+         x-show="showRejectPaymentModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="showRejectPaymentModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
         <h3 class="text-base font-bold text-gray-800 dark:text-white">Konfirmasi Tolak Pembayaran</h3>
         <form :action="rejectPaymentActionUrl" method="POST" class="mt-4 space-y-4">
             @csrf
@@ -83,10 +131,26 @@
     </div>
 </div>
 
-<!-- Edit Kamar -->
+<!-- Edit Kamar (No blur, pop up animation) -->
 <div x-show="isEditAssignmentModalOpen" x-cloak @keydown.escape.window="isEditAssignmentModalOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
-    <div @click="isEditAssignmentModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+    <div @click="isEditAssignmentModalOpen = false"
+         x-show="isEditAssignmentModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="isEditAssignmentModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
         <template x-if="currentAssignment">
             <form method="POST" :action="'/admin/assignments/' + currentAssignment.id + '/price'" class="space-y-4">
                 @csrf
@@ -140,10 +204,26 @@
     </div>
 </div>
 
-<!-- Konfirmasi Simpan Edit Kamar -->
+<!-- Konfirmasi Simpan Edit Kamar (No blur, pop up animation) -->
 <div x-show="showEditSaveConfirmationModal" x-cloak @keydown.escape.window="showEditSaveConfirmationModal = false" class="fixed inset-0 z-999999 flex items-center justify-center p-4">
-    <div @click="showEditSaveConfirmationModal = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
+    <div @click="showEditSaveConfirmationModal = false"
+         x-show="showEditSaveConfirmationModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="showEditSaveConfirmationModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
         <template x-if="currentAssignment">
             <form :action="editSaveActionUrl" method="POST" class="space-y-4">
                 @csrf
@@ -177,10 +257,26 @@
     </div>
 </div>
 
-<!-- Isi Kamar -->
+<!-- Isi Kamar (No blur, pop up animation) -->
 <div x-show="isAssignModalOpen" x-cloak @keydown.escape.window="isAssignModalOpen = false; isRoomLocked = false; lockedRoomId = ''" class="fixed inset-0 z-999999 flex items-center justify-center p-5">
-    <div @click="isAssignModalOpen = false; isRoomLocked = false; lockedRoomId = ''" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+    <div @click="isAssignModalOpen = false; isRoomLocked = false; lockedRoomId = ''"
+         x-show="isAssignModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="isAssignModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
         <h3 class="mb-4 text-base font-semibold text-gray-800 dark:text-white/90">Penempatan Kamar Penyewa</h3>
         <p x-show="isRoomLocked" x-cloak class="mb-3 inline-flex rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-400">Kamar dikunci dari Visualisasi</p>
         <form method="POST" action="{{ route('admin.assignments.store') }}" class="space-y-4">
@@ -244,10 +340,26 @@
     </div>
 </div>
 
-<!-- Pindah Kamar -->
+<!-- Pindah Kamar (No blur, pop up animation) -->
 <div x-show="isChangeRoomModalOpen" x-cloak @keydown.escape.window="isChangeRoomModalOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center p-5">
-    <div @click="isChangeRoomModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+    <div @click="isChangeRoomModalOpen = false"
+         x-show="isChangeRoomModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="isChangeRoomModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
         <h3 class="mb-4 text-base font-semibold text-gray-800 dark:text-white/90">Pindah Kamar Penghuni</h3>
         <form method="POST" :action="'/admin/assignments/' + currentAssignment.id + '/change-room'" class="space-y-4">
             @csrf
@@ -264,10 +376,26 @@
     </div>
 </div>
 
-<!-- Konfirmasi Pindah Kamar -->
+<!-- Konfirmasi Pindah Kamar (No blur, pop up animation) -->
 <div x-show="showChangeRoomConfirmationModal" x-cloak @keydown.escape.window="showChangeRoomConfirmationModal = false" class="fixed inset-0 z-999999 flex items-center justify-center p-4">
-    <div @click="showChangeRoomConfirmationModal = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
+    <div @click="showChangeRoomConfirmationModal = false"
+         x-show="showChangeRoomConfirmationModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="showChangeRoomConfirmationModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900">
         <h3 class="text-base font-bold text-gray-800 dark:text-white">Konfirmasi Pindah Kamar</h3>
         <form :action="changeRoomActionUrl" method="POST" class="mt-4 space-y-4">
             @csrf
@@ -283,10 +411,26 @@
     </div>
 </div>
 
-<!-- Akhiri Sewa -->
+<!-- Akhiri Sewa (No blur, pop up animation) -->
 <div x-show="isEndAssignmentModalOpen" x-cloak @keydown.escape.window="isEndAssignmentModalOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center p-5">
-    <div @click="isEndAssignmentModalOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-    <div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+    <div @click="isEndAssignmentModalOpen = false"
+         x-show="isEndAssignmentModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/60"></div>
+    <div @click.stop
+         x-show="isEndAssignmentModalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
         <h3 class="mb-4 text-base font-semibold text-gray-800 dark:text-white/90">Konfirmasi Akhiri Masa Sewa</h3>
         <form method="POST" :action="'/admin/assignments/' + currentAssignment.id + '/end'" class="space-y-4">
             @csrf

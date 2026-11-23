@@ -1580,7 +1580,7 @@ requires confirmation.
 
 ---
 
-# 43. Phase 37 — Complaint Highlight
+# 43. Phase 37 — Complaint Highlight (Completed)
 
 Admin can highlight complaints for staff.
 
@@ -1595,6 +1595,25 @@ The staff interface should make highlighted complaints visually noticeable.
 Use existing TailAdmin badges, alerts, cards, or emphasis styles.
 
 Do not create a completely new visual framework.
+
+## Summary of Implementation
+
+### Files Created
+- `tests/Feature/Admin/ComplaintHighlightTest.php` — 9 comprehensive feature tests verifying admin highlight toggle, authorization restrictions (guest, staff, and tenant cannot toggle), visual noticeability in staff interface, automatic sorting to top of list, and dedicated filtering by highlighted complaints.
+
+### Files Enhanced & Modified
+- `app/Http/Controllers/Staff/ComplaintController.php` — Added `highlighted` filter support (`?highlighted=1`) and ordering by `highlighted` first (`->orderByDesc('highlighted')`).
+- `app/Http/Controllers/Admin/ComplaintController.php` — Provided `toggleHighlight(Complaint $complaint)` endpoint for Admin and added `highlighted` filter support.
+- `resources/views/staff/complaints/complaint-handling.blade.php` — Added prominent TailAdmin Attention Banner surfacing highlighted complaints from Admin with one-click direct filter.
+- `resources/views/staff/complaints/complaint-cards.blade.php` — Enhanced highlighted cards with top accent gradient ribbon, prominent ring border, and bold "Prioritas Admin" badge.
+- `resources/views/staff/complaints/complaint-filters.blade.php` — Added dedicated quick filter button for "Prioritas Admin" with live counter.
+- `resources/views/admin/complaints/complaint-filters.blade.php` — Added dedicated quick filter button for "Prioritas Admin" with live counter.
+- `resources/views/admin/complaints/complaint-cards.blade.php` — Included one-click highlight toggle button on each card for Admin.
+
+### Test Results
+- Phase 37 specific: **9 tests, 29 assertions — all passing**
+- Full Complaint test suite: **39 tests, 147 assertions — all passing**
+- Full application suite: **311 tests, 1319 assertions — all passing** (zero regressions)
 
 ---
 

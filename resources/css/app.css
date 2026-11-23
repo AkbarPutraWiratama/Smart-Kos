@@ -302,6 +302,14 @@
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: #344054;
 }
+
+@layer base {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+}
+
 @layer utilities {
   /* For Remove Date Icon */
   input[type='date']::-webkit-inner-spin-button,

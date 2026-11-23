@@ -24,6 +24,7 @@ class ComplaintController extends Controller
         $status = $request->query('status', 'all');
         $locationId = $request->query('location_id');
         $search = trim((string) $request->query('search', ''));
+        $highlighted = $request->query('highlighted');
 
         $query = Complaint::with([
             'tenantProfile.user',
@@ -33,6 +34,10 @@ class ComplaintController extends Controller
         ->orderByDesc('highlighted') // Highlighted complaints appear first
         ->orderByDesc('submitted_at')
         ->orderByDesc('id');
+
+        if ($highlighted === '1') {
+            $query->where('highlighted', true);
+        }
 
         if ($status && $status !== 'all') {
             $query->where('status', $status);
@@ -66,7 +71,7 @@ class ComplaintController extends Controller
             'belum'           => $allComplaints->where('status', 'belum')->count(),
             'dalam_perbaikan' => $allComplaints->where('status', 'dalam_perbaikan')->count(),
             'selesai'         => $allComplaints->where('status', 'selesai')->count(),
-            'highlighted'     => $allComplaints->where('highlighted', true)->count(),
+            'highlighted'     => $allComplaints->where('highlighted', true)->where('status', '!=', 'selesai')->count(),
         ];
 
         $locations = Location::where('status', 'active')->orderBy('name')->get();
@@ -77,7 +82,8 @@ class ComplaintController extends Controller
             'locations',
             'status',
             'locationId',
-            'search'
+            'search',
+            'highlighted'
         ));
     }
 
@@ -104,10 +110,12 @@ class ComplaintController extends Controller
             'completed_at'       => $validated['status'] === 'selesai' ? now() : null,
         ]);
 
-        // 2. Update status of the complaint
-        $complaint->update([
-            'status' => $validated['status'],
-        ]);
+        // 2. Update status of the complaint (auto-clear highlight if resolved)
+        $updateData = ['status' => $validated['status']];
+        if ($validated['status'] === 'selesai') {
+            $updateData['highlighted'] = false;
+        }
+        $complaint->update($updateData);
 
         // 3. Optional: If repair/maintenance cost is recorded, sync to Keuangan
         if (! empty($validated['cost']) && (float) $validated['cost'] > 0) {

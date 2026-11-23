@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full overflow-x-hidden">
 
 <head>
     <meta charset="utf-8">
@@ -98,7 +98,7 @@
     </script>
 </head>
 
-<body x-init="$store.sidebar.isExpanded = false;
+<body class="overflow-x-hidden" x-init="$store.sidebar.isExpanded = false;
 const checkMobile = () => {
     if (window.innerWidth < 1280) {
         $store.sidebar.setMobileOpen(false);

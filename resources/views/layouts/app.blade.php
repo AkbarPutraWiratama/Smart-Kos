@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" class="h-full bg-gray-50 dark:bg-gray-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" class="h-full bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
 
 <head>
     <meta charset="utf-8">
@@ -136,18 +136,18 @@
 
 </head>
 
-<body>
+<body class="overflow-x-hidden">
 
-    <div class="min-h-screen xl:flex" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
+    <div class="min-h-screen xl:flex overflow-x-hidden" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
         @include('layouts.backdrop')
         @include('layouts.sidebar')
 
         {{-- transition-all duration-300 ease-in-out --}}
-        <div class="flex-1 min-w-0 w-full ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out">
+        <div class="flex-1 min-w-0 w-full ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out overflow-x-hidden">
             <!-- app header start -->
             @include('layouts.app-header')
             <!-- app header end -->
-            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 w-full min-w-0">
+            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 w-full min-w-0 overflow-x-hidden">
                 @yield('content')
             </div>
         </div>

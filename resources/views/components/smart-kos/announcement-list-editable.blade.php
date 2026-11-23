@@ -140,18 +140,37 @@
 <div
     x-show="isEditModalOpen"
     x-cloak
-    class="fixed inset-0 z-99999 flex items-start justify-center overflow-y-auto bg-gray-900/60 p-4 pt-10 backdrop-blur-sm"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-99999 flex items-start justify-center overflow-y-auto bg-gray-900/60 p-4 pt-10"
     @keydown.escape.window="isEditModalOpen = false"
 >
     {{-- Delete Confirm Sub-Modal --}}
     <div
         x-show="isDeleteConfirmOpen"
         x-cloak
-        class="fixed inset-0 z-[999999] flex items-center justify-center bg-gray-900/70 backdrop-blur-sm p-4"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-[999999] flex items-center justify-center bg-gray-900/70 p-4"
         @keydown.escape.window="isDeleteConfirmOpen = false"
     >
         <div
             @click.outside="isDeleteConfirmOpen = false"
+            x-show="isDeleteConfirmOpen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
             class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xl dark:border-gray-800 dark:bg-gray-900"
         >
             <div class="flex flex-col items-center text-center">
@@ -188,6 +207,12 @@
         @click.outside="isEditModalOpen = false"
         class="w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-theme-xl dark:border-gray-800 dark:bg-gray-900 mb-10"
         x-show="isEditModalOpen"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
     >
         {{-- Modal Header --}}
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">

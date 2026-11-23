@@ -127,70 +127,62 @@
     </div>
 
     <!-- 2. Operational Key Metrics (No Financial Nominals) -->
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
         <!-- Occupied Rooms -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+        <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Kamar Terisi</span>
-                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                 </span>
             </div>
-            <div class="mt-3">
-                <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">{{ $totalOccupiedRooms }}</h3>
-                <p class="mt-1 text-xs text-gray-400">Penyewa aktif tercatat</p>
+            <div class="mt-2.5">
+                <p class="text-lg font-bold tracking-tight tabular-nums text-gray-800 dark:text-white/90 sm:text-xl">{{ $totalOccupiedRooms }}</p>
+                <p class="mt-0.5 text-[11px] text-gray-400">Penyewa aktif tercatat</p>
             </div>
-        </div>
+        </article>
 
         <!-- Approaching Due Date -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+        <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Perlu Perhatian</span>
-                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </span>
             </div>
-            <div class="mt-3">
-                <h3 class="text-2xl font-bold text-warning-600 dark:text-warning-400">{{ $urgentPaymentsCount }}</h3>
-                <p class="mt-1 text-xs text-gray-400">Jatuh tempo &le; 7 hari / hari ini</p>
+            <div class="mt-2.5">
+                <p class="text-lg font-bold tracking-tight tabular-nums text-warning-600 dark:text-warning-400 sm:text-xl">{{ $urgentPaymentsCount }}</p>
+                <p class="mt-0.5 text-[11px] text-gray-400">JT ≤ 7 hari / hari ini</p>
             </div>
-        </div>
+        </article>
 
         <!-- Pending Verifications -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+        <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Menunggu Verifikasi</span>
-                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </span>
             </div>
-            <div class="mt-3">
-                <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">{{ $pendingVerificationCount }}</h3>
-                <p class="mt-1 text-xs text-gray-400">Bukti transfer manual</p>
+            <div class="mt-2.5">
+                <p class="text-lg font-bold tracking-tight tabular-nums text-gray-800 dark:text-white/90 sm:text-xl">{{ $pendingVerificationCount }}</p>
+                <p class="mt-0.5 text-[11px] text-gray-400">Bukti transfer manual</p>
             </div>
-        </div>
+        </article>
 
         <!-- Active Announcements -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]">
+        <article class="rounded-xl border border-gray-200 bg-white p-3.5 shadow-theme-xs transition hover:border-gray-300 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-gray-700">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Pengumuman Aktif</span>
-                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                    </svg>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
                 </span>
             </div>
-            <div class="mt-3">
-                <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">{{ $activeAnnouncementsCount }}</h3>
-                <p class="mt-1 text-xs text-gray-400">Informasi terpublikasi</p>
+            <div class="mt-2.5">
+                <p class="text-lg font-bold tracking-tight tabular-nums text-gray-800 dark:text-white/90 sm:text-xl">{{ $activeAnnouncementsCount }}</p>
+                <p class="mt-0.5 text-[11px] text-gray-400">Informasi terpublikasi</p>
             </div>
-        </div>
+        </article>
     </div>
 
     <!-- 3. Location Filter Navigation Tabs -->
@@ -243,22 +235,59 @@
 
             <!-- Legend Badge Explanation -->
             <div class="flex flex-wrap items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400">
-                <span class="inline-flex items-center gap-1">
-                    <span class="h-2 w-2 rounded-full bg-error-500"></span> Hari Ini / Terlambat
-                </span>
-                <span class="inline-flex items-center gap-1">
-                    <span class="h-2 w-2 rounded-full bg-warning-500"></span> &le; 7 Hari
-                </span>
-                <span class="inline-flex items-center gap-1">
-                    <span class="h-2 w-2 rounded-full bg-gray-400"></span> &gt; 7 Hari
-                </span>
-                <span class="inline-flex items-center gap-1">
-                    <span class="h-2 w-2 rounded-full bg-success-500"></span> Lunas
-                </span>
+                <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-error-500"></span> Hari Ini / Terlambat</span>
+                <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-warning-500"></span> &le; 7 Hari</span>
+                <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-gray-400"></span> &gt; 7 Hari</span>
+                <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-success-500"></span> Lunas</span>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
+        {{-- Mobile Card View --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @forelse ($assignments as $assignment)
+                @php
+                    $room = $assignment->room;
+                    $location = $room->location;
+                    $tenantUser = $assignment->tenantProfile?->user;
+                    $dueDate = $assignment->getPaymentDueDate();
+                    $days = $assignment->getDaysUntilDue();
+                    $status = $assignment->getPaymentStatus();
+                    $isPaid = $assignment->isPaidForCurrentPeriod();
+                    $hasPending = $assignment->hasPendingPayment();
+                    $deadlineColor = $assignment->getDeadlineColor();
+                @endphp
+                <div class="p-4 space-y-1.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-gray-800 dark:text-white/90 text-sm">{{ $tenantUser->name ?? 'Penyewa' }}</p>
+                            <p class="text-xs text-gray-400">{{ '@' . ($tenantUser->username ?? '-') }}</p>
+                        </div>
+                        @if ($isPaid)
+                            <span class="shrink-0 inline-flex items-center rounded-full bg-success-50 px-2 py-0.5 text-xs font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">Lunas</span>
+                        @elseif ($hasPending)
+                            <span class="shrink-0 inline-flex items-center rounded-full bg-blue-light-50 px-2 py-0.5 text-xs font-semibold text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">Verifikasi</span>
+                        @elseif ($days <= 0)
+                            <span class="shrink-0 inline-flex items-center rounded-full bg-error-50 px-2 py-0.5 text-xs font-semibold text-error-700 dark:bg-error-500/15 dark:text-error-400">{{ $days === 0 ? 'Hari Ini' : 'Terlambat' }}</span>
+                        @elseif ($days <= 7)
+                            <span class="shrink-0 inline-flex items-center rounded-full bg-warning-50 px-2 py-0.5 text-xs font-semibold text-warning-700 dark:bg-warning-500/15 dark:text-warning-400">H-{{ $days }}</span>
+                        @else
+                            <span class="shrink-0 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">{{ $days }} Hari Lagi</span>
+                        @endif
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <span>Kamar {{ $room->room_number }} · {{ $location->name }}</span>
+                        <span>JT: {{ $dueDate->translatedFormat('d M Y') }}</span>
+                    </div>
+                </div>
+            @empty
+                <div class="py-10 text-center text-gray-400">
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Tidak ada data sewa aktif untuk filter lokasi yang dipilih.</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop Table View --}}
+        <div class="hidden sm:block overflow-x-auto">
             <table class="w-full text-start text-xs">
                 <thead class="bg-gray-50/75 border-b border-gray-100 text-gray-500 dark:bg-white/[0.02] dark:border-gray-800 dark:text-gray-400 uppercase tracking-wider text-[11px]">
                     <tr>
@@ -323,16 +352,12 @@
                             <td class="py-3.5 px-4">
                                 @if ($isPaid)
                                     <span class="inline-flex items-center gap-1 rounded-md bg-success-50 px-2 py-0.5 text-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-400">
-                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                                         Periode Lunas
                                     </span>
                                 @elseif ($hasPending)
                                     <span class="inline-flex items-center gap-1 rounded-md bg-blue-light-50 px-2 py-0.5 text-xs font-medium text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">
-                                        <svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
+                                        <svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                                         Verifikasi Pending
                                     </span>
                                 @elseif ($days < 0)
@@ -357,25 +382,15 @@
                             <!-- Payment Status Badge -->
                             <td class="py-3.5 px-4 text-center">
                                 @if ($isPaid)
-                                    <span class="inline-flex items-center rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">
-                                        Lunas
-                                    </span>
+                                    <span class="inline-flex items-center rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">Lunas</span>
                                 @elseif ($hasPending)
-                                    <span class="inline-flex items-center rounded-full bg-blue-light-50 px-2.5 py-0.5 text-xs font-semibold text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">
-                                        Menunggu Verifikasi
-                                    </span>
+                                    <span class="inline-flex items-center rounded-full bg-blue-light-50 px-2.5 py-0.5 text-xs font-semibold text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">Menunggu Verifikasi</span>
                                 @elseif ($status === 'Jatuh Tempo Hari Ini')
-                                    <span class="inline-flex items-center rounded-full bg-error-50 px-2.5 py-0.5 text-xs font-semibold text-error-700 dark:bg-error-500/15 dark:text-error-400">
-                                        Jatuh Tempo Hari Ini
-                                    </span>
+                                    <span class="inline-flex items-center rounded-full bg-error-50 px-2.5 py-0.5 text-xs font-semibold text-error-700 dark:bg-error-500/15 dark:text-error-400">Jatuh Tempo Hari Ini</span>
                                 @elseif ($status === 'Menunggak')
-                                    <span class="inline-flex items-center rounded-full bg-error-50 px-2.5 py-0.5 text-xs font-semibold text-error-700 dark:bg-error-500/15 dark:text-error-400">
-                                        Menunggak
-                                    </span>
+                                    <span class="inline-flex items-center rounded-full bg-error-50 px-2.5 py-0.5 text-xs font-semibold text-error-700 dark:bg-error-500/15 dark:text-error-400">Menunggak</span>
                                 @else
-                                    <span class="inline-flex items-center rounded-full {{ $deadlineColor === 'yellow' ? 'bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' }} px-2.5 py-0.5 text-xs font-semibold">
-                                        Belum Bayar
-                                    </span>
+                                    <span class="inline-flex items-center rounded-full {{ $deadlineColor === 'yellow' ? 'bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' }} px-2.5 py-0.5 text-xs font-semibold">Belum Bayar</span>
                                 @endif
                             </td>
                         </tr>

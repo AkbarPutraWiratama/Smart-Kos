@@ -7,7 +7,45 @@
         <span class="inline-flex w-fit items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{{ number_format($financialRecords->total(), 0, ',', '.') }} catatan</span>
     </header>
 
-    <div class="max-w-full overflow-x-auto custom-scrollbar">
+    {{-- Mobile Card View --}}
+    <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+        @forelse ($financialRecords as $record)
+            <div class="p-4 space-y-1.5">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                        <p class="font-medium text-gray-800 text-sm dark:text-white/90">{{ $record->description }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            @if ($record->recordedBy) Dicatat oleh {{ $record->recordedBy->name }}
+                            @elseif ($record->reference_type === 'va_payment') Sistem Otomatis (Midtrans VA)
+                            @elseif ($record->manualPayment?->verifiedBy) Diverifikasi oleh {{ $record->manualPayment->verifiedBy->name }}
+                            @else Sistem @endif
+                        </p>
+                    </div>
+                    @if ($record->type === 'income')
+                        <span class="shrink-0 font-semibold tabular-nums text-success-600 dark:text-success-400 text-sm">+Rp {{ number_format((float) $record->amount, 0, ',', '.') }}</span>
+                    @else
+                        <span class="shrink-0 font-semibold tabular-nums text-error-600 dark:text-error-400 text-sm">−Rp {{ number_format((float) $record->amount, 0, ',', '.') }}</span>
+                    @endif
+                </div>
+                <div class="flex items-center justify-between text-xs text-gray-400">
+                    <span>{{ $record->transaction_date?->format('d M Y') ?? '—' }}</span>
+                    @if ($record->type === 'income')
+                        <span class="inline-flex items-center rounded-full bg-success-50 px-2 py-0.5 text-[10px] font-medium text-success-700 dark:bg-success-500/15 dark:text-success-400">Pemasukan</span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-error-50 px-2 py-0.5 text-[10px] font-medium text-error-700 dark:bg-error-500/15 dark:text-error-400">Pengeluaran</span>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="px-5 py-12 text-center">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Belum ada transaksi pada periode ini</p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Ubah periode atau cakupan untuk melihat transaksi lainnya.</p>
+            </div>
+        @endforelse
+    </div>
+
+    {{-- Desktop Table --}}
+    <div class="hidden sm:block max-w-full overflow-x-auto custom-scrollbar">
         <table class="w-full min-w-[900px]">
             <thead>
                 <tr class="border-b border-gray-100 dark:border-gray-800">
@@ -55,19 +93,13 @@
                                 </span>
                             @elseif ($record->reference_type === 'expense')
                                 <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Pengeluaran: {{ $record->expense?->category?->name ?? 'Umum' }}</span>
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $record->expense?->title ?? 'Pengeluaran' }}
-                                </span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">{{ $record->expense?->title ?? 'Pengeluaran' }}</span>
                             @elseif ($record->reference_type === 'payroll')
                                 <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Gaji Staf</span>
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
-                                    Staf: {{ $record->payrollRecord?->staff?->name ?? '—' }}
-                                </span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">Staf: {{ $record->payrollRecord?->staff?->name ?? '—' }}</span>
                             @elseif ($record->reference_type === 'cash_advance')
                                 <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">Kasbon Staf</span>
-                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
-                                    Staf: {{ $record->cashAdvance?->staff?->name ?? '—' }}
-                                </span>
+                                <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">Staf: {{ $record->cashAdvance?->staff?->name ?? '—' }}</span>
                             @else
                                 <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ $record->reference_type ? ucwords(str_replace('_', ' ', $record->reference_type)) . ' #' . $record->reference_id : 'Catatan manual' }}</span>
                             @endif

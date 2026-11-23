@@ -10,7 +10,7 @@
 
 <div class="space-y-6">
     {{-- Monthly Cash Flow Comparison Bar (STEPBYSTEP.md Specification) --}}
-    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 dark:border-gray-800">
             <div>
                 <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
@@ -77,7 +77,7 @@
     </div>
 
     {{-- ApexCharts 12-Month Bar Chart (TailAdmin Pattern) --}}
-    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03] sm:p-6"
+    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 overflow-hidden"
         x-data="{
             chart: null,
             init() {

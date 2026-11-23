@@ -7,7 +7,44 @@
             <p class="text-sm">Belum ada catatan kasbon untuk filter ini.</p>
         </div>
     @else
-        <div class="overflow-x-auto custom-scrollbar">
+        {{-- Mobile Card View --}}
+        <div class="divide-y divide-gray-100 sm:hidden dark:divide-white/[0.05]">
+            @foreach ($cashAdvances as $advance)
+                <div class="p-4 space-y-1.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-gray-800 dark:text-white/90 text-sm">{{ $advance->staff?->name ?? 'Staf' }}</p>
+                            <p class="text-xs text-gray-400">{{ $advance->staff?->email ?? $advance->staff?->username ?? '' }}</p>
+                        </div>
+                        <span class="shrink-0 font-semibold tabular-nums text-warning-600 dark:text-warning-400 text-sm">Rp {{ number_format((float) $advance->amount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $advance->advance_date?->translatedFormat('d M Y') ?? '—' }}</span>
+                        <form method="POST" action="{{ route('admin.cash-advances.update-status', $advance) }}" class="inline-block">
+                            @csrf
+                            @method('PATCH')
+                            <select name="status" onchange="this.form.submit()"
+                                class="h-7 rounded-md border border-gray-200 bg-white px-2 text-xs font-medium outline-none transition focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800
+                                    {{ $advance->status === 'outstanding' ? 'text-warning-600 dark:text-warning-400' : '' }}
+                                    {{ $advance->status === 'partially_repaid' ? 'text-blue-light-600 dark:text-blue-light-400' : '' }}
+                                    {{ $advance->status === 'repaid' ? 'text-success-600 dark:text-success-400' : '' }}
+                                    {{ $advance->status === 'cancelled' ? 'text-gray-400 dark:text-gray-500 line-through' : '' }}">
+                                <option value="outstanding" @selected($advance->status === 'outstanding')>Belum Lunas</option>
+                                <option value="partially_repaid" @selected($advance->status === 'partially_repaid')>Lunas Sebagian</option>
+                                <option value="repaid" @selected($advance->status === 'repaid')>Lunas</option>
+                                <option value="cancelled" @selected($advance->status === 'cancelled')>Dibatalkan</option>
+                            </select>
+                        </form>
+                    </div>
+                    @if ($advance->notes)
+                        <p class="text-xs text-gray-400 italic line-clamp-1">{{ $advance->notes }}</p>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Desktop Table --}}
+        <div class="hidden sm:block overflow-x-auto custom-scrollbar">
             <table class="w-full min-w-[700px] text-sm">
                 <thead>
                     <tr class="border-b border-gray-100 dark:border-gray-800">

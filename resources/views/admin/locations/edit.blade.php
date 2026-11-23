@@ -101,10 +101,26 @@
 		</form>
 	</x-common.component-card>
 
-	<!-- Modal Konfirmasi Hapus Lokasi -->
+	<!-- Modal Konfirmasi Hapus Lokasi (No blur, pop up animation) -->
 	<div x-show="isDeleteLocationOpen" x-cloak @keydown.escape.window="isDeleteLocationOpen = false" class="fixed inset-0 z-999999 flex items-center justify-center overflow-y-auto p-5">
-		<div @click="isDeleteLocationOpen = false" class="fixed inset-0 bg-gray-900/60"></div>
-		<div @click.stop class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
+		<div @click="isDeleteLocationOpen = false"
+             x-show="isDeleteLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900/60"></div>
+		<div @click.stop
+             x-show="isDeleteLocationOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-theme-xl dark:bg-gray-900">
 			<div class="mb-4 flex items-center gap-3">
 				<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
 					<svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
