@@ -96,7 +96,7 @@ class StaffComplaintHandlingTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Keran Air Kamar Mandi Bocor',
             'description'  => 'Air menetes deras dan tidak bisa ditutup rapat.',
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => false,
             'submitted_at' => now()->subHours(3),
         ]);
@@ -141,17 +141,17 @@ class StaffComplaintHandlingTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Lampu Kamar Selesai Diperbaiki',
             'description'  => 'Lampu sudah diganti',
-            'status'       => 'selesai',
+            'status'       => 'resolved',
             'submitted_at' => now()->subDay(),
         ]);
 
         // Filter status = belum
-        $response = $this->actingAs($this->staff)->get(route('staff.complaints.index', ['status' => 'belum']));
+        $response = $this->actingAs($this->staff)->get(route('staff.complaints.index', ['status' => 'open']));
         $response->assertSeeText('Keran Air Kamar Mandi Bocor');
         $response->assertDontSeeText('Lampu Kamar Selesai Diperbaiki');
 
         // Filter status = selesai
-        $responseSelesai = $this->actingAs($this->staff)->get(route('staff.complaints.index', ['status' => 'selesai']));
+        $responseSelesai = $this->actingAs($this->staff)->get(route('staff.complaints.index', ['status' => 'resolved']));
         $responseSelesai->assertSeeText('Lampu Kamar Selesai Diperbaiki');
         $responseSelesai->assertDontSeeText('Keran Air Kamar Mandi Bocor');
     }
@@ -189,7 +189,7 @@ class StaffComplaintHandlingTest extends TestCase
             'tenant_id'    => $otherProfile->id,
             'title'        => 'AC Rusak di Kos Kenanga',
             'description'  => 'AC mati total',
-            'status'       => 'belum',
+            'status'       => 'open',
             'submitted_at' => now(),
         ]);
 
@@ -207,7 +207,7 @@ class StaffComplaintHandlingTest extends TestCase
     {
         $response = $this->actingAs($this->staff)->post(route('staff.complaints.actions.store', $this->complaint), [
             'action_description' => 'Petugas sedang menuju lokasi untuk membongkar keran air.',
-            'status'             => 'dalam_perbaikan',
+            'status'             => 'in_progress',
         ]);
 
         $response->assertRedirect(route('staff.complaints.index'));
@@ -215,14 +215,14 @@ class StaffComplaintHandlingTest extends TestCase
 
         $this->assertDatabaseHas('complaints', [
             'id'     => $this->complaint->id,
-            'status' => 'dalam_perbaikan',
+            'status' => 'in_progress',
         ]);
 
         $this->assertDatabaseHas('complaint_actions', [
             'complaint_id'       => $this->complaint->id,
             'staff_id'           => $this->staff->id,
             'action_description' => 'Petugas sedang menuju lokasi untuk membongkar keran air.',
-            'status'             => 'dalam_perbaikan',
+            'status'             => 'in_progress',
         ]);
     }
 
@@ -233,7 +233,7 @@ class StaffComplaintHandlingTest extends TestCase
 
         $response = $this->actingAs($this->staff)->post(route('staff.complaints.actions.store', $this->complaint), [
             'action_description' => 'Pipa telah dilepas dan diganti klep.',
-            'status'             => 'dalam_perbaikan',
+            'status'             => 'in_progress',
             'image'              => $image,
         ]);
 
@@ -248,22 +248,22 @@ class StaffComplaintHandlingTest extends TestCase
     /** @test */
     public function test_changing_status_to_selesai_requires_confirmation(): void
     {
-        // Attempting to change to 'selesai' without confirm_selesai must fail validation
+        // Attempting to change to 'resolved' without confirm_selesai must fail validation
         $response = $this->actingAs($this->staff)->post(route('staff.complaints.actions.store', $this->complaint), [
             'action_description' => 'Keran sudah diperbaiki.',
-            'status'             => 'selesai',
+            'status'             => 'resolved',
         ]);
 
         $response->assertSessionHasErrors(['confirm_selesai']);
         $this->assertDatabaseHas('complaints', [
             'id'     => $this->complaint->id,
-            'status' => 'belum', // not changed!
+            'status' => 'open', // not changed!
         ]);
 
         // Attempting with confirm_selesai = 1 succeeds
         $successResponse = $this->actingAs($this->staff)->post(route('staff.complaints.actions.store', $this->complaint), [
             'action_description' => 'Keran sudah diganti dan berfungsi sempurna.',
-            'status'             => 'selesai',
+            'status'             => 'resolved',
             'confirm_selesai'    => 1,
         ]);
 
@@ -272,7 +272,7 @@ class StaffComplaintHandlingTest extends TestCase
 
         $this->assertDatabaseHas('complaints', [
             'id'     => $this->complaint->id,
-            'status' => 'selesai',
+            'status' => 'resolved',
         ]);
 
         $action = ComplaintAction::where('complaint_id', $this->complaint->id)->first();
@@ -288,7 +288,7 @@ class StaffComplaintHandlingTest extends TestCase
     {
         $response = $this->actingAs($this->staff)->post(route('staff.complaints.actions.store', $this->complaint), [
             'action_description' => 'Beli kran wasser baru dan seal tape di toko bangunan.',
-            'status'             => 'selesai',
+            'status'             => 'resolved',
             'confirm_selesai'    => 1,
             'cost'               => 75000,
         ]);

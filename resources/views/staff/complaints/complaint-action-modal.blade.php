@@ -3,13 +3,13 @@
     x-data="{
         isOpen: false,
         activeComplaint: {},
-        newStatus: 'dalam_perbaikan',
+        newStatus: 'in_progress',
         actionImageUrl: null,
         actionFileName: '',
         actionFileSize: '',
         openModal(data) {
             this.activeComplaint = data;
-            this.newStatus = data.status || 'dalam_perbaikan';
+            this.newStatus = data.status || 'in_progress';
             this.clearActionImage();
             this.isOpen = true;
             document.body.classList.add('overflow-hidden');
@@ -228,9 +228,9 @@
                             required
                             class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                         >
-                            <option value="belum">Belum Ditangani</option>
-                            <option value="dalam_perbaikan">Sedang Dalam Perbaikan</option>
-                            <option value="selesai">Selesai Ditangani</option>
+                            <option value="open">Belum Ditangani</option>
+                            <option value="in_progress">Sedang Dalam Perbaikan</option>
+                            <option value="resolved">Selesai Ditangani</option>
                         </select>
                     </div>
 
@@ -313,7 +313,7 @@
 
                     {{-- Konfirmasi Wajib jika Status diubah ke Selesai --}}
                     <div
-                        x-show="newStatus === 'selesai'"
+                        x-show="newStatus === 'resolved'"
                         x-transition
                         class="rounded-xl border border-warning-200 bg-warning-50 p-4 text-xs text-warning-900 dark:border-warning-500/20 dark:bg-warning-500/10 dark:text-warning-200"
                     >
@@ -322,7 +322,7 @@
                                 type="checkbox"
                                 name="confirm_selesai"
                                 value="1"
-                                :required="newStatus === 'selesai'"
+                                :required="newStatus === 'resolved'"
                                 class="mt-0.5 rounded border-warning-400 text-brand-600 focus:ring-brand-500 dark:border-warning-600 dark:bg-gray-800"
                             >
                             <span>

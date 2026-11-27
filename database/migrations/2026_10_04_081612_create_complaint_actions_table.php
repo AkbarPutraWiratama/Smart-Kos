@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('staff_id')->constrained('users')->cascadeOnDelete();
             $table->text('action_description');
             $table->string('image_path')->nullable();
-            $table->enum('status', ['belum', 'dalam_perbaikan', 'selesai'])->default('dalam_perbaikan');
+            $table->enum('status', ['open', 'in_progress', 'resolved'])->default('in_progress');
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
         });

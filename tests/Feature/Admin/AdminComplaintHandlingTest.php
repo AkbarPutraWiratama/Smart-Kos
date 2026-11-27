@@ -91,7 +91,7 @@ class AdminComplaintHandlingTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Saklar Lampu Kamar Korslet',
             'description'  => 'Kadang timbul percikan api saat dinyalakan.',
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => false,
             'submitted_at' => now()->subHours(2),
         ]);
@@ -128,7 +128,7 @@ class AdminComplaintHandlingTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->post(route('admin.complaints.actions.store', $this->complaint), [
             'action_description' => 'Admin telah memanggil teknisi PLN / kelistrikan.',
-            'status'             => 'dalam_perbaikan',
+            'status'             => 'in_progress',
         ]);
 
         $response->assertRedirect(route('admin.complaints.index'));
@@ -136,14 +136,14 @@ class AdminComplaintHandlingTest extends TestCase
 
         $this->assertDatabaseHas('complaints', [
             'id'     => $this->complaint->id,
-            'status' => 'dalam_perbaikan',
+            'status' => 'in_progress',
         ]);
 
         $this->assertDatabaseHas('complaint_actions', [
             'complaint_id'       => $this->complaint->id,
             'staff_id'           => $this->admin->id,
             'action_description' => 'Admin telah memanggil teknisi PLN / kelistrikan.',
-            'status'             => 'dalam_perbaikan',
+            'status'             => 'in_progress',
         ]);
     }
 
@@ -153,7 +153,7 @@ class AdminComplaintHandlingTest extends TestCase
         // Without confirmation fails
         $response = $this->actingAs($this->admin)->post(route('admin.complaints.actions.store', $this->complaint), [
             'action_description' => 'Saklar sudah diganti',
-            'status'             => 'selesai',
+            'status'             => 'resolved',
         ]);
 
         $response->assertSessionHasErrors(['confirm_selesai']);
@@ -161,7 +161,7 @@ class AdminComplaintHandlingTest extends TestCase
         // With confirmation succeeds
         $successResponse = $this->actingAs($this->admin)->post(route('admin.complaints.actions.store', $this->complaint), [
             'action_description' => 'Saklar broco baru sudah dipasang dan dites aman.',
-            'status'             => 'selesai',
+            'status'             => 'resolved',
             'confirm_selesai'    => 1,
             'cost'               => 45000,
         ]);
@@ -171,7 +171,7 @@ class AdminComplaintHandlingTest extends TestCase
 
         $this->assertDatabaseHas('complaints', [
             'id'     => $this->complaint->id,
-            'status' => 'selesai',
+            'status' => 'resolved',
         ]);
 
         $this->assertDatabaseHas('expenses', [

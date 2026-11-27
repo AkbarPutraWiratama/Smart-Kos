@@ -27,9 +27,9 @@ class ComplaintController extends Controller
 
         $stats = [
             'total'           => 0,
-            'belum'           => 0,
-            'dalam_perbaikan' => 0,
-            'selesai'         => 0,
+            'open'           => 0,
+            'in_progress' => 0,
+            'resolved'         => 0,
         ];
 
         if ($tenantProfile) {
@@ -49,9 +49,9 @@ class ComplaintController extends Controller
             // Compute statistics
             $allComplaints = Complaint::where('tenant_id', $tenantProfile->id)->get();
             $stats['total'] = $allComplaints->count();
-            $stats['belum'] = $allComplaints->where('status', 'belum')->count();
-            $stats['dalam_perbaikan'] = $allComplaints->where('status', 'dalam_perbaikan')->count();
-            $stats['selesai'] = $allComplaints->where('status', 'selesai')->count();
+            $stats['open'] = $allComplaints->where('status', 'open')->count();
+            $stats['in_progress'] = $allComplaints->where('status', 'in_progress')->count();
+            $stats['resolved'] = $allComplaints->where('status', 'resolved')->count();
 
             // Check 10-minute rate limit from latest submission
             $lastComplaint = Complaint::where('tenant_id', $tenantProfile->id)
@@ -110,7 +110,7 @@ class ComplaintController extends Controller
             'title'        => $validated['title'],
             'description'  => $validated['description'],
             'image_path'   => $imagePath,
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => false,
             'submitted_at' => now(),
         ]);

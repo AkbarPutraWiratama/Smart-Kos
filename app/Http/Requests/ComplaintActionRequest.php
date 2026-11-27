@@ -28,7 +28,7 @@ class ComplaintActionRequest extends FormRequest
             'cost'               => ['nullable', 'numeric', 'min:0'],
         ];
 
-        if ($this->input('status') === 'selesai') {
+        if ($this->input('status') === 'resolved') {
             $rules['confirm_selesai'] = ['required', 'accepted'];
         }
 

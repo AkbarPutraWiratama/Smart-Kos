@@ -354,7 +354,7 @@
                             </div>
                         @else
                             <span class="text-xs text-gray-400">
-                                {{ $payment->verified_at ? $payment->verified_at->translatedFormat('d M Y H:i') : 'Selesai' }}
+                                {{ $payment->verified_at ? $payment->verified_at->translatedFormat('d M Y H:i') : 'resolved' }}
                             </span>
                         @endif
                     </div>
@@ -524,7 +524,7 @@
                                     </div>
                                 @else
                                     <span class="text-xs text-gray-400">
-                                        {{ $payment->verified_at ? $payment->verified_at->translatedFormat('d M Y H:i') : 'Selesai' }}
+                                        {{ $payment->verified_at ? $payment->verified_at->translatedFormat('d M Y H:i') : 'resolved' }}
                                     </span>
                                 @endif
                             </td>

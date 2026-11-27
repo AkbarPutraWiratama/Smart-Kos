@@ -31,7 +31,7 @@
         </div>
         <div class="mt-2.5">
             <p class="text-lg font-bold tracking-tight tabular-nums text-warning-600 dark:text-warning-400 sm:text-xl">
-                {{ number_format($stats['belum'] ?? 0, 0, ',', '.') }}
+                {{ number_format($stats['open'] ?? 0, 0, ',', '.') }}
             </p>
             <p class="mt-0.5 text-[11px] text-gray-400">Perlu tindak lanjut</p>
         </div>
@@ -49,7 +49,7 @@
         </div>
         <div class="mt-2.5">
             <p class="text-lg font-bold tracking-tight tabular-nums text-blue-light-600 dark:text-blue-light-400 sm:text-xl">
-                {{ number_format($stats['dalam_perbaikan'] ?? 0, 0, ',', '.') }}
+                {{ number_format($stats['in_progress'] ?? 0, 0, ',', '.') }}
             </p>
             <p class="mt-0.5 text-[11px] text-gray-400">Sedang diproses staf</p>
         </div>
@@ -67,7 +67,7 @@
         </div>
         <div class="mt-2.5">
             <p class="text-lg font-bold tracking-tight tabular-nums text-success-600 dark:text-success-400 sm:text-xl">
-                {{ number_format($stats['selesai'] ?? 0, 0, ',', '.') }}
+                {{ number_format($stats['resolved'] ?? 0, 0, ',', '.') }}
             </p>
             <p class="mt-0.5 text-[11px] text-gray-400">Perbaikan tuntas</p>
         </div>

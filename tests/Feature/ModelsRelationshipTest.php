@@ -150,7 +150,7 @@ class ModelsRelationshipTest extends TestCase
             'tenant_id' => $tenantProfile->id,
             'title' => 'AC Bocor',
             'description' => 'Air AC menetes',
-            'status' => 'belum',
+            'status' => 'open',
             'submitted_at' => now(),
         ]);
 
@@ -167,7 +167,7 @@ class ModelsRelationshipTest extends TestCase
             'complaint_id' => $complaint->id,
             'staff_id' => $staff->id,
             'action_description' => 'Teknisi dijadwalkan',
-            'status' => 'dalam_perbaikan',
+            'status' => 'in_progress',
         ]);
         $this->assertEquals($staff->id, $action->staff->id);
 

@@ -68,10 +68,10 @@ class ComplaintController extends Controller
         $allComplaints = Complaint::all();
         $stats = [
             'total'           => $allComplaints->count(),
-            'belum'           => $allComplaints->where('status', 'belum')->count(),
-            'dalam_perbaikan' => $allComplaints->where('status', 'dalam_perbaikan')->count(),
-            'selesai'         => $allComplaints->where('status', 'selesai')->count(),
-            'highlighted'     => $allComplaints->where('highlighted', true)->where('status', '!=', 'selesai')->count(),
+            'open'           => $allComplaints->where('status', 'open')->count(),
+            'in_progress' => $allComplaints->where('status', 'in_progress')->count(),
+            'resolved'         => $allComplaints->where('status', 'resolved')->count(),
+            'highlighted'     => $allComplaints->where('highlighted', true)->where('status', '!=', 'resolved')->count(),
         ];
 
         $locations = Location::where('status', 'active')->orderBy('name')->get();
@@ -107,12 +107,12 @@ class ComplaintController extends Controller
             'action_description' => $validated['action_description'],
             'image_path'         => $imagePath,
             'status'             => $validated['status'],
-            'completed_at'       => $validated['status'] === 'selesai' ? now() : null,
+            'completed_at'       => $validated['status'] === 'resolved' ? now() : null,
         ]);
 
         // 2. Update status of the complaint (auto-clear highlight if resolved)
         $updateData = ['status' => $validated['status']];
-        if ($validated['status'] === 'selesai') {
+        if ($validated['status'] === 'resolved') {
             $updateData['highlighted'] = false;
         }
         $complaint->update($updateData);

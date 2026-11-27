@@ -89,7 +89,7 @@ class ComplaintHighlightTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Kebocoran Pipa Utama Kamar Mandi',
             'description'  => 'Pipa utama bocor dan air merembes ke lorong.',
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => false,
             'submitted_at' => now()->subHours(2),
         ]);
@@ -186,7 +186,7 @@ class ComplaintHighlightTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Darurat: Plafon Jebol',
             'description'  => 'Plafon runtuh',
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => true,
             'submitted_at' => now()->subHours(5),
         ]);
@@ -196,7 +196,7 @@ class ComplaintHighlightTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Biasa: Gagang Lemari Longgar',
             'description'  => 'Gagang lemari goyang',
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => false,
             'submitted_at' => now()->subMinutes(5),
         ]);
@@ -222,7 +222,7 @@ class ComplaintHighlightTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Aduan Biasa Tanpa Highlight',
             'description'  => 'Deskripsi biasa',
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => false,
             'submitted_at' => now()->subHour(),
         ]);
@@ -243,7 +243,7 @@ class ComplaintHighlightTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Aduan Biasa Untuk Admin',
             'description'  => 'Deskripsi biasa',
-            'status'       => 'belum',
+            'status'       => 'open',
             'highlighted'  => false,
             'submitted_at' => now()->subHour(),
         ]);
@@ -268,14 +268,14 @@ class ComplaintHighlightTest extends TestCase
         // 3. Staff resolves the complaint
         $actionResponse = $this->actingAs($this->staff)->post(route('staff.complaints.actions.store', $this->complaint), [
             'action_description' => 'Pipa utama telah diganti pipa PVC baru dan kebocoran tuntas.',
-            'status'             => 'selesai',
+            'status'             => 'resolved',
             'confirm_selesai'    => 1,
         ]);
         $actionResponse->assertRedirect(route('staff.complaints.index'));
 
         // 4. In database, complaint is resolved and highlight is cleared
         $this->complaint->refresh();
-        $this->assertEquals('selesai', $this->complaint->status);
+        $this->assertEquals('resolved', $this->complaint->status);
         $this->assertFalse($this->complaint->highlighted);
 
         // 5. Staff page no longer shows the alert banner

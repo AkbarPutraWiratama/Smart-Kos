@@ -57,12 +57,12 @@
 
                             {{-- Status Badge (Compact & Modern) --}}
                             <div>
-                                @if ($complaint->status === 'selesai')
+                                @if ($complaint->status === 'resolved')
                                     <span class="inline-flex items-center gap-1 rounded-full bg-success-50 px-2 py-0.5 text-[11px] font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-400">
                                         <span class="h-1.5 w-1.5 rounded-full bg-success-500"></span>
                                         Selesai
                                     </span>
-                                @elseif ($complaint->status === 'dalam_perbaikan')
+                                @elseif ($complaint->status === 'in_progress')
                                     <span class="inline-flex items-center gap-1 rounded-full bg-blue-light-50 px-2 py-0.5 text-[11px] font-semibold text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400">
                                         <span class="h-1.5 w-1.5 rounded-full bg-blue-light-500 animate-pulse"></span>
                                         Dalam Perbaikan

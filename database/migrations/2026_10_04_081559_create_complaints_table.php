@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('image_path')->nullable();
-            $table->enum('status', ['belum', 'dalam_perbaikan', 'selesai'])->default('belum');
+            $table->enum('status', ['open', 'in_progress', 'resolved'])->default('open');
             $table->boolean('highlighted')->default(false);
             $table->timestamp('submitted_at')->nullable();
             $table->timestamps();

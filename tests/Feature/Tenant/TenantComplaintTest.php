@@ -192,7 +192,7 @@ class TenantComplaintTest extends TestCase
             'tenant_id'   => $this->tenantProfile->id,
             'title'       => 'Lampu Kamar Mandi Mati',
             'description' => 'Lampu kamar mandi mati sejak semalam, mohon diganti bohlam baru.',
-            'status'      => 'belum',
+            'status'      => 'open',
             'highlighted' => false,
         ]);
     }
@@ -302,7 +302,7 @@ class TenantComplaintTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Aduan 11 Menit Lalu',
             'description'  => 'Sudah lewat cooldown',
-            'status'       => 'belum',
+            'status'       => 'open',
             'submitted_at' => now()->subMinutes(11),
         ]);
 
@@ -329,7 +329,7 @@ class TenantComplaintTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Aduan Saya Sendiri',
             'description'  => 'Deskripsi kepunyaan saya',
-            'status'       => 'belum',
+            'status'       => 'open',
             'submitted_at' => now()->subHour(),
         ]);
 
@@ -346,7 +346,7 @@ class TenantComplaintTest extends TestCase
             'tenant_id'    => $otherProfile->id,
             'title'        => 'Aduan Milik Orang Lain',
             'description'  => 'Penyewa lain mengeluh',
-            'status'       => 'belum',
+            'status'       => 'open',
             'submitted_at' => now()->subHour(),
         ]);
 
@@ -364,7 +364,7 @@ class TenantComplaintTest extends TestCase
             'tenant_id'    => $this->tenantProfile->id,
             'title'        => 'Gagang Pintu Kamar Rusak',
             'description'  => 'Gagang pintu longgar dan hampir lepas',
-            'status'       => 'dalam_perbaikan',
+            'status'       => 'in_progress',
             'highlighted'  => true,
             'submitted_at' => now()->subHours(2),
         ]);
@@ -373,7 +373,7 @@ class TenantComplaintTest extends TestCase
             'complaint_id'       => $complaint->id,
             'staff_id'           => $this->staff->id,
             'action_description' => 'Sedang dibelikan baut pengganti di toko besi.',
-            'status'             => 'dalam_perbaikan',
+            'status'             => 'in_progress',
         ]);
 
         $response = $this->actingAs($this->tenantUser)->get(route('penyewa.complaints.index'));

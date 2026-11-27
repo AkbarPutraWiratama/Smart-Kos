@@ -8,9 +8,9 @@
             <select name="status" id="status" onchange="this.form.submit()"
                 class="h-9 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 outline-none focus:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                 <option value="all" @selected($status === 'all')>Semua Status</option>
-                <option value="belum" @selected($status === 'belum')>Belum Ditangani</option>
-                <option value="dalam_perbaikan" @selected($status === 'dalam_perbaikan')>Dalam Perbaikan</option>
-                <option value="selesai" @selected($status === 'selesai')>Selesai</option>
+                <option value="open" @selected($status === 'open')>Belum Ditangani</option>
+                <option value="in_progress" @selected($status === 'in_progress')>Dalam Perbaikan</option>
+                <option value="resolved" @selected($status === 'resolved')>Selesai</option>
             </select>
         </div>
 
